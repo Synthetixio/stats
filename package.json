@@ -1,5 +1,5 @@
 {
-	"name": "kwenta",
+	"name": "synthetix-stats",
 	"version": "1.0.0",
 	"scripts": {
 		"dev": "next",
@@ -28,6 +28,7 @@
 		"react-responsive": "8.1.0",
 		"react-select": "3.1.0",
 		"react-table": "7.5.0",
+		"recharts": "1.8.5",
 		"styled-components": "5.1.1",
 		"synthetix-data": "2.1.23",
 		"synthetix-js": "2.27.0-alpha",
@@ -42,6 +43,7 @@
 		"@types/react-responsive": "8.0.2",
 		"@types/react-select": "3.0.19",
 		"@types/react-table": "7.0.22",
+		"@types/recharts": "1.8.14",
 		"@types/styled-components": "5.1.2",
 		"@typescript-eslint/eslint-plugin": "2.34.0",
 		"@typescript-eslint/parser": "2.34.0",

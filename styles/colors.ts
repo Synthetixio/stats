@@ -1,17 +1,17 @@
 export default {
 	// black
-	black1: '#000000',
-	black2: '#08080F',
-	black3: '#10101E',
-	black4: '#1A1A2E',
-	// grey
-	gray1: 'currentColor',
-	gray2: '#8A939F',
+	black: '#000000',
+	black1: '#06061B',
 	// white
 	white: '#ffffff',
-	// supplementary
-	purple: '#5D46CE',
-	red: '#CB366D',
-	green: '#66DD84',
-	yellow: '#FFDF6D',
+	white1: 'rgba(255, 255, 255, 0.46)',
+	// blue
+	darkBlue: '#06061B',
+	mediumBlue: '#09092f',
+	// font
+	lightFont: '#C4C4C4',
+	// bright
+	brightGreen: '#31D8A4',
+	brightPink: '#ED1EFF',
+	brightBlue: '#00d1ff',
 };

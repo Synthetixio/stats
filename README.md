@@ -1,1 +1,1 @@
-# kwenta
+# synthetix stats

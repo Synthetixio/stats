@@ -21,8 +21,17 @@ const Layout: FC<LayoutProps> = ({ children }) => {
 
 const GlobalStyle = createGlobalStyle`
   body {
-		background-color: ${(props) => props.theme.colors.black1};
-		color: ${(props) => props.theme.colors.white}
+		font-family: Inter;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 14px;
+    line-height: 18px;
+    /* identical to box height, or 129% */
+
+
+color: ;
+		background-color: ${(props) => props.theme.colors.darkBlue};
+		color: ${(props) => props.theme.colors.lightFont};
   }
 `;
 
