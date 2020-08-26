@@ -1,14 +1,35 @@
+import React, { FC, useContext } from 'react';
 import { useTranslation } from 'react-i18next';
-import SNXSection from '../sections/SNX/index';
-import SUSDSection from '../sections/SUSD/index';
 
-const HomePage = () => {
+import SNXSection from '../sections/Network/index';
+import SUSDSection from '../sections/SUSD/index';
+import SYNTHSSection from '../sections/SYNTHS/index';
+import { HeadersContext } from './_app';
+
+const HomePage: FC = () => {
 	const { t } = useTranslation();
+	const headersContext = useContext(HeadersContext);
 
 	return (
 		<>
-			<SNXSection />
-			<SUSDSection />
+			<div ref={headersContext.NETWORK as React.RefObject<HTMLDivElement>}>
+				<SNXSection />
+			</div>
+			<div ref={headersContext.STAKING as React.RefObject<HTMLDivElement>}>
+				<SUSDSection />
+			</div>
+			<div ref={headersContext['YIELD FARMING'] as React.RefObject<HTMLDivElement>}>
+				<div />
+			</div>
+			<div ref={headersContext.SYNTHS as React.RefObject<HTMLDivElement>}>
+				<SYNTHSSection />
+			</div>
+			<div ref={headersContext.EXCHANGE as React.RefObject<HTMLDivElement>}>
+				<div />
+			</div>
+			<div ref={headersContext.OPTIONS as React.RefObject<HTMLDivElement>}>
+				<div />
+			</div>
 		</>
 	);
 };

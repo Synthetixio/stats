@@ -31,5 +31,5 @@ const ButtonContainer = styled.button<{ isActive: boolean }>`
 	text-transform: uppercase;
 	cursor: pointer;
 
-	color: ${(props) => (props.isActive ? props.theme.colors.black1 : props.theme.colors.white1)};
+	color: ${(props) => (props.isActive ? props.theme.colors.black1 : props.theme.colors.white)};
 `;

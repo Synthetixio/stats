@@ -1,16 +1,17 @@
 import { FC } from 'react';
 import styled from 'styled-components';
-
-type NumberColor = 'green' | 'pink';
-type NumberStyle = 'percent' | 'number' | 'currency';
+import { NumberColor, NumberStyle } from '../constants/formatter';
+import { getFormattedNumber } from '../utils/formatter';
+import { COLORS } from '../constants/styles';
 
 interface StatsBoxProps {
 	title: string;
 	number: number;
-	percentChange: number;
+	percentChange: number | null;
 	subText: string;
 	color: NumberColor;
 	numberStyle: NumberStyle;
+	numBoxes: number;
 }
 
 const StatsBox: FC<StatsBoxProps> = ({
@@ -20,25 +21,32 @@ const StatsBox: FC<StatsBoxProps> = ({
 	subText,
 	color,
 	numberStyle,
+	numBoxes,
 }) => {
-	console.log('numberStyle', numberStyle);
+	const formattedNumber = getFormattedNumber(number, numberStyle);
 	return (
-		<>
-			<StatsBoxContainer>
-				<StatsBoxTitle>{title}</StatsBoxTitle>
-				<StatsBoxNumber color={color}>{number}</StatsBoxNumber>
+		<StatsBoxContainer numBoxes={numBoxes}>
+			<StatsBoxTitle>{title}</StatsBoxTitle>
+			<StatsBoxNumber color={color}>{formattedNumber}</StatsBoxNumber>
+			{percentChange != null ? (
 				<StatsBoxPercentChange color={color}>{percentChange}</StatsBoxPercentChange>
-				<StatsBoxSubText>{subText}</StatsBoxSubText>
-			</StatsBoxContainer>
-		</>
+			) : null}
+			<StatsBoxSubText>{subText}</StatsBoxSubText>
+		</StatsBoxContainer>
 	);
 };
 
 export default StatsBox;
 
-const StatsBoxContainer = styled.div`
+const StatsBoxContainer = styled.div<{ numBoxes: number }>`
 	padding: 20px;
-	width: 254px;
+	width: ${(props) => {
+		if (props.numBoxes === 3) {
+			return '358px';
+		} else {
+			return '254px';
+		}
+	}};
 	height: 207px;
 	left: 176px;
 	top: 279px;
@@ -76,19 +84,24 @@ const StatsBoxNumber = styled.div<{ color: NumberColor }>`
 	text-transform: uppercase;
 
 	color: ${(props) =>
-		props.color === 'green' ? props.theme.colors.brightGreen : props.theme.colors.brightPink};
+		props.color === COLORS.green ? props.theme.colors.brightGreen : props.theme.colors.brightPink};
 `;
-const StatsBoxPercentChange = styled.div<{ color: NumberColor }>`
+
+export const StatsBoxPercentChange = styled.div<{ color: NumberColor }>`
 	width: 48px;
-	height: 24px;
+	height: 22px;
 	margin-bottom: 15px;
 	text-align: center;
-	padding-top: 6px;
+	padding: 4px 6px 0 6px;
+	font-style: normal;
+	font-weight: bold;
+	font-size: 12px;
 
 	background: ${(props) =>
-		props.color === 'green' ? props.theme.colors.brightGreen : props.theme.colors.brightPink};
+		props.color === COLORS.green ? props.theme.colors.brightGreen : props.theme.colors.brightPink};
 	border-radius: 2px;
 `;
+
 const StatsBoxSubText = styled.div`
 	width: 206px;
 	height: 32px;
@@ -100,5 +113,5 @@ const StatsBoxSubText = styled.div`
 	line-height: 18px;
 	/* or 129% */
 
-	color: ${(props) => props.theme.colors.white1};
+	color: ${(props) => props.theme.colors.white};
 `;

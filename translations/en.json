@@ -1,20 +1,14 @@
 {
 	"meta": {
-		"description": "Kwenta description",
+		"description": "Synthetix Stats description",
 		"og": {
-			"title": "Kwenta",
-			"description": "Kwenta description",
-			"image-alt": "Kwenta",
-			"site-name": "Kwenta"
+			"title": "Synthetix Stats",
+			"description": "Synthetix Stats description",
+			"image-alt": "Synthetix Stats",
+			"site-name": "Synthetix Stats"
 		}
 	},
 	"homepage": {
-		"page-title": "Kwenta | Simple crypto trading for everyone"
-	},
-	"exchange": {
-		"page-title": "Kwenta | Exchange"
-	},
-	"dashboard": {
-		"page-title": "Kwenta | Dashboard"
+		"page-title": "Synthetix Stats | Synthetix protocol data"
 	}
 }

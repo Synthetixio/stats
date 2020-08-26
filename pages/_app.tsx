@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { createContext, FC, createRef } from 'react';
 import { AppProps } from 'next/app';
 import Head from 'next/head';
 import { useTranslation } from 'react-i18next';
@@ -11,6 +11,17 @@ import { scTheme, muiTheme } from 'styles/theme';
 import '../i18n';
 
 import Layout from 'sections/shared/Layout';
+
+const headersAndScrollRef = {
+	NETWORK: createRef(),
+	STAKING: createRef(),
+	'YIELD FARMING': createRef(),
+	SYNTHS: createRef(),
+	EXCHANGE: createRef(),
+	OPTIONS: createRef(),
+};
+
+export const HeadersContext = createContext(headersAndScrollRef);
 
 const App: FC<AppProps> = ({ Component, pageProps }) => {
 	const { t } = useTranslation();
@@ -39,9 +50,11 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
 			</Head>
 			<SCThemeProvider theme={scTheme}>
 				<MuiThemeProvider theme={muiTheme}>
-					<Layout>
-						<Component {...pageProps} />
-					</Layout>
+					<HeadersContext.Provider value={headersAndScrollRef}>
+						<Layout>
+							<Component {...pageProps} />
+						</Layout>
+					</HeadersContext.Provider>
 				</MuiThemeProvider>
 			</SCThemeProvider>
 		</>

@@ -1,24 +1,34 @@
-import { FC } from 'react';
+import { FC, useContext } from 'react';
 import styled from 'styled-components';
+
 import Cross from '../../../assets/svg/cross.svg';
+import { MAX_PAGE_WIDTH, Z_INDEX } from '../../../constants/styles';
+import { HeadersContext } from '../../../pages/_app';
 
 // TODO use translation
 const Header: FC = () => {
+	const headersContext = useContext(HeadersContext);
+	const scrollToRef = (ref: any) => {
+		const offsetTop = ref?.current?.offsetTop ?? 0;
+		const scrollEnd = offsetTop === 0 ? 0 : offsetTop - 20;
+		window.scrollTo(0, scrollEnd);
+	};
 	return (
 		<>
 			<HeaderContainer>
-				<HeaderSectionLeft>
-					<Cross />
-					<HeaderTitle>Stats</HeaderTitle>
-				</HeaderSectionLeft>
-				<HeaderSectionRight>
-					<HeaderLink>SNX</HeaderLink>
-					<HeaderLink>SUSD</HeaderLink>
-					<HeaderLink>SYNTHS</HeaderLink>
-					<HeaderLink>STAKING</HeaderLink>
-					<HeaderLink>EXCHANGES</HeaderLink>
-					<HeaderLink>BINARY OPTIONS</HeaderLink>
-				</HeaderSectionRight>
+				<HeaderContainerInner>
+					<HeaderSectionLeft>
+						<Cross />
+						<HeaderTitle>Stats</HeaderTitle>
+					</HeaderSectionLeft>
+					<HeaderSectionRight>
+						{Object.entries(headersContext).map(([key, value]) => (
+							<HeaderLink key={key} onClick={() => scrollToRef(value)}>
+								{key}
+							</HeaderLink>
+						))}
+					</HeaderSectionRight>
+				</HeaderContainerInner>
 			</HeaderContainer>
 			<Divider />
 		</>
@@ -28,11 +38,17 @@ const Header: FC = () => {
 export default Header;
 
 // TODO create a common flex container
-// TODO put 1226 in a shared variable
 const HeaderContainer = styled.div`
-	width: 1226px;
 	height: 60px;
 	padding-top: 30px;
+	position: fixed;
+	width: 100%;
+	z-index: ${Z_INDEX.thousand};
+	background-color: ${(props) => props.theme.colors.darkBlue};
+`;
+
+const HeaderContainerInner = styled.div`
+	width: ${MAX_PAGE_WIDTH}px;
 	margin: 0 auto;
 `;
 

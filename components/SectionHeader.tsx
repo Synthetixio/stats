@@ -2,20 +2,21 @@ import { FC } from 'react';
 import styled from 'styled-components';
 
 import Button from './Button';
+import { MAX_PAGE_WIDTH } from '../constants/styles';
 
 type SectionHeaderProps = {
-	icon: JSX.Element;
+	icon?: JSX.Element;
 	title: string;
-	subtitle: string;
+	subtitle?: string;
 };
 
 const SectionHeader: FC<SectionHeaderProps> = ({ icon, title, subtitle }) => (
 	<>
 		<SectionHeaderContainer>
 			<SectionHeaderLeft>
-				<div>{icon}</div>
+				{icon ? <div>{icon}</div> : null}
 				<SectionTitle>{title}</SectionTitle>
-				<div>{subtitle}</div>
+				{subtitle ? <div>{subtitle}</div> : null}
 			</SectionHeaderLeft>
 			<SectionHeaderRight>
 				<Button text="Price" isActive={true} />
@@ -29,7 +30,7 @@ export default SectionHeader;
 
 const SectionHeaderContainer = styled.div`
 	display: flex;
-	max-width: 1226px;
+	max-width: ${MAX_PAGE_WIDTH}px;
 	justify-content: space-between;
 	margin: 0 auto;
 	flex-wrap: wrap;

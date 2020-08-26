@@ -21,6 +21,7 @@ const Layout: FC<LayoutProps> = ({ children }) => {
 
 const GlobalStyle = createGlobalStyle`
   body {
+		margin: 0;
 		font-family: Inter;
     font-style: normal;
     font-weight: normal;
