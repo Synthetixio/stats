@@ -1,9 +1,8 @@
 import { FC } from 'react';
 import styled from 'styled-components';
 
-import { Z_INDEX } from '../../constants/styles';
+import { Z_INDEX, NumberStyle } from '../../constants/styles';
 
-import { NumberStyle } from '../../constants/formatter';
 import { StatsBoxPercentChange } from '../StatsBox';
 import { getFormattedNumber, formatPercentage } from '../../utils/formatter';
 

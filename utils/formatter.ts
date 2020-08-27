@@ -1,6 +1,7 @@
 import BigNumber from 'bignumber.js';
 import numbro from 'numbro';
-import { NumberStyle } from '../constants/formatter';
+
+import { NumberStyle } from '../constants/styles';
 
 const DEFAULT_CURRENCY_DECIMALS = 2;
 

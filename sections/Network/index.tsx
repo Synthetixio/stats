@@ -1,6 +1,7 @@
 import { FC, useEffect, useState } from 'react';
 import axios from 'axios';
 import { format } from 'date-fns';
+import snxData from 'synthetix-data';
 import { synthetix, Networks } from '@synthetixio/js';
 import { ethers } from 'ethers';
 
@@ -9,6 +10,7 @@ import StatsRow from '../../components/StatsRow';
 import AreaChart from '../../components/Charts/AreaChart';
 import SectionHeader from '../../components/SectionHeader';
 import { COLORS } from '../../constants/styles';
+import SUSDDistribution from '../Network/SUSDDistribution';
 
 const CMC_API = 'https://coinmarketcap-api.synthetix.io/public/prices?symbols=SNX';
 
@@ -17,6 +19,9 @@ const NetworkSection: FC = () => {
 	const [SNXTotalSupply, setSNXTotalSupply] = useState<number>(0);
 	const [SUSDPrice, setSUSDPrice] = useState<number>(0);
 	const [SNX24HVolume, setSNX24HVolume] = useState<number>(0);
+	const [activeCRatio, setActiveCRatio] = useState<number>(0);
+	const [networkCRatio, setNetworkCRatio] = useState<number>(0);
+	const [SNXPercentLocked, setSNXPercentLocked] = useState<number>(0);
 
 	// NOTE: use interval? or save data calls?
 	useEffect(() => {
@@ -41,15 +46,25 @@ const NetworkSection: FC = () => {
 				unformattedSnxTotalSupply,
 				unformattedExchangeAmount,
 				cmcSNXData,
+				unformattedLastDebtLedgerEntry,
+				unformattedTotalIssuedSynths,
+				unformattedIssuanceRatio,
+				holders,
 			] = await Promise.all([
 				snxjs.contracts.ExchangeRates.rateForCurrency(snxjs.toBytes32('SNX')),
 				snxjs.contracts.Synthetix.totalSupply(),
 				curveContract.get_dy_underlying(susdContractNumber, usdcContractNumber, susdAmountWei),
 				axios.get(CMC_API),
+				snxjs.contracts.SynthetixState.lastDebtLedgerEntry(),
+				snxjs.contracts.Synthetix.totalIssuedSynthsExcludeEtherCollateral(snxjs.toBytes32('sUSD')),
+				snxjs.contracts.SynthetixState.issuanceRatio(),
+				snxData.snx.holders({ max: 2000 }),
 			]);
 
-			setSNXPrice(Number(formatEther(unformattedSnxPrice)));
-			setSNXTotalSupply(Number(formatEther(unformattedSnxTotalSupply)));
+			const formattedSNXPrice = Number(formatEther(unformattedSnxPrice));
+			setSNXPrice(formattedSNXPrice);
+			const totalSupply = Number(formatEther(unformattedSnxTotalSupply));
+			setSNXTotalSupply(totalSupply);
 			const exchangeAmount = Number(formatUnits(unformattedExchangeAmount, 6));
 			setSUSDPrice(exchangeAmount / susdAmount);
 
@@ -57,6 +72,44 @@ const NetworkSection: FC = () => {
 			if (dailyVolume) {
 				setSNX24HVolume(dailyVolume);
 			}
+
+			const lastDebtLedgerEntry = Number(formatUnits(unformattedLastDebtLedgerEntry, 27));
+
+			const [totalIssuedSynths, issuanceRatio, usdToSnxPrice] = [
+				unformattedTotalIssuedSynths,
+				unformattedIssuanceRatio,
+				unformattedSnxPrice,
+			].map((val) => Number(formatEther(val)));
+
+			let snxTotal = 0;
+			let snxLocked = 0;
+			let stakersTotalDebt = 0;
+			let stakersTotalCollateral = 0;
+
+			// @ts-ignore
+			holders.forEach(({ collateral, debtEntryAtIndex, initialDebtOwnership }) => {
+				let debtBalance =
+					((totalIssuedSynths * lastDebtLedgerEntry) / debtEntryAtIndex) * initialDebtOwnership;
+				let collateralRatio = debtBalance / collateral / usdToSnxPrice;
+				// ignore if 0 balance
+				//if (Number(collateral) <= 0) continue;
+				if (isNaN(debtBalance)) {
+					debtBalance = 0;
+					collateralRatio = 0;
+				}
+				const lockedSnx = collateral * Math.min(1, collateralRatio / issuanceRatio);
+
+				if (Number(debtBalance) > 0) {
+					stakersTotalDebt += Number(debtBalance);
+					stakersTotalCollateral += Number(collateral * usdToSnxPrice);
+				}
+				snxTotal += Number(collateral);
+				snxLocked += Number(lockedSnx);
+			});
+
+			setSNXPercentLocked(snxLocked / snxTotal);
+			setActiveCRatio(1 / (stakersTotalDebt / stakersTotalCollateral));
+			setNetworkCRatio((totalSupply * formattedSNXPrice) / totalIssuedSynths);
 		};
 		fetchData();
 	}, []);
@@ -87,7 +140,7 @@ const NetworkSection: FC = () => {
 					key="SNXMKTCAP"
 					title="SNX MARKET CAP"
 					number={SNXTotalSupply * SNXPrice}
-					percentChange={0.24}
+					percentChange={null}
 					subText="Fully Diluted Market cap for Synthetix Network Token"
 					color={COLORS.pink}
 					numberStyle="currency"
@@ -114,6 +167,39 @@ const NetworkSection: FC = () => {
 					numBoxes={3}
 				/>
 			</StatsRow>
+			<StatsRow>
+				<StatsBox
+					key="TOTALSNXLOCKED"
+					title="TOTAL SNX STAKED"
+					number={SNXPercentLocked * SNXTotalSupply * SNXPrice}
+					percentChange={null}
+					subText="USD value of SNX tokens locked in staking"
+					color={COLORS.pink}
+					numberStyle="currency"
+					numBoxes={3}
+				/>
+				<StatsBox
+					key="NETWORKCRATIO"
+					title="NETWORK COLLATERALIZATION RATIO"
+					number={networkCRatio}
+					percentChange={null}
+					subText="Collateralization ratio for the all SNX tokens"
+					color={COLORS.green}
+					numberStyle="percent"
+					numBoxes={3}
+				/>
+				<StatsBox
+					key="ACTIVECRATIO"
+					title="ACTIVE COLLATERALIZATION RATIO"
+					number={activeCRatio}
+					percentChange={null}
+					subText="Collateralization ratio for staked SNX tokens"
+					color={COLORS.green}
+					numberStyle="percent"
+					numBoxes={3}
+				/>
+			</StatsRow>
+			<SUSDDistribution />
 		</>
 	);
 };

@@ -1,4 +1,6 @@
-import { NumberColor } from './formatter';
+export type NumberColor = 'green' | 'pink';
+export type NumberStyle = 'percent' | 'number' | 'currency';
+
 export const MAX_PAGE_WIDTH = 1226;
 
 export const Z_INDEX = {

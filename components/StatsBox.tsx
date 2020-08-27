@@ -1,8 +1,7 @@
 import { FC } from 'react';
-import styled from 'styled-components';
-import { NumberColor, NumberStyle } from '../constants/formatter';
+import styled, { css } from 'styled-components';
 import { getFormattedNumber } from '../utils/formatter';
-import { COLORS } from '../constants/styles';
+import { COLORS, NumberColor, NumberStyle } from '../constants/styles';
 
 interface StatsBoxProps {
 	title: string;
@@ -39,25 +38,32 @@ const StatsBox: FC<StatsBoxProps> = ({
 export default StatsBox;
 
 const StatsBoxContainer = styled.div<{ numBoxes: number }>`
+	margin-top: 20px;
 	padding: 20px;
-	width: ${(props) => {
-		if (props.numBoxes === 3) {
-			return '358px';
-		} else {
-			return '254px';
-		}
-	}};
-	height: 207px;
-	left: 176px;
-	top: 279px;
+	${(props) =>
+		props.numBoxes === 3
+			? css`
+					width: 29%;
+					height: 140px;
+			  `
+			: css`
+					width: 21%;
+					height: 165px;
+			  `};
 
 	background: ${(props) => props.theme.colors.mediumBlue};
 	opacity: 0.8;
 	box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.4);
+
+	@media only screen and (max-width: 1015px) {
+		width: 45%;
+	}
+	@media only screen and (max-width: 854px) {
+		width: 100%;
+	}
 `;
 
 const StatsBoxTitle = styled.div`
-	width: 130px;
 	height: 24px;
 	margin-bottom: 15px;
 
@@ -103,7 +109,6 @@ export const StatsBoxPercentChange = styled.div<{ color: NumberColor }>`
 `;
 
 const StatsBoxSubText = styled.div`
-	width: 206px;
 	height: 32px;
 
 	font-family: Inter;

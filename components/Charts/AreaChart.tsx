@@ -4,8 +4,7 @@ import styled from 'styled-components';
 import BasicAreaChart from './BasicAreaChart';
 import ChartTimeSelectors from './ChartTimeSelectors';
 import ChartTitle from './ChartTitle';
-import { NumberStyle } from '../../constants/formatter';
-import { MAX_PAGE_WIDTH } from '../../constants/styles';
+import { MAX_PAGE_WIDTH, NumberStyle } from '../../constants/styles';
 
 interface AreaChartProps {
 	data: Array<any>;
@@ -30,9 +29,8 @@ const AreaChart: FC<AreaChartProps> = ({ data, periods, title, num, numFormat, p
 export default AreaChart;
 
 const ChartContainer = styled.div`
+	background: ${(props) => props.theme.colors.mediumBlue};
 	position: relative;
-	margin-bottom: 20px;
-	margin-top: 20px;
-	margin: 0 auto;
+	margin: 20px auto;
 	max-width: ${MAX_PAGE_WIDTH}px;
 `;

@@ -19,6 +19,6 @@ const StatsRowContainer = styled.div`
 	display: flex;
 	max-width: ${MAX_PAGE_WIDTH}px;
 	justify-content: space-between;
-	margin: 0 auto;
+	margin: 0px auto;
 	flex-wrap: wrap;
 `;
