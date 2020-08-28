@@ -3,12 +3,17 @@ import { FC } from 'react';
 import styled from 'styled-components';
 import BasicTreeMap from '../../components/Charts/TreeMap';
 import { MAX_PAGE_WIDTH } from '../../constants/styles';
+import { TreeMapData } from '../../types/data';
 
-const SUSDDistribution: FC = () => (
+interface SUSDDistributionProps {
+	data: TreeMapData[];
+}
+
+const SUSDDistribution: FC<SUSDDistributionProps> = ({ data }) => (
 	<SectionWrap>
 		<SectionTitle>SUSD DISTRIBUTION</SectionTitle>
 		<SectionSubtitle>Distribution of sUSD desposited/stored</SectionSubtitle>
-		<BasicTreeMap />
+		<BasicTreeMap data={data} />
 	</SectionWrap>
 );
 

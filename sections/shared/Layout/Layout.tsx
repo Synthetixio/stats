@@ -23,7 +23,7 @@ const GlobalStyle = createGlobalStyle`
   body {
 		margin: 0;
 		scroll-behavior: smooth;
-		font-family: sans-serif;
+		font-family: "GT America", sans-serif;
     font-style: normal;
     font-weight: normal;
     font-size: 14px;

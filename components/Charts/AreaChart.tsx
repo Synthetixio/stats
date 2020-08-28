@@ -5,10 +5,10 @@ import BasicAreaChart from './BasicAreaChart';
 import ChartTimeSelectors from './ChartTimeSelectors';
 import ChartTitle from './ChartTitle';
 import { MAX_PAGE_WIDTH, NumberStyle } from '../../constants/styles';
-import { ChartPeriod, ChartData } from '../../types/data';
+import { ChartPeriod, AreaChartData } from '../../types/data';
 
 interface AreaChartProps {
-	data: Array<ChartData>;
+	data: Array<AreaChartData>;
 	periods: Array<ChartPeriod>;
 	title: string;
 	num: number;

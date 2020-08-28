@@ -3,10 +3,10 @@ import { AreaChart, Area, XAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import { Skeleton } from '@material-ui/lab';
 
 import colors from '../../styles/colors';
-import { ChartData } from '../../types/data';
+import { AreaChartData } from '../../types/data';
 
 interface BasicAreaChartProps {
-	data: Array<ChartData>;
+	data: Array<AreaChartData>;
 }
 
 const BasicAreaChart: FC<BasicAreaChartProps> = ({ data }) => {

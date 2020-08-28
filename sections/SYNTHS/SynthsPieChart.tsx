@@ -22,6 +22,7 @@ const SynthsPieChart: FC<SynthsPieChartProps> = ({ data }) => {
 const SynthsPieChartContainer = styled.div`
 	background: ${(props) => props.theme.colors.mediumBlue};
 	width: 48%;
+	height: 500px;
 	@media only screen and (max-width: 854px) {
 		width: 100%;
 	}

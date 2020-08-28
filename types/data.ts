@@ -18,9 +18,14 @@ export type SNXPriceData = {
 	averagePrice: number;
 };
 
-export type ChartData = {
+export type AreaChartData = {
 	created: string;
 	value: number;
+};
+
+export type TreeMapData = {
+	value: number;
+	name: string;
 };
 
 export type ChartPeriod = 'D' | 'W' | 'M' | 'Y';

@@ -3,7 +3,13 @@ import axios from 'axios';
 import snxData from 'synthetix-data';
 import { ethers } from 'ethers';
 
-import { ChartData, ChartPeriod, SNXPriceData, TimeSeries } from '../../types/data';
+import {
+	AreaChartData,
+	ChartPeriod,
+	SNXPriceData,
+	TimeSeries,
+	TreeMapData,
+} from '../../types/data';
 import StatsBox from '../../components/StatsBox';
 import StatsRow from '../../components/StatsRow';
 import AreaChart from '../../components/Charts/AreaChart';
@@ -12,22 +18,27 @@ import { COLORS } from '../../constants/styles';
 import SUSDDistribution from '../Network/SUSDDistribution';
 import { SNXJSContext } from '../../pages/_app';
 import { formatIdToIsoString } from '../../utils/formatter';
+import { getSUSDHoldersName } from '../../utils/dataMapping';
 
 const CMC_API = 'https://coinmarketcap-api.synthetix.io/public/prices?symbols=SNX';
 
 const NetworkSection: FC = () => {
 	const [SNXPrice, setSNXPrice] = useState<number>(0);
 	const [chartPeriod, setChartPeriod] = useState<ChartPeriod>('D');
-	const [SNXChartPriceData, setSNXChartPriceData] = useState<ChartData[]>([]);
+	const [SNXChartPriceData, setSNXChartPriceData] = useState<AreaChartData[]>([]);
 	const [SNXTotalSupply, setSNXTotalSupply] = useState<number>(0);
 	const [SUSDPrice, setSUSDPrice] = useState<number>(0);
 	const [SNX24HVolume, setSNX24HVolume] = useState<number>(0);
 	const [activeCRatio, setActiveCRatio] = useState<number>(0);
 	const [networkCRatio, setNetworkCRatio] = useState<number>(0);
 	const [SNXPercentLocked, setSNXPercentLocked] = useState<number>(0);
+	const [SUSDHolders, setSUSDHolders] = useState<TreeMapData[]>([]);
 	const snxjs = useContext(SNXJSContext);
 
-	const formatSNXPriceChartData = (data: SNXPriceData[], timeSeries: TimeSeries): ChartData[] => {
+	const formatSNXPriceChartData = (
+		data: SNXPriceData[],
+		timeSeries: TimeSeries
+	): AreaChartData[] => {
 		return data.map(({ id, averagePrice }) => {
 			return {
 				created: formatIdToIsoString(id, timeSeries),
@@ -61,6 +72,7 @@ const NetworkSection: FC = () => {
 				unformattedTotalIssuedSynths,
 				unformattedIssuanceRatio,
 				holders,
+				topSUSDHolders,
 			] = await Promise.all([
 				snxjs.contracts.ExchangeRates.rateForCurrency(snxjs.toBytes32('SNX')),
 				snxjs.contracts.Synthetix.totalSupply(),
@@ -70,6 +82,7 @@ const NetworkSection: FC = () => {
 				snxjs.contracts.Synthetix.totalIssuedSynthsExcludeEtherCollateral(snxjs.toBytes32('sUSD')),
 				snxjs.contracts.SynthetixState.issuanceRatio(),
 				snxData.snx.holders({ max: 2000 }),
+				snxData.synths.holders({ max: 20, synth: 'sUSD' }),
 			]);
 
 			const formattedSNXPrice = Number(formatEther(unformattedSnxPrice));
@@ -118,6 +131,13 @@ const NetworkSection: FC = () => {
 				snxLocked += Number(lockedSnx);
 			});
 
+			const topHolders = topSUSDHolders.map(
+				({ balanceOf, account }: { balanceOf: number; account: string }) => ({
+					name: getSUSDHoldersName(account),
+					value: balanceOf,
+				})
+			);
+			setSUSDHolders(topHolders);
 			setSNXPercentLocked(snxLocked / snxTotal);
 			setActiveCRatio(1 / (stakersTotalDebt / stakersTotalCollateral));
 			setNetworkCRatio((totalSupply * formattedSNXPrice) / totalIssuedSynths);
@@ -225,7 +245,7 @@ const NetworkSection: FC = () => {
 					numBoxes={3}
 				/>
 			</StatsRow>
-			<SUSDDistribution />
+			<SUSDDistribution data={SUSDHolders} />
 		</>
 	);
 };

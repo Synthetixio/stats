@@ -1,31 +1,44 @@
 import React, { PureComponent } from 'react';
-import { Treemap, ResponsiveContainer } from 'recharts';
+import { Treemap, ResponsiveContainer, Legend } from 'recharts';
 
 import colors from '../../styles/colors';
 import { formatCurrency } from '../../utils/formatter';
+import { TreeMapData } from '../../types/data';
 
-const data = [
-	{
-		name: 'sUSD',
-		children: [
-			{ name: 'Curve', size: 20859000 },
-			{ name: 'Stakers', size: 4614000 },
-			{ name: 'Uniswap', size: 3000345 },
-			{ name: 'Balancer', size: 1250900 },
-			{ name: 'Other', size: 3478987 },
-		],
-	},
+// const data = [
+// 	{
+// 		name: 'sUSD',
+// 		children: [
+// 			{ name: 'Curve', value: 20859000 },
+// 			{ name: 'Stakers', value: 4614000 },
+// 			{ name: 'Uniswap', value: 3000345 },
+// 			{ name: 'Balancer', value: 1250900 },
+// 			{ name: 'Other', value: 3478987 },
+// 		],
+// 	},
+// ];
+
+const MUTED_COLORS = [
+	colors.mutedBrightBlue,
+	colors.mutedBrightPink,
+	colors.mutedBrightGreen,
+	colors.mutedBrightYellow,
+	colors.mutedBrightOrange,
+	colors.mutedBrightPurple,
 ];
 
-const COLORS = [
-	colors.mutedBrightBlue,
-	colors.mutedBrightGreen,
-	colors.mutedBrightPink,
-	colors.mutedBrightOrange,
+const BRIGHT_COLORS = [
+	colors.brightBlue,
+	colors.brightPink,
+	colors.brightGreen,
+	colors.brightYellow,
+	colors.brightOrange,
+	colors.brightPurple,
 ];
 
 class CustomizedContent extends PureComponent {
 	render() {
+		// @ts-ignore TODO get the types for this
 		const { x, y, width, height, index, payload, rank, name, size } = this.props;
 
 		return (
@@ -36,8 +49,8 @@ class CustomizedContent extends PureComponent {
 					width={width}
 					height={height}
 					style={{
-						fill: COLORS[Math.floor(Math.random() * COLORS.length)],
-						stroke: colors.brightGreen,
+						fill: MUTED_COLORS[index % MUTED_COLORS.length],
+						stroke: BRIGHT_COLORS[index % BRIGHT_COLORS.length],
 						strokeWidth: 2,
 						strokeOpacity: 1,
 					}}
@@ -56,19 +69,25 @@ class CustomizedContent extends PureComponent {
 	}
 }
 
-export default class BasicTreeMap extends PureComponent {
+interface BasicTreeMapProps {
+	data: TreeMapData[];
+}
+
+export default class BasicTreeMap extends PureComponent<BasicTreeMapProps, {}> {
 	render() {
+		const { data } = this.props;
 		return (
 			<ResponsiveContainer width="100%" height={400}>
 				<Treemap
 					height={400}
 					data={data}
-					dataKey="size"
+					dataKey="value"
 					ratio={4 / 3}
 					stroke={colors.brightGreen}
 					fill={colors.mutedBrightGreen}
 					content={<CustomizedContent />}
 				/>
+				<Legend iconType="line" height={26} />
 			</ResponsiveContainer>
 		);
 	}

@@ -112,6 +112,7 @@ const StatsBoxNumber = styled.div<{ color: NumberColor }>`
 	height: 24px;
 	margin-bottom: 15px;
 
+	font-family: 'GT America Mono', sans-serif;
 	font-style: normal;
 	font-weight: bold;
 	font-size: 28px;
@@ -132,6 +133,7 @@ export const StatsBoxPercentChange = styled.div<{ color: NumberColor }>`
 	font-style: normal;
 	font-weight: bold;
 	font-size: 12px;
+	font-family: Inter, sans-serif;
 
 	background: ${(props) =>
 		props.color === COLORS.green ? props.theme.colors.brightGreen : props.theme.colors.brightPink};
@@ -141,7 +143,7 @@ export const StatsBoxPercentChange = styled.div<{ color: NumberColor }>`
 const StatsBoxSubText = styled.div`
 	height: 32px;
 
-	font-family: Inter;
+	font-family: Inter, sans-serif;
 	font-style: normal;
 	font-weight: normal;
 	font-size: 14px;
