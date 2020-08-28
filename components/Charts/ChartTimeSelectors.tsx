@@ -21,12 +21,10 @@ const ChartTimeSelectors: FC<ChartTimeSelectorsProps> = ({ onClick, periods }) =
 };
 
 const SelectorContainer = styled.div`
+	padding-right: 40px;
 	display: flex;
 	justify-content: space-between;
-	position: absolute;
 	width: 200px;
-	right: 50px;
-	top: 30px;
 	z-index: ${Z_INDEX.hundred};
 `;
 

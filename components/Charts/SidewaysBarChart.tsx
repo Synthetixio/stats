@@ -1,14 +1,16 @@
 import { FC } from 'react';
 import styled, { css, keyframes } from 'styled-components';
 
-import { formatPercentage } from '../../utils/formatter';
+import { formatCurrency, formatNumber } from '../../utils/formatter';
+import { OpenInterest } from '../../types/data';
 
 interface SidewaysBarChartProps {
-	data: any;
+	data: OpenInterest;
 }
 
 const SidewaysBarChart: FC<SidewaysBarChartProps> = ({ data }) => (
 	<ChartContainer>
+		<VerticalBar />
 		<HeaderRow>
 			<StyledLabel>Shorts</StyledLabel>
 			<StyledLabel>Longs</StyledLabel>
@@ -18,21 +20,31 @@ const SidewaysBarChart: FC<SidewaysBarChartProps> = ({ data }) => (
 					const synthName = `s${key}`;
 					const inverseName = `i${key}`;
 
-					const synthValue = data[key][synthName];
-					const inverseValue = data[key][inverseName];
+					const synthValue = data[key][synthName].value;
+					const inverseValue = data[key][inverseName].value;
+					const synthTotalSupply = data[key][synthName].totalSupply;
+					const inverseTotalSupply = data[key][inverseName].totalSupply;
 
 					const totalValue = synthValue + inverseValue;
 
 					return (
 						<SynthContainer key={`synth-${key}`}>
-							<ShortSynth>
-								<SynthLabel>{inverseName}</SynthLabel>
-								<LabelSmall>{formatPercentage(inverseValue / totalValue, 0)}</LabelSmall>
-							</ShortSynth>
-							<LongSynth>
-								<SynthLabel>{synthName}</SynthLabel>
-								<LabelSmall>{formatPercentage(synthValue / totalValue, 0)}</LabelSmall>
-							</LongSynth>
+							<SynthLabels>
+								<SynthInfo>
+									<SynthLabel>{inverseName}</SynthLabel>
+									<LabelSmall>{`${formatNumber(inverseTotalSupply)} (${formatCurrency(
+										inverseValue,
+										0
+									)})`}</LabelSmall>
+								</SynthInfo>
+								<SynthInfo>
+									<SynthLabel>{synthName}</SynthLabel>
+									<LabelSmall>{`${formatNumber(synthTotalSupply)} (${formatCurrency(
+										synthValue,
+										0
+									)})`}</LabelSmall>
+								</SynthInfo>
+							</SynthLabels>
 							<BarContainer>
 								<ShortBar value={inverseValue / totalValue}></ShortBar>
 								<LongBar value={synthValue / totalValue}></LongBar>
@@ -45,9 +57,9 @@ const SidewaysBarChart: FC<SidewaysBarChartProps> = ({ data }) => (
 );
 
 const ChartContainer = styled.div`
-	width: 500px;
 	min-height: 250px;
 	position: relative;
+	background: ${(props) => props.theme.colors.mediumBlue};
 `;
 
 const VerticalBar = styled.div`
@@ -55,6 +67,7 @@ const VerticalBar = styled.div`
 	top: 25px;
 	bottom: 0;
 	left: 50%;
+	border: 1px solid #161b44;
 `;
 
 const HeaderRow = styled.div`
@@ -65,18 +78,33 @@ const HeaderRow = styled.div`
 `;
 
 const SynthContainer = styled.div`
-	height: 58px;
-	justify-content: center;
+	height: 64px;
 	display: flex;
-	padding: 0 38px;
-	align-items: center;
+	flex-direction: column;
 	width: 100%;
+	border-top: 1px solid #161b44;
+	&:last-child {
+		border-bottom: 1px solid #161b44;
+	}
+`;
+
+export const SynthLabels = styled.div`
+	display: flex;
+	width: 100%;
+	justify-content: space-between;
 `;
 
 const BarContainer = styled.div`
-	position: relative;
-	height: 26px;
+	height: 20px;
 	width: 100%;
+	display: flex;
+	justify-content: center;
+	position: relative;
+`;
+
+const SynthInfo = styled.div`
+	display: flex;
+	padding: 13px 10px;
 `;
 
 const slideToLeft = (value: string) => keyframes`
@@ -99,46 +127,26 @@ const slideToRight = (value: string) => keyframes`
 
 const barStyle = css`
 	position: absolute;
-	height: 26px;
+	height: 20px;
 	transition: all 0.5s linear;
-	bottom: 26px;
-	top: 0;
-`;
-
-const ShortSynth = styled.div`
-	display: flex;
-	flex-direction: column;
-	position: absolute;
-	left: 0;
-	width: 32px;
-	text-align: left;
-`;
-
-const LongSynth = styled.div`
-	display: flex;
-	flex-direction: column;
-	position: absolute;
-	right: 0;
-	width: 38px;
-	text-align: right;
 `;
 
 const ShortBar = styled.div<{ value: number }>`
 	${barStyle}
-	border: ${(props) => `2px solid ${props.theme.colors.mutedBrightPinkBorder}`};
+	border: ${(props) => `2px solid ${props.theme.colors.brightPink}`};
 	box-shadow: 0px 0px 15px rgba(237, 30, 255, 0.28);
 	background: ${(props) => props.theme.colors.mutedBrightPink};
 	right: 50%;
-	animation: ${(props) => slideToLeft(`calc((50%  - 50%  * ${props.value}))`)} 0.5s forwards linear;
+	animation: ${(props) => slideToLeft(`calc((50%  - 45%  * ${props.value}))`)} 0.5s forwards linear;
 `;
 
 const LongBar = styled.div<{ value: number }>`
 	${barStyle}
-	border: ${(props) => `2px solid ${props.theme.colors.mutedBrightGreenBorder}`};
+	border: ${(props) => `2px solid ${props.theme.colors.brightGreen}`};
 	box-shadow: 0px 0px 15px rgba(77, 244, 184, 0.15);
 	background: ${(props) => props.theme.colors.mutedBrightGreen};
 	left: 50%;
-	animation: ${(props) => slideToRight(`calc((50%  - 50%  * ${props.value}))`)} 0.5s forwards linear;
+	animation: ${(props) => slideToRight(`calc((50%  - 45%  * ${props.value}))`)} 0.5s forwards linear;
 `;
 
 export const LabelSmall = styled.span`
@@ -146,10 +154,12 @@ export const LabelSmall = styled.span`
 	color: ${(props) => props.theme.colors.white};
 	line-height: 1.2;
 	letter-spacing: 0.2px;
+	padding-left: 5px;
 `;
 
 const StyledLabel = styled(LabelSmall)`
 	text-transform: uppercase;
+	text-align: center;
 	flex: 1;
 `;
 

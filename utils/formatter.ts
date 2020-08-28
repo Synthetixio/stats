@@ -27,13 +27,16 @@ export const formatCurrency = (
 
 export const formatPercentage = (
 	value: string | number,
-	decimals = DEFAULT_CURRENCY_DECIMALS
+	decimals: number = DEFAULT_CURRENCY_DECIMALS
 ): string => {
 	return numbro(value).format({
 		output: 'percent',
 		mantissa: decimals,
 	});
 };
+
+export const formatNumber = (num: number, mantissa: number = DEFAULT_CURRENCY_DECIMALS) =>
+	numbro(num).format({ thousandSeparated: true, mantissa });
 
 export const getFormattedNumber = (num: number, numFormat: NumberStyle) => {
 	let formattedNum;

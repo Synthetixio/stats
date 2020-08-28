@@ -29,10 +29,9 @@ const ChartTitle: FC<ChartTitleProps> = ({ title, num, numFormat, percentChange 
 };
 
 const ContentContainer = styled.div`
-	position: absolute;
+	padding-left: 30px;
+	padding-top: 30px;
 	width: 200px;
-	left: 50px;
-	top: 30px;
 	z-index: ${Z_INDEX.hundred};
 	color: ${(props) => props.theme.colors.white};
 `;

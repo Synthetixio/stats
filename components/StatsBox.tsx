@@ -1,11 +1,13 @@
 import { FC } from 'react';
+import { Skeleton } from '@material-ui/lab';
 import styled, { css } from 'styled-components';
+
 import { getFormattedNumber } from '../utils/formatter';
 import { COLORS, NumberColor, NumberStyle } from '../constants/styles';
 
 interface StatsBoxProps {
 	title: string;
-	number: number;
+	num: number;
 	percentChange: number | null;
 	subText: string;
 	color: NumberColor;
@@ -13,43 +15,71 @@ interface StatsBoxProps {
 	numBoxes: number;
 }
 
+// TODO what if num is 0 and is supposed to be zero!!
 const StatsBox: FC<StatsBoxProps> = ({
 	title,
-	number,
+	num,
 	percentChange,
 	subText,
 	color,
 	numberStyle,
 	numBoxes,
 }) => {
-	const formattedNumber = getFormattedNumber(number, numberStyle);
+	const formattedNumber = getFormattedNumber(num, numberStyle);
 	return (
-		<StatsBoxContainer numBoxes={numBoxes}>
-			<StatsBoxTitle>{title}</StatsBoxTitle>
-			<StatsBoxNumber color={color}>{formattedNumber}</StatsBoxNumber>
-			{percentChange != null ? (
-				<StatsBoxPercentChange color={color}>{percentChange}</StatsBoxPercentChange>
-			) : null}
-			<StatsBoxSubText>{subText}</StatsBoxSubText>
+		<StatsBoxContainer num={num} numBoxes={numBoxes}>
+			{num === 0 ? (
+				<Skeleton
+					className="stats-box-skeleton"
+					variant="rect"
+					animation="wave"
+					width="100%"
+					height="100%"
+				/>
+			) : (
+				<>
+					<StatsBoxTitle>{title}</StatsBoxTitle>
+					<StatsBoxNumber color={color}>{formattedNumber}</StatsBoxNumber>
+					{percentChange != null ? (
+						<StatsBoxPercentChange color={color}>{percentChange}</StatsBoxPercentChange>
+					) : null}
+					<StatsBoxSubText>{subText}</StatsBoxSubText>
+				</>
+			)}
 		</StatsBoxContainer>
 	);
 };
 
 export default StatsBox;
 
-const StatsBoxContainer = styled.div<{ numBoxes: number }>`
+const StatsBoxContainer = styled.div<{ num: number; numBoxes: number }>`
 	margin-top: 20px;
-	padding: 20px;
-	${(props) =>
-		props.numBoxes === 3
-			? css`
-					width: 29%;
-					height: 140px;
-			  `
-			: css`
-					width: 21%;
-					height: 165px;
-			  `};
+	padding: ${(props) => (props.num === 0 ? '0' : '20px')};
+	${(props) => {
+		if (props.num === 0 && props.numBoxes === 3) {
+			return css`
+				width: calc(29% + 40px);
+				height: 180px;
+			`;
+		}
+		if (props.num === 0) {
+			return css`
+				width: calc(21% + 40px);
+				height: 205px;
+			`;
+		}
+
+		if (props.numBoxes === 3) {
+			return css`
+				width: 29%;
+				height: 140px;
+			`;
+		}
+		return css`
+			width: 21%;
+			height: 165px;
+		`;
+	}};
 
 	background: ${(props) => props.theme.colors.mediumBlue};
 	opacity: 0.8;

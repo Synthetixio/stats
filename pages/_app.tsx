@@ -3,6 +3,7 @@ import { AppProps } from 'next/app';
 import Head from 'next/head';
 import { useTranslation } from 'react-i18next';
 
+import { synthetix, Network } from '@synthetixio/js';
 import { ThemeProvider as SCThemeProvider } from 'styled-components';
 import { ThemeProvider as MuiThemeProvider } from '@material-ui/core/styles';
 
@@ -22,6 +23,10 @@ const headersAndScrollRef = {
 };
 
 export const HeadersContext = createContext(headersAndScrollRef);
+
+const snxjs = synthetix({ network: Network.Mainnet });
+
+export const SNXJSContext = createContext(snxjs);
 
 const App: FC<AppProps> = ({ Component, pageProps }) => {
 	const { t } = useTranslation();
@@ -51,9 +56,11 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
 			<SCThemeProvider theme={scTheme}>
 				<MuiThemeProvider theme={muiTheme}>
 					<HeadersContext.Provider value={headersAndScrollRef}>
-						<Layout>
-							<Component {...pageProps} />
-						</Layout>
+						<SNXJSContext.Provider value={snxjs}>
+							<Layout>
+								<Component {...pageProps} />
+							</Layout>
+						</SNXJSContext.Provider>
 					</HeadersContext.Provider>
 				</MuiThemeProvider>
 			</SCThemeProvider>

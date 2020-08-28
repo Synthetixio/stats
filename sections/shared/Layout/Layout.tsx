@@ -28,12 +28,22 @@ const GlobalStyle = createGlobalStyle`
     font-weight: normal;
     font-size: 14px;
     line-height: 18px;
-    /* identical to box height, or 129% */
+		/* identical to box height, or 129% */
 
-
-color: ;
 		background-color: ${(props) => props.theme.colors.darkBlue};
 		color: ${(props) => props.theme.colors.lightFont};
+
+		.stats-box-skeleton, .chart-skeleton {
+			background-color: ${(props) => props.theme.colors.mediumBlue};
+		}
+
+		.chart-skeleton {
+			margin-top: -100px;
+		}
+
+		.stats-box-skeleton::after, .chart-skeleton::after {
+			background: linear-gradient(90deg, #08021E 0%, #120446 146.21%);
+		}
   }
 `;
 

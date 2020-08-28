@@ -1,8 +1,7 @@
-import { FC, useEffect, useState } from 'react';
+import { FC, useEffect, useState, useContext } from 'react';
 import axios from 'axios';
 import { format } from 'date-fns';
 import snxData from 'synthetix-data';
-import { synthetix, Networks } from '@synthetixio/js';
 import { ethers } from 'ethers';
 
 import StatsBox from '../../components/StatsBox';
@@ -11,6 +10,7 @@ import AreaChart from '../../components/Charts/AreaChart';
 import SectionHeader from '../../components/SectionHeader';
 import { COLORS } from '../../constants/styles';
 import SUSDDistribution from '../Network/SUSDDistribution';
+import { SNXJSContext } from '../../pages/_app';
 
 const CMC_API = 'https://coinmarketcap-api.synthetix.io/public/prices?symbols=SNX';
 
@@ -22,12 +22,11 @@ const NetworkSection: FC = () => {
 	const [activeCRatio, setActiveCRatio] = useState<number>(0);
 	const [networkCRatio, setNetworkCRatio] = useState<number>(0);
 	const [SNXPercentLocked, setSNXPercentLocked] = useState<number>(0);
+	const snxjs = useContext(SNXJSContext);
 
 	// NOTE: use interval? or save data calls?
 	useEffect(() => {
 		const fetchData = async () => {
-			// move this to the context
-			const snxjs = synthetix({ network: Networks.Mainnet });
 			const { formatEther, formatUnits, parseUnits } = snxjs.utils;
 
 			const curveContract = new ethers.Contract(
@@ -126,7 +125,7 @@ const NetworkSection: FC = () => {
 	const periods = ['D', 'W', 'M', 'Y'];
 	return (
 		<>
-			<SectionHeader title="NETWORK" />
+			<SectionHeader title="NETWORK" first={true} />
 			<AreaChart
 				periods={periods}
 				data={data}
@@ -139,7 +138,7 @@ const NetworkSection: FC = () => {
 				<StatsBox
 					key="SNXMKTCAP"
 					title="SNX MARKET CAP"
-					number={SNXTotalSupply * SNXPrice}
+					num={SNXTotalSupply * SNXPrice}
 					percentChange={null}
 					subText="Fully Diluted Market cap for Synthetix Network Token"
 					color={COLORS.pink}
@@ -149,7 +148,7 @@ const NetworkSection: FC = () => {
 				<StatsBox
 					key="SUSDPRICE"
 					title="SUSD PRICE"
-					number={SUSDPrice}
+					num={SUSDPrice}
 					percentChange={null}
 					subText="Price of sUSD token on Curve"
 					color={COLORS.green}
@@ -159,7 +158,7 @@ const NetworkSection: FC = () => {
 				<StatsBox
 					key="SNXVOLUME"
 					title="SNX VOLUME"
-					number={SNX24HVolume}
+					num={SNX24HVolume}
 					percentChange={null}
 					subText="SNX 24HR volume from Coinmarketcap API"
 					color={COLORS.green}
@@ -171,7 +170,7 @@ const NetworkSection: FC = () => {
 				<StatsBox
 					key="TOTALSNXLOCKED"
 					title="TOTAL SNX STAKED"
-					number={SNXPercentLocked * SNXTotalSupply * SNXPrice}
+					num={SNXPercentLocked * SNXTotalSupply * SNXPrice}
 					percentChange={null}
 					subText="USD value of SNX tokens locked in staking"
 					color={COLORS.pink}
@@ -181,7 +180,7 @@ const NetworkSection: FC = () => {
 				<StatsBox
 					key="NETWORKCRATIO"
 					title="NETWORK COLLATERALIZATION RATIO"
-					number={networkCRatio}
+					num={networkCRatio}
 					percentChange={null}
 					subText="Collateralization ratio for the all SNX tokens"
 					color={COLORS.green}
@@ -191,7 +190,7 @@ const NetworkSection: FC = () => {
 				<StatsBox
 					key="ACTIVECRATIO"
 					title="ACTIVE COLLATERALIZATION RATIO"
-					number={activeCRatio}
+					num={activeCRatio}
 					percentChange={null}
 					subText="Collateralization ratio for staked SNX tokens"
 					color={COLORS.green}

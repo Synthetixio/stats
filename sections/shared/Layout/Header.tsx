@@ -1,7 +1,7 @@
 import { FC, useContext } from 'react';
 import styled from 'styled-components';
 
-import Cross from '../../../assets/svg/cross.svg';
+import SNXLogo from '../../../assets/svg/snxlogo.svg';
 import { MAX_PAGE_WIDTH, Z_INDEX } from '../../../constants/styles';
 import { HeadersContext } from '../../../pages/_app';
 
@@ -18,7 +18,9 @@ const Header: FC = () => {
 			<HeaderContainer>
 				<HeaderContainerInner>
 					<HeaderSectionLeft>
-						<Cross />
+						<SNXLogoWrap>
+							<SNXLogo />
+						</SNXLogoWrap>
 						<HeaderTitle>Stats</HeaderTitle>
 					</HeaderSectionLeft>
 					<HeaderSectionRight>
@@ -40,7 +42,7 @@ export default Header;
 // TODO create a common flex container
 const HeaderContainer = styled.div`
 	height: 60px;
-	padding-top: 30px;
+	padding-top: 35px;
 	position: fixed;
 	width: 100%;
 	z-index: ${Z_INDEX.thousand};
@@ -81,4 +83,9 @@ const Divider = styled.div`
 	opacity: 0.1;
 	width: 100%;
 	height: 1px;
+`;
+
+const SNXLogoWrap = styled.div`
+	margin-top: -7px;
+	margin-right: 10px;
 `;

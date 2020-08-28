@@ -5,54 +5,21 @@ import Button from './Button';
 import { MAX_PAGE_WIDTH } from '../constants/styles';
 
 type SectionHeaderProps = {
-	icon?: JSX.Element;
 	title: string;
-	subtitle?: string;
+	first?: boolean;
 };
 
-const SectionHeader: FC<SectionHeaderProps> = ({ icon, title, subtitle }) => (
-	<>
-		<SectionHeaderContainer>
-			<SectionHeaderLeft>
-				{icon ? <div>{icon}</div> : null}
-				<SectionTitle>{title}</SectionTitle>
-				{subtitle ? <div>{subtitle}</div> : null}
-			</SectionHeaderLeft>
-			<SectionHeaderRight>
-				<Button text="Price" isActive={true} />
-				<Button text="Volume" isActive={false} />
-			</SectionHeaderRight>
-		</SectionHeaderContainer>
-	</>
+const SectionHeader: FC<SectionHeaderProps> = ({ title, first }) => (
+	<SectionHeaderContainer first={first}>{title}</SectionHeaderContainer>
 );
 
 export default SectionHeader;
 
-const SectionHeaderContainer = styled.div`
-	display: flex;
+const SectionHeaderContainer = styled.div<{ first?: boolean }>`
 	max-width: ${MAX_PAGE_WIDTH}px;
-	justify-content: space-between;
-	margin: 0 auto;
-	flex-wrap: wrap;
-	margin-top: 35px;
-	margin-bottom: 15px;
-`;
-
-const SectionHeaderLeft = styled.div`
-	display: flex;
-	max-width: 300px;
-	justify-content: space-between;
-`;
-
-const SectionHeaderRight = styled.div`
-	display: flex;
-	max-width: 200px;
-	justify-content: space-between;
-`;
-
-const SectionTitle = styled.div`
-	font-size: 25px;
-	font-weight: bold;
-	margin-left: 15px;
-	margin-right: 15px;
+	margin: ${(props) => (props.first ? '120px auto 20px auto' : '40px auto 20px auto')};
+	font-style: normal;
+	font-weight: 900;
+	font-size: 28px;
+	line-height: 120%;
 `;

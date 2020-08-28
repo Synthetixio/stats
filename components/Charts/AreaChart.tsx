@@ -17,11 +17,13 @@ interface AreaChartProps {
 
 const AreaChart: FC<AreaChartProps> = ({ data, periods, title, num, numFormat, percentChange }) => (
 	<ChartContainer>
-		<ChartTitle title={title} num={num} numFormat={numFormat} percentChange={percentChange} />
-		<ChartTimeSelectors
-			periods={periods}
-			onClick={(period: string) => console.log('period:', period)}
-		/>
+		<ChartHeader>
+			<ChartTitle title={title} num={num} numFormat={numFormat} percentChange={percentChange} />
+			<ChartTimeSelectors
+				periods={periods}
+				onClick={(period: string) => console.log('period:', period)}
+			/>
+		</ChartHeader>
 		<BasicAreaChart data={data} />
 	</ChartContainer>
 );
@@ -30,7 +32,14 @@ export default AreaChart;
 
 const ChartContainer = styled.div`
 	background: ${(props) => props.theme.colors.mediumBlue};
-	position: relative;
 	margin: 20px auto;
 	max-width: ${MAX_PAGE_WIDTH}px;
+`;
+
+const ChartHeader = styled.div`
+	height: 100px;
+	width: 100%;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
 `;
