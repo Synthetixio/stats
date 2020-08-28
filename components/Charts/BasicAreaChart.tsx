@@ -3,9 +3,10 @@ import { AreaChart, Area, XAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import { Skeleton } from '@material-ui/lab';
 
 import colors from '../../styles/colors';
+import { ChartData } from '../../types/data';
 
 interface BasicAreaChartProps {
-	data: Array<any>;
+	data: Array<ChartData>;
 }
 
 const BasicAreaChart: FC<BasicAreaChartProps> = ({ data }) => {
@@ -33,7 +34,7 @@ const BasicAreaChart: FC<BasicAreaChartProps> = ({ data }) => {
 				<Tooltip />
 				<Area
 					type="monotone"
-					dataKey="price"
+					dataKey="value"
 					stackId="1"
 					stroke={colors.brightGreen}
 					fillOpacity={1}

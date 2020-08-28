@@ -5,24 +5,31 @@ import BasicAreaChart from './BasicAreaChart';
 import ChartTimeSelectors from './ChartTimeSelectors';
 import ChartTitle from './ChartTitle';
 import { MAX_PAGE_WIDTH, NumberStyle } from '../../constants/styles';
+import { ChartPeriod, ChartData } from '../../types/data';
 
 interface AreaChartProps {
-	data: Array<any>;
-	periods: Array<string>;
+	data: Array<ChartData>;
+	periods: Array<ChartPeriod>;
 	title: string;
 	num: number;
 	numFormat: NumberStyle;
 	percentChange: number;
+	onPeriodSelect: (period: ChartPeriod) => void;
 }
 
-const AreaChart: FC<AreaChartProps> = ({ data, periods, title, num, numFormat, percentChange }) => (
+const AreaChart: FC<AreaChartProps> = ({
+	data,
+	onPeriodSelect,
+	periods,
+	title,
+	num,
+	numFormat,
+	percentChange,
+}) => (
 	<ChartContainer>
 		<ChartHeader>
 			<ChartTitle title={title} num={num} numFormat={numFormat} percentChange={percentChange} />
-			<ChartTimeSelectors
-				periods={periods}
-				onClick={(period: string) => console.log('period:', period)}
-			/>
+			<ChartTimeSelectors periods={periods} onClick={onPeriodSelect} />
 		</ChartHeader>
 		<BasicAreaChart data={data} />
 	</ChartContainer>

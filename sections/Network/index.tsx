@@ -1,9 +1,9 @@
 import { FC, useEffect, useState, useContext } from 'react';
 import axios from 'axios';
-import { format } from 'date-fns';
 import snxData from 'synthetix-data';
 import { ethers } from 'ethers';
 
+import { ChartData, ChartPeriod, SNXPriceData, TimeSeries } from '../../types/data';
 import StatsBox from '../../components/StatsBox';
 import StatsRow from '../../components/StatsRow';
 import AreaChart from '../../components/Charts/AreaChart';
@@ -11,11 +11,14 @@ import SectionHeader from '../../components/SectionHeader';
 import { COLORS } from '../../constants/styles';
 import SUSDDistribution from '../Network/SUSDDistribution';
 import { SNXJSContext } from '../../pages/_app';
+import { formatIdToIsoString } from '../../utils/formatter';
 
 const CMC_API = 'https://coinmarketcap-api.synthetix.io/public/prices?symbols=SNX';
 
 const NetworkSection: FC = () => {
 	const [SNXPrice, setSNXPrice] = useState<number>(0);
+	const [chartPeriod, setChartPeriod] = useState<ChartPeriod>('D');
+	const [SNXChartPriceData, setSNXChartPriceData] = useState<ChartData[]>([]);
 	const [SNXTotalSupply, setSNXTotalSupply] = useState<number>(0);
 	const [SUSDPrice, setSUSDPrice] = useState<number>(0);
 	const [SNX24HVolume, setSNX24HVolume] = useState<number>(0);
@@ -23,6 +26,15 @@ const NetworkSection: FC = () => {
 	const [networkCRatio, setNetworkCRatio] = useState<number>(0);
 	const [SNXPercentLocked, setSNXPercentLocked] = useState<number>(0);
 	const snxjs = useContext(SNXJSContext);
+
+	const formatSNXPriceChartData = (data: SNXPriceData[], timeSeries: TimeSeries): ChartData[] => {
+		return data.map(({ id, averagePrice }) => {
+			return {
+				created: formatIdToIsoString(id, timeSeries),
+				value: averagePrice,
+			};
+		});
+	};
 
 	// NOTE: use interval? or save data calls?
 	useEffect(() => {
@@ -113,22 +125,37 @@ const NetworkSection: FC = () => {
 		fetchData();
 	}, []);
 
-	const data = [...Array(120).keys()].map((num: number) => {
-		const created = format(new Date(), 'MM/dd');
-		return {
-			name: 'Random data',
-			price: 5 + (Math.random() * num) / 40,
-			created,
+	useEffect(() => {
+		const fetchNewChartData = async () => {
+			let newSNXPriceData = [];
+			let timeSeries = '1d';
+			if (chartPeriod === 'D') {
+				timeSeries = '15m';
+				newSNXPriceData = await snxData.rate.snxAggregate({ timeSeries: '15m', max: 24 * 4 });
+			} else if (chartPeriod === 'W') {
+				timeSeries = '15m';
+				newSNXPriceData = await snxData.rate.snxAggregate({ timeSeries: '15m', max: 24 * 4 * 7 });
+			} else if (chartPeriod === 'M') {
+				newSNXPriceData = await snxData.rate.snxAggregate({ timeSeries: '1d', max: 30 });
+			} else if (chartPeriod === 'Y') {
+				newSNXPriceData = await snxData.rate.snxAggregate({ timeSeries: '1d', max: 365 });
+			}
+			setSNXChartPriceData(formatSNXPriceChartData(newSNXPriceData, timeSeries as TimeSeries));
 		};
-	});
+		fetchNewChartData();
+	}, [chartPeriod]);
 
-	const periods = ['D', 'W', 'M', 'Y'];
+	const periods: ChartPeriod[] = ['D', 'W', 'M', 'Y'];
 	return (
 		<>
 			<SectionHeader title="NETWORK" first={true} />
 			<AreaChart
 				periods={periods}
-				data={data}
+				onPeriodSelect={(period: ChartPeriod) => {
+					setSNXChartPriceData([]); // will force loading state
+					setChartPeriod(period);
+				}}
+				data={SNXChartPriceData}
 				title="SNX PRICE"
 				num={SNXPrice}
 				numFormat="currency"

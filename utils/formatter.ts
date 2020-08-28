@@ -2,6 +2,7 @@ import BigNumber from 'bignumber.js';
 import numbro from 'numbro';
 
 import { NumberStyle } from '../constants/styles';
+import { TimeSeries } from '../types/data';
 
 const DEFAULT_CURRENCY_DECIMALS = 2;
 
@@ -48,4 +49,15 @@ export const getFormattedNumber = (num: number, numFormat: NumberStyle) => {
 		formattedNum = formatPercentage(num);
 	}
 	return formattedNum;
+};
+
+export const formatIdToIsoString = (id: string, timeSeries: TimeSeries) => {
+	let multiple = 0;
+	if (timeSeries === '1d') {
+		multiple = 86400;
+	} else if (timeSeries === '15m') {
+		multiple = 900;
+	}
+	const created = new Date(Number(id) * multiple * 1000);
+	return created.toISOString();
 };

@@ -2,16 +2,17 @@ import { FC } from 'react';
 import styled from 'styled-components';
 
 import { Z_INDEX } from '../../constants/styles';
+import { ChartPeriod } from '../../types/data';
 
 interface ChartTimeSelectorsProps {
-	periods: Array<string>;
-	onClick: (timePeriod: string) => void;
+	periods: Array<ChartPeriod>;
+	onClick: (period: ChartPeriod) => void;
 }
 
 const ChartTimeSelectors: FC<ChartTimeSelectorsProps> = ({ onClick, periods }) => {
 	return (
 		<SelectorContainer>
-			{periods.map((period: string) => (
+			{periods.map((period: ChartPeriod) => (
 				<SelectorItem key={period} onClick={() => onClick(period)}>
 					{period}
 				</SelectorItem>
