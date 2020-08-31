@@ -33,7 +33,7 @@
 		"react-table": "7.5.0",
 		"recharts": "1.8.5",
 		"styled-components": "5.1.1",
-		"synthetix-data": "2.1.23",
+		"synthetix-data": "2.1.26",
 		"synthetix-js": "2.27.0-alpha",
 		"unstated-next": "1.1.0",
 		"use-immer": "0.4.1"
