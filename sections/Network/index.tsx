@@ -16,24 +16,25 @@ import AreaChart from '../../components/Charts/AreaChart';
 import SectionHeader from '../../components/SectionHeader';
 import { COLORS } from '../../constants/styles';
 import SUSDDistribution from '../Network/SUSDDistribution';
-import { SNXJSContext } from '../../pages/_app';
-import { formatIdToIsoString } from '../../utils/formatter';
+import { SNXJSContext, SUSDContext } from '../../pages/_app';
+import { formatIdToIsoString, formatPercentage } from '../../utils/formatter';
 import { getSUSDHoldersName } from '../../utils/dataMapping';
 
 const CMC_API = 'https://coinmarketcap-api.synthetix.io/public/prices?symbols=SNX';
 
 const NetworkSection: FC = () => {
+	const [priorSNXPrice, setPriorSNXPrice] = useState<number>(0);
 	const [SNXPrice, setSNXPrice] = useState<number>(0);
 	const [chartPeriod, setChartPeriod] = useState<ChartPeriod>('D');
 	const [SNXChartPriceData, setSNXChartPriceData] = useState<AreaChartData[]>([]);
 	const [SNXTotalSupply, setSNXTotalSupply] = useState<number>(0);
-	const [SUSDPrice, setSUSDPrice] = useState<number>(0);
 	const [SNX24HVolume, setSNX24HVolume] = useState<number>(0);
 	const [activeCRatio, setActiveCRatio] = useState<number>(0);
 	const [networkCRatio, setNetworkCRatio] = useState<number>(0);
 	const [SNXPercentLocked, setSNXPercentLocked] = useState<number>(0);
 	const [SUSDHolders, setSUSDHolders] = useState<TreeMapData[]>([]);
 	const snxjs = useContext(SNXJSContext);
+	const { sUSDPrice, setsUSDPrice } = useContext(SUSDContext);
 
 	const formatSNXPriceChartData = (
 		data: SNXPriceData[],
@@ -90,7 +91,7 @@ const NetworkSection: FC = () => {
 			const totalSupply = Number(formatEther(unformattedSnxTotalSupply));
 			setSNXTotalSupply(totalSupply);
 			const exchangeAmount = Number(formatUnits(unformattedExchangeAmount, 6));
-			setSUSDPrice(exchangeAmount / susdAmount);
+			setsUSDPrice(exchangeAmount / susdAmount);
 
 			const dailyVolume = cmcSNXData?.data?.data?.SNX?.quote?.USD?.volume_24h;
 			if (dailyVolume) {
@@ -160,6 +161,8 @@ const NetworkSection: FC = () => {
 			} else if (chartPeriod === 'Y') {
 				newSNXPriceData = await snxData.rate.snxAggregate({ timeSeries: '1d', max: 365 });
 			}
+			newSNXPriceData = newSNXPriceData.reverse();
+			setPriorSNXPrice(newSNXPriceData[0].averagePrice);
 			setSNXChartPriceData(formatSNXPriceChartData(newSNXPriceData, timeSeries as TimeSeries));
 		};
 		fetchNewChartData();
@@ -171,6 +174,7 @@ const NetworkSection: FC = () => {
 			<SectionHeader title="NETWORK" first={true} />
 			<AreaChart
 				periods={periods}
+				activePeriod={chartPeriod}
 				onPeriodSelect={(period: ChartPeriod) => {
 					setSNXChartPriceData([]); // will force loading state
 					setChartPeriod(period);
@@ -179,7 +183,8 @@ const NetworkSection: FC = () => {
 				title="SNX PRICE"
 				num={SNXPrice}
 				numFormat="currency"
-				percentChange={0.1}
+				percentChange={SNXPrice / priorSNXPrice - 1}
+				timeSeries={chartPeriod === 'D' ? '15m' : '1d'}
 			/>
 			<StatsRow>
 				<StatsBox
@@ -195,7 +200,7 @@ const NetworkSection: FC = () => {
 				<StatsBox
 					key="SUSDPRICE"
 					title="SUSD PRICE"
-					num={SUSDPrice}
+					num={sUSDPrice}
 					percentChange={null}
 					subText="Price of sUSD token on Curve"
 					color={COLORS.green}

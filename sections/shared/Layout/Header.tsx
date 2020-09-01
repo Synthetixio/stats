@@ -10,7 +10,7 @@ const Header: FC = () => {
 	const headersContext = useContext(HeadersContext);
 	const scrollToRef = (ref: any) => {
 		const offsetTop = ref?.current?.offsetTop ?? 0;
-		const scrollEnd = offsetTop === 0 ? 0 : offsetTop - 20;
+		const scrollEnd = offsetTop === 0 ? 0 : offsetTop - 100;
 		window.scrollTo(0, scrollEnd);
 	};
 	return (

@@ -7,16 +7,23 @@ import findIndex from 'lodash/findIndex';
 import SectionHeader from '../../components/SectionHeader';
 import SynthsBarChart from './SynthsBarChart';
 import SynthsPieChart from './SynthsPieChart';
-import { MAX_PAGE_WIDTH } from '../../constants/styles';
-import { SNXJSContext } from '../../pages/_app';
+import { MAX_PAGE_WIDTH, COLORS } from '../../constants/styles';
+import { SNXJSContext, SUSDContext } from '../../pages/_app';
 import { OpenInterest, SynthTotalSupply } from '../../types/data';
+import SingleStatRow from 'components/SingleStatRow';
+import DoubleStatsBox from 'components/DoubleStatsBox';
+import StatsRow from '../../components/StatsRow';
 
 const MIN_PERCENT_FOR_PIE_CHART = 0.03;
+const NUMBER_OF_TOP_SYNTHS = 3;
+const subtitleText = (name: string) =>
+	`Tracks the price of ${name} through price feeds supplied by an oracle.`;
 
 const SynthsSection: FC<{}> = () => {
-	const [pieChartData, setPieChartData] = useState<SynthTotalSupply[] | []>([]);
-	const [barChartData, setBarChartData] = useState<OpenInterest | {}>({});
+	const [pieChartData, setPieChartData] = useState<SynthTotalSupply[]>([]);
+	const [barChartData, setBarChartData] = useState<OpenInterest>({});
 	const snxjs = useContext(SNXJSContext);
+	const { sUSDPrice } = useContext(SUSDContext);
 	useEffect(() => {
 		const fetchData = async () => {
 			const SynthSummaryUtil = new ethers.Contract(
@@ -79,13 +86,41 @@ const SynthsSection: FC<{}> = () => {
 		};
 		fetchData();
 	}, []);
+	const totalValue = pieChartData.reduce((acc, { value }) => acc + value, 0);
 	return (
 		<>
 			<SectionHeader title="SYNTHS" />
+			<SingleStatRow
+				text="TOTAL SYNTHS"
+				subtext="The total value of all synths in USD"
+				num={totalValue}
+				color={COLORS.green}
+			/>
 			<SynthsCharts>
 				<SynthsBarChart data={barChartData} />
 				<SynthsPieChart data={pieChartData} />
 			</SynthsCharts>
+			<SubsectionHeader>CURRENT TOP 3 SYNTHS</SubsectionHeader>
+			<StatsRow>
+				{pieChartData.map(({ name, totalSupply, value }: SynthTotalSupply, index: number) => {
+					if (index < NUMBER_OF_TOP_SYNTHS) {
+						return (
+							<DoubleStatsBox
+								key={name}
+								title={name}
+								subtitle={subtitleText(name)}
+								firstMetricTitle="PRICE"
+								firstMetric={name === 'sUSD' ? sUSDPrice : value / (totalSupply ?? 0)}
+								firstColor={index === 0 ? COLORS.pink : COLORS.green}
+								secondMetricTitle="MARKET CAP"
+								secondMetric={value}
+								secondColor={index === 2 ? COLORS.pink : COLORS.green}
+							/>
+						);
+					}
+					return null;
+				})}
+			</StatsRow>
 		</>
 	);
 };
@@ -98,6 +133,16 @@ const SynthsCharts = styled.div`
 	@media only screen and (max-width: 854px) {
 		display: block;
 	}
+`;
+
+const SubsectionHeader = styled.div`
+	max-width: ${MAX_PAGE_WIDTH}px;
+	font-family: 'GT America', sans-serif;
+	font-style: normal;
+	font-weight: 900;
+	font-size: 20px;
+	line-height: 120%;
+	margin: 40px auto 20px auto;
 `;
 
 export const synthSummaryUtilContract = {

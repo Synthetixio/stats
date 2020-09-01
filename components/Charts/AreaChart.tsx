@@ -6,6 +6,7 @@ import ChartTimeSelectors from './ChartTimeSelectors';
 import ChartTitle from './ChartTitle';
 import { MAX_PAGE_WIDTH, NumberStyle } from '../../constants/styles';
 import { ChartPeriod, AreaChartData } from '../../types/data';
+import { TimeSeriesType } from '../../utils/formatter';
 
 interface AreaChartProps {
 	data: Array<AreaChartData>;
@@ -15,23 +16,27 @@ interface AreaChartProps {
 	numFormat: NumberStyle;
 	percentChange: number;
 	onPeriodSelect: (period: ChartPeriod) => void;
+	timeSeries: TimeSeriesType;
+	activePeriod: ChartPeriod;
 }
 
 const AreaChart: FC<AreaChartProps> = ({
 	data,
 	onPeriodSelect,
+	activePeriod,
 	periods,
 	title,
 	num,
 	numFormat,
 	percentChange,
+	timeSeries,
 }) => (
 	<ChartContainer>
 		<ChartHeader>
 			<ChartTitle title={title} num={num} numFormat={numFormat} percentChange={percentChange} />
-			<ChartTimeSelectors periods={periods} onClick={onPeriodSelect} />
+			<ChartTimeSelectors activePeriod={activePeriod} periods={periods} onClick={onPeriodSelect} />
 		</ChartHeader>
-		<BasicAreaChart data={data} />
+		<BasicAreaChart data={data} timeSeries={timeSeries} />
 	</ChartContainer>
 );
 

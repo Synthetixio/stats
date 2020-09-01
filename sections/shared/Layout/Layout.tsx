@@ -44,6 +44,29 @@ const GlobalStyle = createGlobalStyle`
 		.stats-box-skeleton::after, .chart-skeleton::after {
 			background: linear-gradient(90deg, #08021E 0%, #120446 146.21%);
 		}
+
+		/* Let's get this party started */
+		*::-webkit-scrollbar, ::-webkit-scrollbar {
+				width: 12px;
+		}
+		
+		/* Track */
+		*::-webkit-scrollbar-track, ::-webkit-scrollbar-track {
+				-webkit-box-shadow: inset 0 0 6px ${(props) => props.theme.colors.mediumBlue}; 
+				-webkit-border-radius: 10px;
+				border-radius: 10px;
+		}
+		
+		/* Handle */
+		*::-webkit-scrollbar-thumb, ::-webkit-scrollbar-thumb {
+				-webkit-border-radius: 10px;
+				border-radius: 10px;
+				background: ${(props) => props.theme.colors.mutedBrightPink}; 
+				-webkit-box-shadow: inset 0 0 6px ${(props) => props.theme.colors.mediumBlue}; 
+		}
+		*::-webkit-scrollbar-thumb:window-inactive, ::-webkit-scrollbar-thumb:window-inactive {
+			background: ${(props) => props.theme.colors.mutedBrightPink}; 
+		}
   }
 `;
 

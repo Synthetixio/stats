@@ -5,28 +5,28 @@ import PieChart from '../../components/Charts/PieChart';
 import { ChartTitle, ChartSubtitle } from '../../components/common';
 import { SynthTotalSupply } from '../../types/data';
 
-type SynthsPieChartProps = {
+type OptionsPieChartProps = {
 	data: SynthTotalSupply[];
 };
 
-const SynthsPieChart: FC<SynthsPieChartProps> = ({ data }) => {
-	const totalValue = data.reduce((acc, { value }) => acc + value, 0);
+const OptionsPieChart: FC<OptionsPieChartProps> = ({ data }) => {
 	return (
-		<SynthsPieChartContainer>
-			<ChartTitle>SYNTH DOMINANCE</ChartTitle>
+		<OptionsPieChartContainer>
+			<ChartTitle>BINARY MARKETS DOMINANCE</ChartTitle>
 			<ChartSubtitle>Distribution of synths within the network</ChartSubtitle>
 			<PieChart data={data} />
-		</SynthsPieChartContainer>
+		</OptionsPieChartContainer>
 	);
 };
 
-const SynthsPieChartContainer = styled.div`
+const OptionsPieChartContainer = styled.div`
 	background: ${(props) => props.theme.colors.mediumBlue};
 	width: 48%;
-	height: 520px;
+	height: 560px;
+	margin-top: 20px;
 	@media only screen and (max-width: 854px) {
 		width: 100%;
 	}
 `;
 
-export default SynthsPieChart;
+export default OptionsPieChart;

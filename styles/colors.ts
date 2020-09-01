@@ -9,6 +9,7 @@ export default {
 	// blue
 	darkBlue: '#06061B',
 	mediumBlue: '#09092f',
+	linedBlue: '#161b44',
 	// font
 	lightFont: '#C4C4C4',
 	// muted

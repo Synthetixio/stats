@@ -2,7 +2,7 @@ import { FC } from 'react';
 import styled from 'styled-components';
 
 import SidewaysBarChart from '../../components/Charts/SidewaysBarChart';
-import { SynthsChartTitle, SynthsChartSubtitle } from './common';
+import { ChartTitle, ChartSubtitle } from '../../components/common';
 import { OpenInterest } from '../../types/data';
 
 type SynthsBarChartProps = {
@@ -11,8 +11,8 @@ type SynthsBarChartProps = {
 
 const SynthsBarChart: FC<SynthsBarChartProps> = ({ data }) => (
 	<SynthsBarChartContainer>
-		<SynthsChartTitle>SYNTH vs iSYNTH</SynthsChartTitle>
-		<SynthsChartSubtitle>Long/short interest on crptoassets</SynthsChartSubtitle>
+		<ChartTitle>SYNTH vs iSYNTH</ChartTitle>
+		<ChartSubtitle>Long/short interest on crptoassets</ChartSubtitle>
 		<SidewaysBarChart data={data} />
 	</SynthsBarChartContainer>
 );
@@ -20,7 +20,7 @@ const SynthsBarChart: FC<SynthsBarChartProps> = ({ data }) => (
 const SynthsBarChartContainer = styled.div`
 	background: ${(props) => props.theme.colors.mediumBlue};
 	width: 48%;
-	height: 500px;
+	height: 520px;
 	overflow-y: scroll;
 	@media only screen and (max-width: 854px) {
 		width: 100%;

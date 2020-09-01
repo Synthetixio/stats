@@ -7,13 +7,18 @@ import { ChartPeriod } from '../../types/data';
 interface ChartTimeSelectorsProps {
 	periods: Array<ChartPeriod>;
 	onClick: (period: ChartPeriod) => void;
+	activePeriod: ChartPeriod;
 }
 
-const ChartTimeSelectors: FC<ChartTimeSelectorsProps> = ({ onClick, periods }) => {
+const ChartTimeSelectors: FC<ChartTimeSelectorsProps> = ({ onClick, periods, activePeriod }) => {
 	return (
 		<SelectorContainer>
 			{periods.map((period: ChartPeriod) => (
-				<SelectorItem key={period} onClick={() => onClick(period)}>
+				<SelectorItem
+					isActive={period === activePeriod}
+					key={period}
+					onClick={() => onClick(period)}
+				>
 					{period}
 				</SelectorItem>
 			))}
@@ -29,11 +34,11 @@ const SelectorContainer = styled.div`
 	z-index: ${Z_INDEX.hundred};
 `;
 
-const SelectorItem = styled.div`
+const SelectorItem = styled.div<{ isActive: boolean }>`
 	cursor: pointer;
 	height: 25px;
 	width: 25px;
-	color: ${(props) => props.theme.colors.white};
+	color: ${(props) => (props.isActive ? props.theme.colors.white : props.theme.colors.gray)};
 `;
 
 export default ChartTimeSelectors;

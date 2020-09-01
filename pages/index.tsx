@@ -1,8 +1,9 @@
 import React, { FC, useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import SNXSection from '../sections/Network/index';
-import SYNTHSSection from '../sections/SYNTHS/index';
+import SnxSection from '../sections/Network/index';
+import SynthsSection from '../sections/Synths/index';
+import OptionsSection from '../sections/Options/index';
 import { HeadersContext } from './_app';
 
 const HomePage: FC = () => {
@@ -12,7 +13,7 @@ const HomePage: FC = () => {
 	return (
 		<>
 			<div ref={headersContext.NETWORK as React.RefObject<HTMLDivElement>}>
-				<SNXSection />
+				<SnxSection />
 			</div>
 			<div ref={headersContext.STAKING as React.RefObject<HTMLDivElement>}>
 				<div />
@@ -21,13 +22,13 @@ const HomePage: FC = () => {
 				<div />
 			</div>
 			<div ref={headersContext.SYNTHS as React.RefObject<HTMLDivElement>}>
-				<SYNTHSSection />
+				<SynthsSection />
 			</div>
 			<div ref={headersContext.EXCHANGE as React.RefObject<HTMLDivElement>}>
 				<div />
 			</div>
 			<div ref={headersContext.OPTIONS as React.RefObject<HTMLDivElement>}>
-				<div />
+				<OptionsSection />
 			</div>
 		</>
 	);

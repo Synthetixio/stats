@@ -3,7 +3,7 @@ import styled from 'styled-components';
 
 import { Z_INDEX, NumberStyle } from '../../constants/styles';
 
-import { StatsBoxPercentChange } from '../StatsBox';
+import { PercentChangeBox } from '../common';
 import { getFormattedNumber, formatPercentage } from '../../utils/formatter';
 
 interface ChartTitleProps {
@@ -15,14 +15,13 @@ interface ChartTitleProps {
 
 const ChartTitle: FC<ChartTitleProps> = ({ title, num, numFormat, percentChange }) => {
 	let formattedNum = getFormattedNumber(num, numFormat);
+	console.log('percentChange', percentChange);
 	return (
 		<ContentContainer>
 			<MainTitle>{title}</MainTitle>
 			<BottomSegment>
 				<MainNumber>{formattedNum}</MainNumber>
-				<StatsBoxPercentChange color="green">
-					{formatPercentage(percentChange)}
-				</StatsBoxPercentChange>
+				<PercentChangeBox color="green">{formatPercentage(percentChange)}</PercentChangeBox>
 			</BottomSegment>
 		</ContentContainer>
 	);

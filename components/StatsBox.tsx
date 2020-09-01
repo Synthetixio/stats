@@ -4,6 +4,7 @@ import styled, { css } from 'styled-components';
 
 import { getFormattedNumber } from '../utils/formatter';
 import { COLORS, NumberColor, NumberStyle } from '../constants/styles';
+import { PercentChangeBox } from './common';
 
 interface StatsBoxProps {
 	title: string;
@@ -41,7 +42,7 @@ const StatsBox: FC<StatsBoxProps> = ({
 					<StatsBoxTitle>{title}</StatsBoxTitle>
 					<StatsBoxNumber color={color}>{formattedNumber}</StatsBoxNumber>
 					{percentChange != null ? (
-						<StatsBoxPercentChange color={color}>{percentChange}</StatsBoxPercentChange>
+						<PercentChangeBox color={color}>{percentChange}</PercentChangeBox>
 					) : null}
 					<StatsBoxSubText>{subText}</StatsBoxSubText>
 				</>
@@ -66,6 +67,13 @@ const StatsBoxContainer = styled.div<{ num: number; numBoxes: number }>`
 			return css`
 				width: calc(21% + 40px);
 				height: 205px;
+			`;
+		}
+
+		if (props.numBoxes === 1) {
+			return css`
+				width: 100%;
+				height: 140px;
 			`;
 		}
 
@@ -124,22 +132,6 @@ const StatsBoxNumber = styled.div<{ color: NumberColor }>`
 		props.color === COLORS.green ? props.theme.colors.brightGreen : props.theme.colors.brightPink};
 `;
 
-export const StatsBoxPercentChange = styled.div<{ color: NumberColor }>`
-	width: 48px;
-	height: 22px;
-	margin-bottom: 15px;
-	text-align: center;
-	padding: 4px 6px 0 6px;
-	font-style: normal;
-	font-weight: bold;
-	font-size: 12px;
-	font-family: Inter, sans-serif;
-
-	background: ${(props) =>
-		props.color === COLORS.green ? props.theme.colors.brightGreen : props.theme.colors.brightPink};
-	border-radius: 2px;
-`;
-
 const StatsBoxSubText = styled.div`
 	height: 32px;
 
@@ -150,5 +142,5 @@ const StatsBoxSubText = styled.div`
 	line-height: 18px;
 	/* or 129% */
 
-	color: ${(props) => props.theme.colors.white};
+	color: ${(props) => props.theme.colors.gray};
 `;

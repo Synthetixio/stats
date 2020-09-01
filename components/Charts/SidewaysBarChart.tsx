@@ -3,6 +3,7 @@ import styled, { css, keyframes } from 'styled-components';
 
 import { formatCurrency, formatNumber } from '../../utils/formatter';
 import { OpenInterest } from '../../types/data';
+import colors from '../../styles/colors';
 
 interface SidewaysBarChartProps {
 	data: OpenInterest;
@@ -67,7 +68,7 @@ const VerticalBar = styled.div`
 	top: 25px;
 	bottom: 0;
 	left: 50%;
-	border: 1px solid #161b44;
+	border: 1px solid ${colors.linedBlue};
 `;
 
 const HeaderRow = styled.div`
@@ -82,9 +83,9 @@ const SynthContainer = styled.div`
 	display: flex;
 	flex-direction: column;
 	width: 100%;
-	border-top: 1px solid #161b44;
+	border-top: 1px solid ${colors.linedBlue};
 	&:last-child {
-		border-bottom: 1px solid #161b44;
+		border-bottom: 1px solid ${colors.linedBlue};
 	}
 `;
 

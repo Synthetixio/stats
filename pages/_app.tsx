@@ -1,4 +1,4 @@
-import { createContext, FC, createRef } from 'react';
+import { createContext, FC, createRef, useState, Dispatch, SetStateAction } from 'react';
 import { AppProps } from 'next/app';
 import Head from 'next/head';
 import { useTranslation } from 'react-i18next';
@@ -24,12 +24,18 @@ const headersAndScrollRef = {
 
 export const HeadersContext = createContext(headersAndScrollRef);
 
+export const SUSDContext = createContext({
+	sUSDPrice: 0,
+	setsUSDPrice: (num: number) => null,
+});
+
 const snxjs = synthetix({ network: Network.Mainnet });
 
 export const SNXJSContext = createContext(snxjs);
 
 const App: FC<AppProps> = ({ Component, pageProps }) => {
 	const { t } = useTranslation();
+	const [sUSDPrice, setsUSDPrice] = useState<number>(0);
 
 	return (
 		<>
@@ -57,9 +63,11 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
 				<MuiThemeProvider theme={muiTheme}>
 					<HeadersContext.Provider value={headersAndScrollRef}>
 						<SNXJSContext.Provider value={snxjs}>
-							<Layout>
-								<Component {...pageProps} />
-							</Layout>
+							<SUSDContext.Provider value={{ sUSDPrice, setsUSDPrice }}>
+								<Layout>
+									<Component {...pageProps} />
+								</Layout>
+							</SUSDContext.Provider>
 						</SNXJSContext.Provider>
 					</HeadersContext.Provider>
 				</MuiThemeProvider>

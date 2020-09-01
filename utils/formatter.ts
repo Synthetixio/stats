@@ -1,5 +1,6 @@
 import BigNumber from 'bignumber.js';
 import numbro from 'numbro';
+import { format } from 'date-fns';
 
 import { NumberStyle } from '../constants/styles';
 import { TimeSeries } from '../types/data';
@@ -46,6 +47,7 @@ export const getFormattedNumber = (num: number, numFormat: NumberStyle) => {
 	} else if (numFormat === 'number') {
 		formattedNum = num.toFixed(2);
 	} else if (numFormat === 'percent') {
+		console.log('num', num);
 		formattedNum = formatPercentage(num);
 	}
 	return formattedNum;
@@ -61,3 +63,8 @@ export const formatIdToIsoString = (id: string, timeSeries: TimeSeries) => {
 	const created = new Date(Number(id) * multiple * 1000);
 	return created.toISOString();
 };
+
+export type TimeSeriesType = '15m' | '1d';
+
+export const formatTime = (created: string, type: TimeSeriesType) =>
+	type === '15m' ? format(new Date(created), 'HH:00') : format(new Date(created), 'MM/dd');
