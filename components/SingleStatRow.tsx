@@ -40,7 +40,7 @@ const SingleStatRowContainer = styled.div`
 const SingleStats = styled.div`
 	display: flex;
 	flex-direction: column;
-	width: 300px;
+	width: 400px;
 `;
 
 const SingleStatsLeft = styled(SingleStats)`
@@ -63,7 +63,7 @@ const SingleStatsSubtext = styled.div`
 `;
 
 const SingleStatsNumber = styled.div<{ color: string }>`
-	font-family: 'GT America Mono', sans-serif;
+	font-family: ${(props) => `${props.theme.fonts.mono}, ${props.theme.fonts.regular}`};
 	font-style: normal;
 	font-weight: bold;
 	font-size: 28px;

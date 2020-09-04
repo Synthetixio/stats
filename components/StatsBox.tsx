@@ -105,8 +105,7 @@ const StatsBoxTitle = styled.div`
 	height: 24px;
 	margin-bottom: 15px;
 
-	font-style: normal;
-	font-weight: 500;
+	font-family: ${(props) => `${props.theme.fonts.condensedMedium}, ${props.theme.fonts.regular}`};
 	font-size: 14px;
 	line-height: 24px;
 
@@ -120,7 +119,7 @@ const StatsBoxNumber = styled.div<{ color: NumberColor }>`
 	height: 24px;
 	margin-bottom: 15px;
 
-	font-family: 'GT America Mono', sans-serif;
+	font-family: ${(props) => `${props.theme.fonts.mono}, ${props.theme.fonts.regular}`};
 	font-style: normal;
 	font-weight: bold;
 	font-size: 28px;

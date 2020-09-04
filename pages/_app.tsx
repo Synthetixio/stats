@@ -1,4 +1,4 @@
-import { createContext, FC, createRef, useState, Dispatch, SetStateAction } from 'react';
+import { createContext, FC, createRef, useState } from 'react';
 import { AppProps } from 'next/app';
 import Head from 'next/head';
 import { useTranslation } from 'react-i18next';
@@ -9,6 +9,7 @@ import { ThemeProvider as MuiThemeProvider } from '@material-ui/core/styles';
 
 import { scTheme, muiTheme } from 'styles/theme';
 
+import '../styles/index.css';
 import '../i18n';
 
 import Layout from 'sections/shared/Layout';
@@ -18,7 +19,7 @@ const headersAndScrollRef = {
 	STAKING: createRef(),
 	'YIELD FARMING': createRef(),
 	SYNTHS: createRef(),
-	EXCHANGE: createRef(),
+	TRADING: createRef(),
 	OPTIONS: createRef(),
 };
 
@@ -29,6 +30,13 @@ export const SUSDContext = createContext({
 	setsUSDPrice: (num: number) => null,
 });
 
+export const SNXContext = createContext({
+	SNXPrice: 0,
+	setSNXPrice: (num: number) => null,
+	SNXStaked: 0,
+	setSNXStaked: (num: number) => null,
+});
+
 const snxjs = synthetix({ network: Network.Mainnet });
 
 export const SNXJSContext = createContext(snxjs);
@@ -36,6 +44,8 @@ export const SNXJSContext = createContext(snxjs);
 const App: FC<AppProps> = ({ Component, pageProps }) => {
 	const { t } = useTranslation();
 	const [sUSDPrice, setsUSDPrice] = useState<number>(0);
+	const [SNXPrice, setSNXPrice] = useState<number>(0);
+	const [SNXStaked, setSNXStaked] = useState<number>(0);
 
 	return (
 		<>
@@ -64,9 +74,11 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
 					<HeadersContext.Provider value={headersAndScrollRef}>
 						<SNXJSContext.Provider value={snxjs}>
 							<SUSDContext.Provider value={{ sUSDPrice, setsUSDPrice }}>
-								<Layout>
-									<Component {...pageProps} />
-								</Layout>
+								<SNXContext.Provider value={{ SNXPrice, setSNXPrice, SNXStaked, setSNXStaked }}>
+									<Layout>
+										<Component {...pageProps} />
+									</Layout>
+								</SNXContext.Provider>
 							</SUSDContext.Provider>
 						</SNXJSContext.Provider>
 					</HeadersContext.Provider>

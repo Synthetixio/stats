@@ -21,9 +21,9 @@ const Layout: FC<LayoutProps> = ({ children }) => {
 
 const GlobalStyle = createGlobalStyle`
   body {
-		margin: 0;
+		margin: 0 20px;
 		scroll-behavior: smooth;
-		font-family: "GT America", sans-serif;
+		font-family: "GT America Mono", sans-serif;
     font-style: normal;
     font-weight: normal;
     font-size: 14px;

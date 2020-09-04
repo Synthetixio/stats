@@ -16,15 +16,14 @@ import AreaChart from '../../components/Charts/AreaChart';
 import SectionHeader from '../../components/SectionHeader';
 import { COLORS } from '../../constants/styles';
 import SUSDDistribution from '../Network/SUSDDistribution';
-import { SNXJSContext, SUSDContext } from '../../pages/_app';
-import { formatIdToIsoString, formatPercentage } from '../../utils/formatter';
+import { SNXJSContext, SUSDContext, SNXContext } from '../../pages/_app';
+import { formatIdToIsoString } from '../../utils/formatter';
 import { getSUSDHoldersName } from '../../utils/dataMapping';
 
 const CMC_API = 'https://coinmarketcap-api.synthetix.io/public/prices?symbols=SNX';
 
 const NetworkSection: FC = () => {
 	const [priorSNXPrice, setPriorSNXPrice] = useState<number>(0);
-	const [SNXPrice, setSNXPrice] = useState<number>(0);
 	const [chartPeriod, setChartPeriod] = useState<ChartPeriod>('D');
 	const [SNXChartPriceData, setSNXChartPriceData] = useState<AreaChartData[]>([]);
 	const [SNXTotalSupply, setSNXTotalSupply] = useState<number>(0);
@@ -35,6 +34,7 @@ const NetworkSection: FC = () => {
 	const [SUSDHolders, setSUSDHolders] = useState<TreeMapData[]>([]);
 	const snxjs = useContext(SNXJSContext);
 	const { sUSDPrice, setsUSDPrice } = useContext(SUSDContext);
+	const { SNXPrice, setSNXPrice, setSNXStaked } = useContext(SNXContext);
 
 	const formatSNXPriceChartData = (
 		data: SNXPriceData[],
@@ -139,7 +139,9 @@ const NetworkSection: FC = () => {
 				})
 			);
 			setSUSDHolders(topHolders);
-			setSNXPercentLocked(snxLocked / snxTotal);
+			const percentLocked = snxLocked / snxTotal;
+			setSNXPercentLocked(percentLocked);
+			setSNXStaked(totalSupply * percentLocked);
 			setActiveCRatio(1 / (stakersTotalDebt / stakersTotalCollateral));
 			setNetworkCRatio((totalSupply * formattedSNXPrice) / totalIssuedSynths);
 		};
@@ -182,7 +184,7 @@ const NetworkSection: FC = () => {
 				data={SNXChartPriceData}
 				title="SNX PRICE"
 				num={SNXPrice}
-				numFormat="currency"
+				numFormat="currency2"
 				percentChange={SNXPrice / priorSNXPrice - 1}
 				timeSeries={chartPeriod === 'D' ? '15m' : '1d'}
 			/>
@@ -194,7 +196,7 @@ const NetworkSection: FC = () => {
 					percentChange={null}
 					subText="Fully Diluted Market cap for Synthetix Network Token"
 					color={COLORS.pink}
-					numberStyle="currency"
+					numberStyle="currency0"
 					numBoxes={3}
 				/>
 				<StatsBox
@@ -204,7 +206,7 @@ const NetworkSection: FC = () => {
 					percentChange={null}
 					subText="Price of sUSD token on Curve"
 					color={COLORS.green}
-					numberStyle="currency"
+					numberStyle="currency2"
 					numBoxes={3}
 				/>
 				<StatsBox
@@ -214,7 +216,7 @@ const NetworkSection: FC = () => {
 					percentChange={null}
 					subText="SNX 24HR volume from Coinmarketcap API"
 					color={COLORS.green}
-					numberStyle="currency"
+					numberStyle="currency0"
 					numBoxes={3}
 				/>
 			</StatsRow>
@@ -226,7 +228,7 @@ const NetworkSection: FC = () => {
 					percentChange={null}
 					subText="USD value of SNX tokens locked in staking"
 					color={COLORS.pink}
-					numberStyle="currency"
+					numberStyle="currency0"
 					numBoxes={3}
 				/>
 				<StatsBox

@@ -105,7 +105,7 @@ const Options: FC = () => {
 					percentChange={null}
 					subText={`The largest active binary options market is ${largestActiveMarketName}`}
 					color={COLORS.green}
-					numberStyle="currency"
+					numberStyle="currency0"
 					numBoxes={3}
 				/>
 				<StatsBox
@@ -115,7 +115,7 @@ const Options: FC = () => {
 					percentChange={null}
 					subText={`The largest binary options market to date is ${largestMarketName}`}
 					color={COLORS.pink}
-					numberStyle="currency"
+					numberStyle="currency0"
 					numBoxes={3}
 				/>
 				<StatsBox
@@ -125,7 +125,7 @@ const Options: FC = () => {
 					percentChange={null}
 					subText="The total volume traded for binary options markets to date"
 					color={COLORS.pink}
-					numberStyle="currency"
+					numberStyle="currency0"
 					numBoxes={3}
 				/>
 			</StatsRow>
@@ -148,7 +148,7 @@ const Options: FC = () => {
 						percentChange={null}
 						subText="The total amount of capital pooled in active binary options markets"
 						color={COLORS.green}
-						numberStyle="currency"
+						numberStyle="currency0"
 						numBoxes={1}
 					/>
 					<StatsBox

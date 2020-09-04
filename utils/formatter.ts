@@ -37,15 +37,17 @@ export const formatPercentage = (
 	});
 };
 
-export const formatNumber = (num: number, mantissa: number = DEFAULT_CURRENCY_DECIMALS) =>
+export const formatNumber = (num: number, mantissa: number = 0) =>
 	numbro(num).format({ thousandSeparated: true, mantissa });
 
 export const getFormattedNumber = (num: number, numFormat: NumberStyle) => {
 	let formattedNum;
-	if (numFormat === 'currency') {
-		formattedNum = formatCurrency(num);
+	if (numFormat === 'currency0') {
+		formattedNum = formatCurrency(num, 0);
+	} else if (numFormat === 'currency2') {
+		formattedNum = formatCurrency(num, 2);
 	} else if (numFormat === 'number') {
-		formattedNum = num.toFixed(2);
+		formattedNum = formatNumber(num);
 	} else if (numFormat === 'percent') {
 		console.log('num', num);
 		formattedNum = formatPercentage(num);
@@ -68,3 +70,5 @@ export type TimeSeriesType = '15m' | '1d';
 
 export const formatTime = (created: string, type: TimeSeriesType) =>
 	type === '15m' ? format(new Date(created), 'HH:00') : format(new Date(created), 'MM/dd');
+
+export const formatDate = (created: string) => format(new Date(created), 'PPpp');

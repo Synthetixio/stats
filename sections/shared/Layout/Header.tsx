@@ -1,7 +1,7 @@
 import { FC, useContext } from 'react';
 import styled from 'styled-components';
 
-import SNXLogo from '../../../assets/svg/snxlogo.svg';
+import StatsLogo from '../../../assets/svg/stats-logo.svg';
 import { MAX_PAGE_WIDTH, Z_INDEX } from '../../../constants/styles';
 import { HeadersContext } from '../../../pages/_app';
 
@@ -10,7 +10,7 @@ const Header: FC = () => {
 	const headersContext = useContext(HeadersContext);
 	const scrollToRef = (ref: any) => {
 		const offsetTop = ref?.current?.offsetTop ?? 0;
-		const scrollEnd = offsetTop === 0 ? 0 : offsetTop - 100;
+		const scrollEnd = offsetTop === 0 ? 0 : offsetTop - 120;
 		window.scrollTo(0, scrollEnd);
 	};
 	return (
@@ -18,10 +18,9 @@ const Header: FC = () => {
 			<HeaderContainer>
 				<HeaderContainerInner>
 					<HeaderSectionLeft>
-						<SNXLogoWrap>
-							<SNXLogo />
-						</SNXLogoWrap>
-						<HeaderTitle>Stats</HeaderTitle>
+						<StatsLogoWrap>
+							<StatsLogo />
+						</StatsLogoWrap>
 					</HeaderSectionLeft>
 					<HeaderSectionRight>
 						{Object.entries(headersContext).map(([key, value]) => (
@@ -44,33 +43,43 @@ const HeaderContainer = styled.div`
 	height: 60px;
 	padding-top: 35px;
 	position: fixed;
+	font-style: normal;
+	font-weight: bold;
 	width: 100%;
+	margin-left: -20px;
 	z-index: ${Z_INDEX.thousand};
 	background-color: ${(props) => props.theme.colors.darkBlue};
+	@media only screen and (max-width: 1266px) {
+		margin-left: 0;
+	}
 `;
 
 const HeaderContainerInner = styled.div`
-	width: ${MAX_PAGE_WIDTH}px;
+	max-width: ${MAX_PAGE_WIDTH}px;
 	margin: 0 auto;
+	display: flex;
+	justify-content: space-between;
+	@media only screen and (max-width: 1266px) {
+		max-width: calc(100% - 40px);
+		margin: 0;
+	}
 `;
 
-const HeaderTitle = styled.div`
-	font-size: 35px;
-	font-weigth: bold;
-	margin-left: 15px;
+const StatsLogoWrap = styled.div`
+	margin-top: -4px;
 `;
 
 const HeaderSectionLeft = styled.div`
-	width: 300px;
-	float: left;
 	display: flex;
 	justify-content; space-between;
 `;
 
 const HeaderSectionRight = styled.div`
-	float: right;
 	display: flex;
 	justify-content; space-between;
+	font-family: ${(props) => `${props.theme.fonts.condensedBold}, ${props.theme.fonts.regular}`};
+	font-size: 12px;
+	color: ${(props) => props.theme.colors.white};
 `;
 
 const HeaderLink = styled.div`
@@ -83,9 +92,4 @@ const Divider = styled.div`
 	opacity: 0.1;
 	width: 100%;
 	height: 1px;
-`;
-
-const SNXLogoWrap = styled.div`
-	margin-top: -7px;
-	margin-right: 10px;
 `;

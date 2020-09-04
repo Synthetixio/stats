@@ -46,10 +46,16 @@ const DoubleStatsBoxContainer = styled.div`
 	padding: 20px;
 	width: 29%;
 	height: 290px;
+	@media only screen and (max-width: 1015px) {
+		width: 45%;
+	}
+	@media only screen and (max-width: 854px) {
+		width: 100%;
+	}
 `;
 
 const DoubleStatsBoxTitle = styled.div`
-	font-family: 'GT America', sans-serif;
+	font-family: ${(props) => `${props.theme.fonts.mono}, ${props.theme.fonts.regular}`};
 	font-style: normal;
 	font-weight: 900;
 	font-size: 20px;
@@ -69,7 +75,7 @@ const DoubleStatsBoxSubtitle = styled.div`
 `;
 
 const DoubleStatsBoxMetric = styled.div<{ color: NumberColor }>`
-	font-family: 'GT America Mono', sans-serif;
+	font-family: ${(props) => `${props.theme.fonts.mono}, ${props.theme.fonts.regular}`};
 	font-style: normal;
 	font-weight: bold;
 	font-size: 28px;
@@ -80,7 +86,7 @@ const DoubleStatsBoxMetric = styled.div<{ color: NumberColor }>`
 `;
 
 const DoubleStatsBoxMetricTitle = styled.div`
-	font-family: 'GT America', sans-serif;
+	font-family: ${(props) => `${props.theme.fonts.mono}, ${props.theme.fonts.regular}`};
 	font-style: normal;
 	font-weight: 500;
 	font-size: 14px;

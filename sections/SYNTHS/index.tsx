@@ -137,7 +137,7 @@ const SynthsCharts = styled.div`
 
 const SubsectionHeader = styled.div`
 	max-width: ${MAX_PAGE_WIDTH}px;
-	font-family: 'GT America', sans-serif;
+	font-family: ${(props) => `${props.theme.fonts.mono}, ${props.theme.fonts.regular}`};
 	font-style: normal;
 	font-weight: 900;
 	font-size: 20px;

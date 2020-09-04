@@ -10,18 +10,19 @@ interface ChartTitleProps {
 	title: string;
 	num: number;
 	numFormat: NumberStyle;
-	percentChange: number;
+	percentChange: number | null;
 }
 
 const ChartTitle: FC<ChartTitleProps> = ({ title, num, numFormat, percentChange }) => {
 	let formattedNum = getFormattedNumber(num, numFormat);
-	console.log('percentChange', percentChange);
 	return (
 		<ContentContainer>
 			<MainTitle>{title}</MainTitle>
 			<BottomSegment>
 				<MainNumber>{formattedNum}</MainNumber>
-				<PercentChangeBox color="green">{formatPercentage(percentChange)}</PercentChangeBox>
+				{percentChange ? (
+					<PercentChangeBox color="green">{formatPercentage(percentChange)}</PercentChangeBox>
+				) : null}
 			</BottomSegment>
 		</ContentContainer>
 	);
@@ -36,8 +37,7 @@ const ContentContainer = styled.div`
 `;
 
 const MainTitle = styled.div`
-	font-style: normal;
-	font-weight: 500;
+	font-family: ${(props) => `${props.theme.fonts.condensedMedium}, ${props.theme.fonts.regular}`};
 	font-size: 14px;
 	line-height: 24px;
 `;

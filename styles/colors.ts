@@ -8,6 +8,7 @@ export default {
 	white: '#ffffff',
 	// blue
 	darkBlue: '#06061B',
+	tooltipBlue: '#10104E',
 	mediumBlue: '#09092f',
 	linedBlue: '#161b44',
 	// font
@@ -26,4 +27,6 @@ export default {
 	brightYellow: '#FFD75C',
 	brightOrange: '#FC8738',
 	brightPurple: '#4834E4',
+	// gradient
+	tooltipGradient: 'linear-gradient(180deg, #ED1EFF 0%, #00D1FF 100%)',
 };

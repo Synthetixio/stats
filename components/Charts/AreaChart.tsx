@@ -14,7 +14,7 @@ interface AreaChartProps {
 	title: string;
 	num: number;
 	numFormat: NumberStyle;
-	percentChange: number;
+	percentChange: number | null;
 	onPeriodSelect: (period: ChartPeriod) => void;
 	timeSeries: TimeSeriesType;
 	activePeriod: ChartPeriod;
@@ -36,7 +36,7 @@ const AreaChart: FC<AreaChartProps> = ({
 			<ChartTitle title={title} num={num} numFormat={numFormat} percentChange={percentChange} />
 			<ChartTimeSelectors activePeriod={activePeriod} periods={periods} onClick={onPeriodSelect} />
 		</ChartHeader>
-		<BasicAreaChart data={data} timeSeries={timeSeries} />
+		<BasicAreaChart valueType={numFormat} data={data} timeSeries={timeSeries} />
 	</ChartContainer>
 );
 

@@ -1,9 +1,11 @@
 import React, { FC, useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import SnxSection from '../sections/Network/index';
-import SynthsSection from '../sections/Synths/index';
-import OptionsSection from '../sections/Options/index';
+import SnxSection from '../sections/Network';
+import TradingSection from '../sections/Trading';
+import SynthsSection from '../sections/Synths';
+import OptionsSection from '../sections/Options';
+import StakingSection from '../sections/Staking';
 import { HeadersContext } from './_app';
 
 const HomePage: FC = () => {
@@ -16,7 +18,7 @@ const HomePage: FC = () => {
 				<SnxSection />
 			</div>
 			<div ref={headersContext.STAKING as React.RefObject<HTMLDivElement>}>
-				<div />
+				<StakingSection />
 			</div>
 			<div ref={headersContext['YIELD FARMING'] as React.RefObject<HTMLDivElement>}>
 				<div />
@@ -24,8 +26,8 @@ const HomePage: FC = () => {
 			<div ref={headersContext.SYNTHS as React.RefObject<HTMLDivElement>}>
 				<SynthsSection />
 			</div>
-			<div ref={headersContext.EXCHANGE as React.RefObject<HTMLDivElement>}>
-				<div />
+			<div ref={headersContext.TRADING as React.RefObject<HTMLDivElement>}>
+				<TradingSection />
 			</div>
 			<div ref={headersContext.OPTIONS as React.RefObject<HTMLDivElement>}>
 				<OptionsSection />
