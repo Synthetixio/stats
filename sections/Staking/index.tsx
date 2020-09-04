@@ -48,9 +48,9 @@ const Staking: FC = () => {
 					title="CURRENT SNX STAKING APY"
 					num={
 						(((sUSDPrice * currentFeePeriod?.feesToDistribute ?? 0) +
-							(SNXPrice * currentFeePeriod?.rewardsToDistribute ?? 0)) /
-							SNXValueStaked) *
-						100
+							(SNXPrice * currentFeePeriod?.rewardsToDistribute ?? 0)) *
+							52) /
+						SNXValueStaked
 					}
 					percentChange={null}
 					subText="Annual percentage yield from staking SNX. Not assuming compounded interest."
@@ -61,7 +61,7 @@ const Staking: FC = () => {
 				<StatsBox
 					key="SNXSTKAPYSUSD"
 					title="CURRENT SNX STAKING APY (sUSD fees)"
-					num={((sUSDPrice * currentFeePeriod?.feesToDistribute ?? 0) / SNXValueStaked) * 100}
+					num={((sUSDPrice * currentFeePeriod?.feesToDistribute ?? 0) * 52) / SNXValueStaked}
 					percentChange={null}
 					subText="Annual percentage yield from staking SNX in sUSD trading volume fees. Not assuming compounded interest."
 					color={COLORS.green}
@@ -71,7 +71,7 @@ const Staking: FC = () => {
 				<StatsBox
 					key="SNXSTKAPYSNX"
 					title="CURRENT SNX STAKING APY (SNX rewards)"
-					num={((SNXPrice * currentFeePeriod?.rewardsToDistribute ?? 0) / SNXValueStaked) * 100}
+					num={((SNXPrice * currentFeePeriod?.rewardsToDistribute ?? 0) * 52) / SNXValueStaked}
 					percentChange={null}
 					subText="Annual percentage yield from staking SNX in SNX rewards. Not assuming compounded interest."
 					color={COLORS.pink}
