@@ -18,6 +18,11 @@ export type SNXPriceData = {
 	averagePrice: number;
 };
 
+export type ActiveStakersData = {
+	id: string;
+	count: number;
+};
+
 export type TradesRequestData = {
 	id: string;
 	trades: number;

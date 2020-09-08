@@ -9,6 +9,7 @@ import {
 	SNXPriceData,
 	TimeSeries,
 	TreeMapData,
+	ActiveStakersData,
 } from '../../types/data';
 import StatsBox from '../../components/StatsBox';
 import StatsRow from '../../components/StatsRow';
@@ -24,8 +25,11 @@ const CMC_API = 'https://coinmarketcap-api.synthetix.io/public/prices?symbols=SN
 
 const NetworkSection: FC = () => {
 	const [priorSNXPrice, setPriorSNXPrice] = useState<number>(0);
-	const [chartPeriod, setChartPeriod] = useState<ChartPeriod>('D');
+	const [totalActiveStakers, setTotalActiveStakers] = useState<number>(0);
+	const [priceChartPeriod, setPriceChartPeriod] = useState<ChartPeriod>('D');
+	const [stakersChartPeriod, setStakersChartPeriod] = useState<ChartPeriod>('W');
 	const [SNXChartPriceData, setSNXChartPriceData] = useState<AreaChartData[]>([]);
+	const [stakersChartData, setStakersChartData] = useState<AreaChartData[]>([]);
 	const [SNXTotalSupply, setSNXTotalSupply] = useState<number>(0);
 	const [SNX24HVolume, setSNX24HVolume] = useState<number>(0);
 	const [activeCRatio, setActiveCRatio] = useState<number>(0);
@@ -35,18 +39,6 @@ const NetworkSection: FC = () => {
 	const snxjs = useContext(SNXJSContext);
 	const { sUSDPrice, setsUSDPrice } = useContext(SUSDContext);
 	const { SNXPrice, setSNXPrice, setSNXStaked } = useContext(SNXContext);
-
-	const formatSNXPriceChartData = (
-		data: SNXPriceData[],
-		timeSeries: TimeSeries
-	): AreaChartData[] => {
-		return data.map(({ id, averagePrice }) => {
-			return {
-				created: formatIdToIsoString(id, timeSeries),
-				value: averagePrice,
-			};
-		});
-	};
 
 	// NOTE: use interval? or save data calls?
 	useEffect(() => {
@@ -148,45 +140,88 @@ const NetworkSection: FC = () => {
 		fetchData();
 	}, []);
 
-	useEffect(() => {
-		const fetchNewChartData = async () => {
-			let newSNXPriceData = [];
-			let timeSeries = '1d';
-			if (chartPeriod === 'D') {
-				timeSeries = '15m';
-				newSNXPriceData = await snxData.rate.snxAggregate({ timeSeries: '15m', max: 24 * 4 });
-			} else if (chartPeriod === 'W') {
-				timeSeries = '15m';
-				newSNXPriceData = await snxData.rate.snxAggregate({ timeSeries: '15m', max: 24 * 4 * 7 });
-			} else if (chartPeriod === 'M') {
-				newSNXPriceData = await snxData.rate.snxAggregate({ timeSeries: '1d', max: 30 });
-			} else if (chartPeriod === 'Y') {
-				newSNXPriceData = await snxData.rate.snxAggregate({ timeSeries: '1d', max: 365 });
-			}
+	const formatChartData = (
+		type: 'price' | 'stakers',
+		data: SNXPriceData[] | ActiveStakersData[],
+		timeSeries?: TimeSeries
+	): AreaChartData[] =>
+		type === 'price'
+			? (data as SNXPriceData[]).map(({ id, averagePrice }) => {
+					return {
+						created: formatIdToIsoString(id, timeSeries as TimeSeries),
+						value: averagePrice,
+					};
+			  })
+			: (data as ActiveStakersData[]).map(({ id, count }) => {
+					return {
+						created: formatIdToIsoString(id, '1d'),
+						value: count,
+					};
+			  });
+
+	const fetchNewChartData = async (
+		type: 'price' | 'stakers' | 'both',
+		fetchPeriod?: ChartPeriod
+	) => {
+		let newSNXPriceData = [];
+		let newStakersData = [];
+		let timeSeries = '1d';
+		if (type === 'both') {
+			timeSeries = '15m';
+			newSNXPriceData = await snxData.rate.snxAggregate({ timeSeries, max: 24 * 4 });
+			newStakersData = await snxData.snx.aggregateActiveStakers({ max: 7 });
+		} else if (type === 'price' && fetchPeriod === 'D') {
+			timeSeries = '15m';
+			newSNXPriceData = await snxData.rate.snxAggregate({ timeSeries, max: 24 * 4 });
+		} else if (fetchPeriod === 'W' && type === 'price') {
+			timeSeries = '15m';
+			newSNXPriceData = await snxData.rate.snxAggregate({ timeSeries, max: 24 * 4 * 7 });
+		} else if (fetchPeriod === 'M' && type === 'price') {
+			newSNXPriceData = await snxData.rate.snxAggregate({ timeSeries, max: 30 });
+		} else if (fetchPeriod === 'Y' && type === 'price') {
+			newSNXPriceData = await snxData.rate.snxAggregate({ timeSeries, max: 365 });
+		} else if (fetchPeriod === 'W' && type === 'stakers') {
+			newStakersData = await snxData.snx.aggregateActiveStakers({ max: 7 });
+		} else if (fetchPeriod === 'M' && type === 'stakers') {
+			newStakersData = await snxData.snx.aggregateActiveStakers({ max: 30 });
+		} else if (fetchPeriod === 'Y' && type === 'stakers') {
+			newStakersData = await snxData.snx.aggregateActiveStakers({ max: 365 });
+		}
+		if (type === 'both' || type === 'price') {
 			newSNXPriceData = newSNXPriceData.reverse();
 			setPriorSNXPrice(newSNXPriceData[0].averagePrice);
-			setSNXChartPriceData(formatSNXPriceChartData(newSNXPriceData, timeSeries as TimeSeries));
-		};
-		fetchNewChartData();
-	}, [chartPeriod]);
+			setSNXChartPriceData(formatChartData('price', newSNXPriceData, timeSeries as TimeSeries));
+		}
+		if (type === 'both' || type === 'stakers') {
+			newStakersData = newStakersData.reverse();
+			setTotalActiveStakers(newStakersData[newStakersData.length - 1].count);
+			setStakersChartData(formatChartData('stakers', newStakersData));
+		}
+	};
 
-	const periods: ChartPeriod[] = ['D', 'W', 'M', 'Y'];
+	useEffect(() => {
+		fetchNewChartData('both');
+	}, []);
+
+	const stakingPeriods: ChartPeriod[] = ['W', 'M', 'Y'];
+	const pricePeriods: ChartPeriod[] = ['D', ...stakingPeriods];
 	return (
 		<>
 			<SectionHeader title="NETWORK" first={true} />
 			<AreaChart
-				periods={periods}
-				activePeriod={chartPeriod}
+				periods={pricePeriods}
+				activePeriod={priceChartPeriod}
 				onPeriodSelect={(period: ChartPeriod) => {
 					setSNXChartPriceData([]); // will force loading state
-					setChartPeriod(period);
+					setPriceChartPeriod(period);
+					fetchNewChartData('price', period);
 				}}
 				data={SNXChartPriceData}
 				title="SNX PRICE"
 				num={SNXPrice}
 				numFormat="currency2"
 				percentChange={SNXPrice / priorSNXPrice - 1}
-				timeSeries={chartPeriod === 'D' ? '15m' : '1d'}
+				timeSeries={priceChartPeriod === 'D' ? '15m' : '1d'}
 			/>
 			<StatsRow>
 				<StatsBox
@@ -253,6 +288,21 @@ const NetworkSection: FC = () => {
 				/>
 			</StatsRow>
 			<SUSDDistribution data={SUSDHolders} />
+			<AreaChart
+				periods={stakingPeriods}
+				activePeriod={stakersChartPeriod}
+				onPeriodSelect={(period: ChartPeriod) => {
+					setStakersChartData([]); // will force loading state
+					setStakersChartPeriod(period);
+					fetchNewChartData('stakers', period);
+				}}
+				data={stakersChartData}
+				title="TOTAL ACTIVE STAKERS"
+				num={totalActiveStakers}
+				numFormat="number"
+				percentChange={null}
+				timeSeries="1d"
+			/>
 		</>
 	);
 };
