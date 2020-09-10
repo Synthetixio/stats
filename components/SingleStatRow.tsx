@@ -1,17 +1,18 @@
 import { FC } from 'react';
 import styled from 'styled-components';
-import { COLORS, NumberColor, MAX_PAGE_WIDTH } from '../constants/styles';
-import { PercentChangeBox } from './common';
-import { formatCurrency } from '../utils/formatter';
+import { COLORS, NumberColor, MAX_PAGE_WIDTH, NumberStyle } from '../constants/styles';
+import { getFormattedNumber } from '../utils/formatter';
 
 type SingleStatRowProps = {
 	text: string;
 	subtext: string;
-	num: number;
+	num: number | null;
 	color: NumberColor;
+	numberStyle: NumberStyle;
 };
 
-const SingleStatRow: FC<SingleStatRowProps> = ({ text, subtext, color, num }) => {
+const SingleStatRow: FC<SingleStatRowProps> = ({ text, subtext, color, num, numberStyle }) => {
+	const formattedNumber = getFormattedNumber(num, numberStyle);
 	return (
 		<SingleStatRowContainer>
 			<SingleStatsLeft>
@@ -19,7 +20,7 @@ const SingleStatRow: FC<SingleStatRowProps> = ({ text, subtext, color, num }) =>
 				<SingleStatsSubtext>{subtext}</SingleStatsSubtext>
 			</SingleStatsLeft>
 			<SingleStatsRight>
-				<SingleStatsNumber color={color}>{formatCurrency(num, 0)}</SingleStatsNumber>
+				<SingleStatsNumber color={color}>{formattedNumber}</SingleStatsNumber>
 			</SingleStatsRight>
 		</SingleStatRowContainer>
 	);
@@ -40,7 +41,7 @@ const SingleStatRowContainer = styled.div`
 const SingleStats = styled.div`
 	display: flex;
 	flex-direction: column;
-	width: 400px;
+	width: 430px;
 `;
 
 const SingleStatsLeft = styled(SingleStats)`
@@ -60,6 +61,9 @@ const SingleStatsText = styled.div`
 
 const SingleStatsSubtext = styled.div`
 	color: ${(props) => props.theme.colors.gray};
+	@media only screen and (max-width: 500px) {
+		display: none;
+	}
 `;
 
 const SingleStatsNumber = styled.div<{ color: string }>`

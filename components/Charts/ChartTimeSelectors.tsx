@@ -32,13 +32,19 @@ const SelectorContainer = styled.div`
 	justify-content: space-between;
 	width: 200px;
 	z-index: ${Z_INDEX.hundred};
+	@media only screen and (max-width: 500px) {
+		padding-right: 5px;
+		width: 140px;
+	}
 `;
 
 const SelectorItem = styled.div<{ isActive: boolean }>`
 	cursor: pointer;
 	height: 25px;
 	width: 25px;
+	font-size: 12px;
 	color: ${(props) => (props.isActive ? props.theme.colors.white : props.theme.colors.gray)};
+	font-family: ${(props) => `${props.theme.fonts.condensedBold}, ${props.theme.fonts.regular}`};
 `;
 
 export default ChartTimeSelectors;

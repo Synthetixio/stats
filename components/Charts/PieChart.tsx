@@ -3,9 +3,11 @@ import { PieChart, Pie, Cell, Legend, ResponsiveContainer } from 'recharts';
 
 import colors from '../../styles/colors';
 import { SynthTotalSupply } from '../../types/data';
+import CustomLegend from './CustomLegend';
 
 interface BasicPieChartProps {
 	data: SynthTotalSupply[];
+	legendRight?: boolean;
 }
 
 const MUTED_COLORS = [
@@ -25,7 +27,7 @@ const BRIGHT_COLORS = [
 	colors.brightPurple,
 ];
 
-const BasicPieChart: FC<BasicPieChartProps> = ({ data }) => (
+const BasicPieChart: FC<BasicPieChartProps> = ({ data, legendRight }) => (
 	<ResponsiveContainer width="100%" height={380}>
 		<PieChart height={380}>
 			<Pie
@@ -46,7 +48,7 @@ const BasicPieChart: FC<BasicPieChartProps> = ({ data }) => (
 					/>
 				))}
 			</Pie>
-			<Legend iconType="line" height={26} />
+			<Legend content={<CustomLegend legendRight={legendRight} />} />
 		</PieChart>
 	</ResponsiveContainer>
 );

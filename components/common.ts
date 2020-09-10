@@ -9,8 +9,8 @@ export const PercentChangeBox = styled.div<{ color: NumberColor }>`
 	padding: 4px 6px 0 6px;
 	font-style: normal;
 	font-weight: bold;
-	font-size: 12px;
-	font-family: Inter, sans-serif;
+	font-size: 10px;
+	font-family: 'Inter', sans-serif;
 
 	background: ${(props) =>
 		props.color === COLORS.green ? props.theme.colors.brightGreen : props.theme.colors.brightPink};

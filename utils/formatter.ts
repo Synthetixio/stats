@@ -40,7 +40,10 @@ export const formatPercentage = (
 export const formatNumber = (num: number, mantissa: number = 0) =>
 	numbro(num).format({ thousandSeparated: true, mantissa });
 
-export const getFormattedNumber = (num: number, numFormat: NumberStyle) => {
+export const getFormattedNumber = (num: number | null, numFormat: NumberStyle) => {
+	if (num == null) {
+		return null;
+	}
 	let formattedNum;
 	if (numFormat === 'currency0') {
 		formattedNum = formatCurrency(num, 0);
@@ -48,9 +51,10 @@ export const getFormattedNumber = (num: number, numFormat: NumberStyle) => {
 		formattedNum = formatCurrency(num, 2);
 	} else if (numFormat === 'number') {
 		formattedNum = formatNumber(num);
-	} else if (numFormat === 'percent') {
-		console.log('num', num);
+	} else if (numFormat === 'percent2') {
 		formattedNum = formatPercentage(num);
+	} else if (numFormat === 'percent0') {
+		formattedNum = formatPercentage(num, 0);
 	}
 	return formattedNum;
 };

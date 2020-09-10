@@ -6,6 +6,7 @@ import TradingSection from '../sections/Trading';
 import SynthsSection from '../sections/Synths';
 import OptionsSection from '../sections/Options';
 import StakingSection from '../sections/Staking';
+import YieldFarmingSection from '../sections/YieldFarming';
 import { HeadersContext } from './_app';
 
 const HomePage: FC = () => {
@@ -21,7 +22,7 @@ const HomePage: FC = () => {
 				<StakingSection />
 			</div>
 			<div ref={headersContext['YIELD FARMING'] as React.RefObject<HTMLDivElement>}>
-				<div />
+				<YieldFarmingSection />
 			</div>
 			<div ref={headersContext.SYNTHS as React.RefObject<HTMLDivElement>}>
 				<SynthsSection />

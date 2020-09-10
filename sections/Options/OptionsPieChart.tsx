@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import PieChart from '../../components/Charts/PieChart';
 import { ChartTitle, ChartSubtitle } from '../../components/common';
 import { SynthTotalSupply } from '../../types/data';
+import { MAX_PAGE_WIDTH } from '../../constants/styles';
 
 type OptionsPieChartProps = {
 	data: SynthTotalSupply[];
@@ -14,19 +15,16 @@ const OptionsPieChart: FC<OptionsPieChartProps> = ({ data }) => {
 		<OptionsPieChartContainer>
 			<ChartTitle>BINARY MARKETS DOMINANCE</ChartTitle>
 			<ChartSubtitle>Distribution of synths within the network</ChartSubtitle>
-			<PieChart data={data} />
+			<PieChart legendRight={true} data={data} />
 		</OptionsPieChartContainer>
 	);
 };
 
 const OptionsPieChartContainer = styled.div`
 	background: ${(props) => props.theme.colors.mediumBlue};
-	width: 48%;
-	height: 560px;
-	margin-top: 20px;
-	@media only screen and (max-width: 854px) {
-		width: 100%;
-	}
+	max-width: ${MAX_PAGE_WIDTH}px;
+	height: 760px;
+	margin: 20px auto 50px auto;
 `;
 
 export default OptionsPieChart;

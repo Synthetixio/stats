@@ -8,7 +8,7 @@ import { PercentChangeBox } from './common';
 
 interface StatsBoxProps {
 	title: string;
-	num: number;
+	num: number | null;
 	percentChange: number | null;
 	subText: string;
 	color: NumberColor;
@@ -29,7 +29,7 @@ const StatsBox: FC<StatsBoxProps> = ({
 	const formattedNumber = getFormattedNumber(num, numberStyle);
 	return (
 		<StatsBoxContainer num={num} numBoxes={numBoxes}>
-			{num === 0 ? (
+			{num == null ? (
 				<Skeleton
 					className="stats-box-skeleton"
 					variant="rect"
@@ -53,30 +53,34 @@ const StatsBox: FC<StatsBoxProps> = ({
 
 export default StatsBox;
 
-const StatsBoxContainer = styled.div<{ num: number; numBoxes: number }>`
+const StatsBoxContainer = styled.div<{ num: number | null; numBoxes: number }>`
 	margin-top: 20px;
-	padding: ${(props) => (props.num === 0 ? '0' : '20px')};
+	padding: ${(props) => (props.num == null ? '0' : '20px')};
 	${(props) => {
-		if (props.num === 0 && props.numBoxes === 3) {
+		if (props.num == null && props.numBoxes === 2) {
+			return css`
+				width: calc(46% + 40px);
+				height: 180px;
+			`;
+		}
+		if (props.num == null && props.numBoxes === 3) {
 			return css`
 				width: calc(29% + 40px);
 				height: 180px;
 			`;
 		}
-		if (props.num === 0) {
+		if (props.num == null && props.numBoxes === 4) {
 			return css`
 				width: calc(21% + 40px);
 				height: 205px;
 			`;
 		}
-
-		if (props.numBoxes === 1) {
+		if (props.numBoxes === 2) {
 			return css`
-				width: 100%;
+				width: 46%;
 				height: 140px;
 			`;
 		}
-
 		if (props.numBoxes === 3) {
 			return css`
 				width: 29%;
@@ -134,7 +138,7 @@ const StatsBoxNumber = styled.div<{ color: NumberColor }>`
 const StatsBoxSubText = styled.div`
 	height: 32px;
 
-	font-family: Inter, sans-serif;
+	font-family: 'Inter', sans-serif;
 	font-style: normal;
 	font-weight: normal;
 	font-size: 14px;

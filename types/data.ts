@@ -49,3 +49,10 @@ export type FeePeriod = {
 	rewardsToDistribute: number;
 	rewardsClaimed: number;
 };
+
+export type OptionsMarket = {
+	strikePrice: number;
+	maturityDate: number;
+	currencyKey: string;
+	poolSize: number;
+};

@@ -1,7 +1,7 @@
 import { FC } from 'react';
 import styled from 'styled-components';
-import { NumberColor, COLORS } from '../constants/styles';
-import { formatCurrency } from '../utils/formatter';
+import { NumberColor, COLORS, NumberStyle } from '../constants/styles';
+import { getFormattedNumber } from '../utils/formatter';
 
 type DoubleStatsBoxProps = {
 	title: string;
@@ -9,9 +9,11 @@ type DoubleStatsBoxProps = {
 	firstMetricTitle: string;
 	firstMetric: number;
 	firstColor: NumberColor;
+	firstMetricStyle: NumberStyle;
 	secondMetricTitle: string;
 	secondMetric: number;
 	secondColor: NumberColor;
+	secondMetricStyle: NumberStyle;
 };
 
 const DoubleStatsBox: FC<DoubleStatsBoxProps> = ({
@@ -19,21 +21,23 @@ const DoubleStatsBox: FC<DoubleStatsBoxProps> = ({
 	subtitle,
 	firstMetric,
 	firstMetricTitle,
+	firstMetricStyle,
 	firstColor,
 	secondColor,
 	secondMetric,
 	secondMetricTitle,
+	secondMetricStyle,
 }) => {
+	const formattedFirstMetric = getFormattedNumber(firstMetric, firstMetricStyle);
+	const formattedSecondMetric = getFormattedNumber(secondMetric, secondMetricStyle);
 	return (
 		<DoubleStatsBoxContainer>
 			<DoubleStatsBoxTitle>{title}</DoubleStatsBoxTitle>
 			<DoubleStatsBoxSubtitle>{subtitle}</DoubleStatsBoxSubtitle>
 			<DoubleStatsBoxMetricTitle>{firstMetricTitle}</DoubleStatsBoxMetricTitle>
-			<DoubleStatsBoxMetric color={firstColor}>{formatCurrency(firstMetric)}</DoubleStatsBoxMetric>
+			<DoubleStatsBoxMetric color={firstColor}>{formattedFirstMetric}</DoubleStatsBoxMetric>
 			<DoubleStatsBoxMetricTitle>{secondMetricTitle}</DoubleStatsBoxMetricTitle>
-			<DoubleStatsBoxMetric color={secondColor}>
-				{formatCurrency(secondMetric, 0)}
-			</DoubleStatsBoxMetric>
+			<DoubleStatsBoxMetric color={secondColor}>{formattedSecondMetric}</DoubleStatsBoxMetric>
 		</DoubleStatsBoxContainer>
 	);
 };

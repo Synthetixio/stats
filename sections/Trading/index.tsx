@@ -3,6 +3,7 @@ import snxData from 'synthetix-data';
 
 import SectionHeader from '../../components/SectionHeader';
 import StatsRow from '../../components/StatsRow';
+import SingleStatRow from '../../components/SingleStatRow';
 import StatsBox from '../../components/StatsBox';
 import AreaChart from '../../components/Charts/AreaChart';
 import { COLORS } from '../../constants/styles';
@@ -10,19 +11,29 @@ import { ChartPeriod, AreaChartData, TradesRequestData } from '../../types/data'
 import { formatIdToIsoString } from '../../utils/formatter';
 
 const Trading: FC = () => {
-	const [totalTradingVolume, setTotalTradingVolume] = useState<number>(0);
-	const [totalTrades, setTotalTrades] = useState<number>(0);
-	const [totalUsers, setTotalUsers] = useState<number>(0);
+	const [totalTradingVolume, setTotalTradingVolume] = useState<number | null>(null);
+	const [totalDailyTradingVolume, setTotalDailyTradingVolume] = useState<number | null>(null);
+	const [totalTrades, setTotalTrades] = useState<number | null>(null);
+	const [totalUsers, setTotalUsers] = useState<number | null>(null);
 	const [tradesChartPeriod, setTradesChartPeriod] = useState<ChartPeriod>('W');
 	const [tradesChartData, setTradesChartData] = useState<AreaChartData[]>([]);
 	const [tradersChartPeriod, setTradersChartPeriod] = useState<ChartPeriod>('W');
 	const [tradersChartData, setTradersChartData] = useState<AreaChartData[]>([]);
-	const [totalTradesOverPeriod, setTotalTradesOverPeriod] = useState<number>(0);
-	const [totalTradersOverPeriod, setTotalTradersOverPeriod] = useState<number>(0);
+	const [totalTradesOverPeriod, setTotalTradesOverPeriod] = useState<number | null>(null);
+	const [totalTradersOverPeriod, setTotalTradersOverPeriod] = useState<number | null>(null);
 
 	useEffect(() => {
 		const fetchData = async () => {
-			const exchangeVolumeData = await snxData.exchanges.total();
+			const ts = Math.floor(Date.now() / 1e3);
+			const oneDayAgo = ts - 3600 * 24;
+
+			const [exchangeVolumeData, exchanges] = await Promise.all([
+				snxData.exchanges.total(),
+				snxData.exchanges.since({ minTimestamp: oneDayAgo }),
+			]);
+			const last24Hours = exchanges.reduce((acc, { fromAmountInUSD }) => acc + fromAmountInUSD, 0);
+
+			setTotalDailyTradingVolume(last24Hours);
 			setTotalTradingVolume(exchangeVolumeData.exchangeUSDTally);
 			setTotalTrades(exchangeVolumeData.trades);
 			setTotalUsers(exchangeVolumeData.exchangers);
@@ -87,7 +98,7 @@ const Trading: FC = () => {
 					title="TOTAL TRADING VOLUME"
 					num={totalTradingVolume}
 					percentChange={null}
-					subText="Total historical trading volume for synths in Synthetix protocol."
+					subText="Total historical trading volume for synths"
 					color={COLORS.green}
 					numberStyle="currency0"
 					numBoxes={3}
@@ -97,17 +108,17 @@ const Trading: FC = () => {
 					title="TOTAL NUMBER OF TRADES"
 					num={totalTrades}
 					percentChange={null}
-					subText="Total historical trades for synths in Synthetix protocol."
+					subText="Total historical trades for synths"
 					color={COLORS.green}
 					numberStyle="number"
 					numBoxes={3}
 				/>
 				<StatsBox
-					key="TOTLUSERS"
-					title="TOTAL NUMBER OF TRADERS"
-					num={totalUsers}
+					key="TOTLDAILYVOLUME"
+					title="24HR EXCHANGE VOLUME"
+					num={totalDailyTradingVolume}
 					percentChange={null}
-					subText="Total number of Ethereum addresses trading synths via the Synthetix protocol."
+					subText="Total Synth trading volume over the past 24 hours"
 					color={COLORS.green}
 					numberStyle="number"
 					numBoxes={3}
@@ -127,6 +138,13 @@ const Trading: FC = () => {
 				numFormat="number"
 				percentChange={null}
 				timeSeries="1d"
+			/>
+			<SingleStatRow
+				text="TOTAL NUMBER OF TRADERS"
+				subtext="Total number of Ethereum addresses trading synths"
+				num={totalUsers}
+				color={COLORS.pink}
+				numberStyle="number"
 			/>
 			<AreaChart
 				periods={periods}

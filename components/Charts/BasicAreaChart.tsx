@@ -31,10 +31,9 @@ const BasicAreaChart: FC<BasicAreaChartProps> = ({ data, timeSeries, valueType }
 			/>
 		);
 	}
-	// const formattedData = data.map((data) => ({
-	// 	...data,
-	// 	created: formatTime(data.created, timeSeries),
-	// }));
+
+	const width =
+		window?.innerWidth || document?.documentElement?.clientWidth || document?.body?.clientWidth;
 
 	let interval = 1;
 	if (data.length > 90 && data.length < 120) {
@@ -43,6 +42,10 @@ const BasicAreaChart: FC<BasicAreaChartProps> = ({ data, timeSeries, valueType }
 		interval = 30;
 	} else if (data.length > 600) {
 		interval = 100;
+	}
+
+	if (width < 700 && data.length > 10) {
+		interval *= 2;
 	}
 
 	return (

@@ -2,7 +2,6 @@ import { FC } from 'react';
 import { createGlobalStyle } from 'styled-components';
 
 import Header from './Header';
-import Footer from './Footer';
 
 type LayoutProps = {
 	children: React.ReactNode;
@@ -14,7 +13,6 @@ const Layout: FC<LayoutProps> = ({ children }) => {
 			<GlobalStyle />
 			<Header />
 			<section>{children}</section>
-			<Footer />
 		</>
 	);
 };
@@ -66,6 +64,10 @@ const GlobalStyle = createGlobalStyle`
 		}
 		*::-webkit-scrollbar-thumb:window-inactive, ::-webkit-scrollbar-thumb:window-inactive {
 			background: ${(props) => props.theme.colors.mutedBrightPink}; 
+		}
+
+		svg.recharts-surface tspan {
+			font-size: 10px !important;
 		}
   }
 `;

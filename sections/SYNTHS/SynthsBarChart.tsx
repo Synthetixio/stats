@@ -19,8 +19,8 @@ const SynthsBarChart: FC<SynthsBarChartProps> = ({ data }) => (
 
 const SynthsBarChartContainer = styled.div`
 	background: ${(props) => props.theme.colors.mediumBlue};
-	width: 48%;
-	height: 520px;
+	width: 49%;
+	height: 680px;
 	overflow-y: scroll;
 	@media only screen and (max-width: 854px) {
 		width: 100%;

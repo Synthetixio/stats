@@ -68,6 +68,7 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
 				<meta name="twitter:image" content="/images/synthetix.png" />
 				<meta name="twitter:url" content="https://stats.synthetix.io" />
 				<link rel="icon" href="/images/favicon.png" />
+				<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter" />
 			</Head>
 			<SCThemeProvider theme={scTheme}>
 				<MuiThemeProvider theme={muiTheme}>

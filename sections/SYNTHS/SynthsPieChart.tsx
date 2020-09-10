@@ -9,21 +9,18 @@ type SynthsPieChartProps = {
 	data: SynthTotalSupply[];
 };
 
-const SynthsPieChart: FC<SynthsPieChartProps> = ({ data }) => {
-	const totalValue = data.reduce((acc, { value }) => acc + value, 0);
-	return (
-		<SynthsPieChartContainer>
-			<ChartTitle>SYNTH DOMINANCE</ChartTitle>
-			<ChartSubtitle>Distribution of synths within the network</ChartSubtitle>
-			<PieChart data={data} />
-		</SynthsPieChartContainer>
-	);
-};
+const SynthsPieChart: FC<SynthsPieChartProps> = ({ data }) => (
+	<SynthsPieChartContainer>
+		<ChartTitle>SYNTH DOMINANCE</ChartTitle>
+		<ChartSubtitle>Distribution of synths within the network</ChartSubtitle>
+		<PieChart data={data} />
+	</SynthsPieChartContainer>
+);
 
 const SynthsPieChartContainer = styled.div`
 	background: ${(props) => props.theme.colors.mediumBlue};
-	width: 48%;
-	height: 520px;
+	width: 49%;
+	height: 680px;
 	@media only screen and (max-width: 854px) {
 		width: 100%;
 	}

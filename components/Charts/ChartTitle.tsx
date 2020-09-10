@@ -8,7 +8,7 @@ import { getFormattedNumber, formatPercentage } from '../../utils/formatter';
 
 interface ChartTitleProps {
 	title: string;
-	num: number;
+	num: number | null;
 	numFormat: NumberStyle;
 	percentChange: number | null;
 }
@@ -49,6 +49,7 @@ const MainNumber = styled.div`
 	line-height: 24px;
 	color: ${(props) => props.theme.colors.brightGreen};
 	margin-right: 10px;
+	font-family: ${(props) => `${props.theme.fonts.mono}, ${props.theme.fonts.regular}`};
 `;
 
 const BottomSegment = styled.div`

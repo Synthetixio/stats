@@ -12,7 +12,7 @@ interface AreaChartProps {
 	data: Array<AreaChartData>;
 	periods: Array<ChartPeriod>;
 	title: string;
-	num: number;
+	num: number | null;
 	numFormat: NumberStyle;
 	percentChange: number | null;
 	onPeriodSelect: (period: ChartPeriod) => void;

@@ -16,8 +16,7 @@ import StatsRow from '../../components/StatsRow';
 
 const MIN_PERCENT_FOR_PIE_CHART = 0.03;
 const NUMBER_OF_TOP_SYNTHS = 3;
-const subtitleText = (name: string) =>
-	`Tracks the price of ${name} through price feeds supplied by an oracle.`;
+const subtitleText = (name: string) => `Price and market cap for ${name}`;
 
 const SynthsSection: FC<{}> = () => {
 	const [pieChartData, setPieChartData] = useState<SynthTotalSupply[]>([]);
@@ -95,6 +94,7 @@ const SynthsSection: FC<{}> = () => {
 				subtext="The total value of all synths in USD"
 				num={totalValue}
 				color={COLORS.green}
+				numberStyle="currency0"
 			/>
 			<SynthsCharts>
 				<SynthsBarChart data={barChartData} />
@@ -110,11 +110,13 @@ const SynthsSection: FC<{}> = () => {
 								title={name}
 								subtitle={subtitleText(name)}
 								firstMetricTitle="PRICE"
+								firstMetricStyle="currency2"
 								firstMetric={name === 'sUSD' ? sUSDPrice : value / (totalSupply ?? 0)}
 								firstColor={index === 0 ? COLORS.pink : COLORS.green}
 								secondMetricTitle="MARKET CAP"
 								secondMetric={value}
 								secondColor={index === 2 ? COLORS.pink : COLORS.green}
+								secondMetricStyle="currency0"
 							/>
 						);
 					}
