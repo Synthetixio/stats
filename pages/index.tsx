@@ -1,12 +1,12 @@
 import React, { FC, useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import SnxSection from '../sections/Network';
-import TradingSection from '../sections/Trading';
-import SynthsSection from '../sections/Synths';
-import OptionsSection from '../sections/Options';
-import StakingSection from '../sections/Staking';
-import YieldFarmingSection from '../sections/YieldFarming';
+import SnxSection from 'sections/Network';
+import TradingSection from 'sections/Trading';
+import SynthsSection from 'sections/Synths';
+import OptionsSection from 'sections/Options';
+import StakingSection from 'sections/Staking';
+import YieldFarmingSection from 'sections/YieldFarming';
 import { HeadersContext } from './_app';
 
 const HomePage: FC = () => {

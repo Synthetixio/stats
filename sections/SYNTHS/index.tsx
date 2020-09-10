@@ -4,15 +4,15 @@ import ethers from 'ethers';
 import orderBy from 'lodash/orderBy';
 import findIndex from 'lodash/findIndex';
 
-import SectionHeader from '../../components/SectionHeader';
+import SectionHeader from 'components/SectionHeader';
 import SynthsBarChart from './SynthsBarChart';
 import SynthsPieChart from './SynthsPieChart';
-import { MAX_PAGE_WIDTH, COLORS } from '../../constants/styles';
-import { SNXJSContext, SUSDContext } from '../../pages/_app';
-import { OpenInterest, SynthTotalSupply } from '../../types/data';
+import { MAX_PAGE_WIDTH, COLORS } from 'constants/styles';
+import { SNXJSContext, SUSDContext } from 'pages/_app';
+import { OpenInterest, SynthTotalSupply } from 'types/data';
 import SingleStatRow from 'components/SingleStatRow';
 import DoubleStatsBox from 'components/DoubleStatsBox';
-import StatsRow from '../../components/StatsRow';
+import StatsRow from 'components/StatsRow';
 
 const MIN_PERCENT_FOR_PIE_CHART = 0.03;
 const NUMBER_OF_TOP_SYNTHS = 3;

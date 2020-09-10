@@ -1,10 +1,10 @@
 import { FC } from 'react';
 import styled from 'styled-components';
 
-import PieChart from '../../components/Charts/PieChart';
-import { ChartTitle, ChartSubtitle } from '../../components/common';
-import { SynthTotalSupply } from '../../types/data';
-import { MAX_PAGE_WIDTH } from '../../constants/styles';
+import PieChart from 'components/Charts/PieChart';
+import { ChartTitle, ChartSubtitle } from 'components/common';
+import { SynthTotalSupply } from 'types/data';
+import { MAX_PAGE_WIDTH } from 'constants/styles';
 
 type OptionsPieChartProps = {
 	data: SynthTotalSupply[];

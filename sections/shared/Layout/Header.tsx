@@ -1,11 +1,11 @@
 import { FC, useContext, useState } from 'react';
 import styled from 'styled-components';
 
-import StatsLogo from '../../../assets/svg/stats-logo.svg';
-import MenuHamburgerIcon from '../../../assets/svg/menu-hamburger.svg';
-import MenuCloseIcon from '../../../assets/svg/menu-close.svg';
-import { MAX_PAGE_WIDTH, Z_INDEX } from '../../../constants/styles';
-import { HeadersContext } from '../../../pages/_app';
+import StatsLogo from 'assets/svg/stats-logo.svg';
+import MenuHamburgerIcon from 'assets/svg/menu-hamburger.svg';
+import MenuCloseIcon from 'assets/svg/menu-close.svg';
+import { MAX_PAGE_WIDTH, Z_INDEX } from 'constants/styles';
+import { HeadersContext } from 'pages/_app';
 
 // TODO use translation
 const Header: FC = () => {

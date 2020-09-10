@@ -1,10 +1,11 @@
 import { FC, useState, useEffect, useContext, useMemo } from 'react';
-import SectionHeader from '../../components/SectionHeader';
-import StatsRow from '../../components/StatsRow';
-import StatsBox from '../../components/StatsBox';
-import { COLORS } from '../../constants/styles';
-import { SNXJSContext, SNXContext, SUSDContext } from '../../pages/_app';
-import { FeePeriod } from '../../types/data';
+
+import SectionHeader from 'components/SectionHeader';
+import StatsRow from 'components/StatsRow';
+import StatsBox from 'components/StatsBox';
+import { COLORS } from 'constants/styles';
+import { SNXJSContext, SNXContext, SUSDContext } from 'pages/_app';
+import { FeePeriod } from 'types/data';
 
 const Staking: FC = () => {
 	const [currentFeePeriod, setCurrentFeePeriod] = useState<FeePeriod | null>(null);

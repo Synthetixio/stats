@@ -3,12 +3,12 @@ import snxData from 'synthetix-data';
 import findIndex from 'lodash/findIndex';
 import { format } from 'date-fns';
 
-import SectionHeader from '../../components/SectionHeader';
-import StatsBox from '../../components/StatsBox';
-import StatsRow from '../../components/StatsRow';
-import { COLORS } from '../../constants/styles';
+import SectionHeader from 'components/SectionHeader';
+import StatsBox from 'components/StatsBox';
+import StatsRow from 'components/StatsRow';
+import { COLORS } from 'constants/styles';
 import OptionsPieChart from './OptionsPieChart';
-import { SynthTotalSupply, OptionsMarket } from '../../types/data';
+import { SynthTotalSupply, OptionsMarket } from 'types/data';
 import { formatCurrency } from 'utils/formatter';
 
 const MIN_PERCENT_FOR_PIE_CHART = 0.03;

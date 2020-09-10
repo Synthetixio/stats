@@ -1,7 +1,8 @@
 import { FC } from 'react';
 import styled from 'styled-components';
-import { COLORS, NumberColor, MAX_PAGE_WIDTH, NumberStyle } from '../constants/styles';
-import { getFormattedNumber } from '../utils/formatter';
+
+import { COLORS, NumberColor, MAX_PAGE_WIDTH, NumberStyle } from 'constants/styles';
+import { getFormattedNumber } from 'utils/formatter';
 
 type SingleStatRowProps = {
 	text: string;

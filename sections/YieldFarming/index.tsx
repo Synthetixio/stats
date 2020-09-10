@@ -1,10 +1,12 @@
+import { ethers } from 'ethers';
 import { FC, useEffect, useState } from 'react';
-import SectionHeader from '../../components/SectionHeader';
-import SingleStatRow from '../../components/SingleStatRow';
-import StatsRow from '../../components/StatsRow';
+
+import SectionHeader from 'components/SectionHeader';
+import SingleStatRow from 'components/SingleStatRow';
+import StatsRow from 'components/StatsRow';
 import DoubleStatsBox from 'components/DoubleStatsBox';
 
-import { COLORS } from '../../constants/styles';
+import { COLORS } from 'constants/styles';
 
 const subtitleText = (name: string) =>
 	`Data for Synthetix Liquidity Provider (LP) ${name} rewards program`;

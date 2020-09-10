@@ -1,9 +1,9 @@
 import { FC } from 'react';
 import styled from 'styled-components';
 
-import SidewaysBarChart from '../../components/Charts/SidewaysBarChart';
-import { ChartTitle, ChartSubtitle } from '../../components/common';
-import { OpenInterest } from '../../types/data';
+import SidewaysBarChart from 'components/Charts/SidewaysBarChart';
+import { ChartTitle, ChartSubtitle } from 'components/common';
+import { OpenInterest } from 'types/data';
 
 type SynthsBarChartProps = {
 	data: OpenInterest;

@@ -1,5 +1,6 @@
 import styled from 'styled-components';
-import { COLORS, NumberColor } from '../constants/styles';
+
+import { COLORS, NumberColor } from 'constants/styles';
 
 export const PercentChangeBox = styled.div<{ color: NumberColor }>`
 	width: 52px;

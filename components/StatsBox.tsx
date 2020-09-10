@@ -2,8 +2,8 @@ import { FC } from 'react';
 import { Skeleton } from '@material-ui/lab';
 import styled, { css } from 'styled-components';
 
-import { getFormattedNumber } from '../utils/formatter';
-import { COLORS, NumberColor, NumberStyle } from '../constants/styles';
+import { getFormattedNumber } from 'utils/formatter';
+import { COLORS, NumberColor, NumberStyle } from 'constants/styles';
 import { PercentChangeBox } from './common';
 
 interface StatsBoxProps {

@@ -1,14 +1,14 @@
 import { FC, useEffect, useState } from 'react';
 import snxData from 'synthetix-data';
 
-import SectionHeader from '../../components/SectionHeader';
-import StatsRow from '../../components/StatsRow';
-import SingleStatRow from '../../components/SingleStatRow';
-import StatsBox from '../../components/StatsBox';
-import AreaChart from '../../components/Charts/AreaChart';
-import { COLORS } from '../../constants/styles';
-import { ChartPeriod, AreaChartData, TradesRequestData } from '../../types/data';
-import { formatIdToIsoString } from '../../utils/formatter';
+import SectionHeader from 'components/SectionHeader';
+import StatsRow from 'components/StatsRow';
+import SingleStatRow from 'components/SingleStatRow';
+import StatsBox from 'components/StatsBox';
+import AreaChart from 'components/Charts/AreaChart';
+import { COLORS } from 'constants/styles';
+import { ChartPeriod, AreaChartData, TradesRequestData } from 'types/data';
+import { formatIdToIsoString } from 'utils/formatter';
 
 const Trading: FC = () => {
 	const [totalTradingVolume, setTotalTradingVolume] = useState<number | null>(null);

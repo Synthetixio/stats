@@ -1,9 +1,9 @@
 import { FC } from 'react';
-
 import styled from 'styled-components';
-import BasicTreeMap from '../../components/Charts/TreeMap';
-import { MAX_PAGE_WIDTH } from '../../constants/styles';
-import { TreeMapData } from '../../types/data';
+
+import BasicTreeMap from 'components/Charts/TreeMap';
+import { MAX_PAGE_WIDTH } from 'constants/styles';
+import { TreeMapData } from 'types/data';
 
 interface SUSDDistributionProps {
 	data: TreeMapData[];

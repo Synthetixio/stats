@@ -1,7 +1,7 @@
 import { FC } from 'react';
 import styled from 'styled-components';
 
-import { MAX_PAGE_WIDTH } from '../constants/styles';
+import { MAX_PAGE_WIDTH } from 'constants/styles';
 
 type StatsRowProps = {
 	children: React.ReactNode;

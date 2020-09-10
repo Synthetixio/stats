@@ -9,7 +9,7 @@ import { ThemeProvider as MuiThemeProvider } from '@material-ui/core/styles';
 
 import { scTheme, muiTheme } from 'styles/theme';
 
-import '../styles/index.css';
+import 'styles/index.css';
 import '../i18n';
 
 import Layout from 'sections/shared/Layout';

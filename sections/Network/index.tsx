@@ -10,16 +10,16 @@ import {
 	TimeSeries,
 	TreeMapData,
 	ActiveStakersData,
-} from '../../types/data';
-import StatsBox from '../../components/StatsBox';
-import StatsRow from '../../components/StatsRow';
-import AreaChart from '../../components/Charts/AreaChart';
-import SectionHeader from '../../components/SectionHeader';
-import { COLORS } from '../../constants/styles';
+} from 'types/data';
+import StatsBox from 'components/StatsBox';
+import StatsRow from 'components/StatsRow';
+import AreaChart from 'components/Charts/AreaChart';
+import SectionHeader from 'components/SectionHeader';
+import { COLORS } from 'constants/styles';
 import SUSDDistribution from '../Network/SUSDDistribution';
-import { SNXJSContext, SUSDContext, SNXContext } from '../../pages/_app';
-import { formatIdToIsoString } from '../../utils/formatter';
-import { getSUSDHoldersName } from '../../utils/dataMapping';
+import { SNXJSContext, SUSDContext, SNXContext } from 'pages/_app';
+import { formatIdToIsoString } from 'utils/formatter';
+import { getSUSDHoldersName } from 'utils/dataMapping';
 
 const CMC_API = 'https://coinmarketcap-api.synthetix.io/public/prices?symbols=SNX';
 

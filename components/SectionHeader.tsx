@@ -2,7 +2,7 @@ import { FC } from 'react';
 import styled from 'styled-components';
 
 import Button from './Button';
-import { MAX_PAGE_WIDTH } from '../constants/styles';
+import { MAX_PAGE_WIDTH } from 'constants/styles';
 
 type SectionHeaderProps = {
 	title: string;

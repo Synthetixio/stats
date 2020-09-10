@@ -1,7 +1,8 @@
 import { FC } from 'react';
 import styled from 'styled-components';
-import { NumberColor, COLORS, NumberStyle } from '../constants/styles';
-import { getFormattedNumber } from '../utils/formatter';
+
+import { NumberColor, COLORS, NumberStyle } from 'constants/styles';
+import { getFormattedNumber } from 'utils/formatter';
 
 type DoubleStatsBoxProps = {
 	title: string;
