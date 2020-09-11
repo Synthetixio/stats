@@ -45,22 +45,36 @@ const Trading: FC = () => {
 		data: TradesRequestData[],
 		type: 'trade' | 'trader'
 	): AreaChartData[] => {
-		return data.map(({ id, trades, exchangers }) => {
-			return {
+		const cumulativeArray: AreaChartData[] = [];
+		data.forEach(({ id, trades, exchangers }, index) => {
+			if (index === 0) {
+				return cumulativeArray.push({
+					created: formatIdToIsoString(id, '1d'),
+					value: type === 'trade' ? trades : exchangers,
+				});
+			}
+			return cumulativeArray.push({
 				created: formatIdToIsoString(id, '1d'),
-				value: type === 'trade' ? trades : exchangers,
-			};
+				value:
+					type === 'trade'
+						? trades + cumulativeArray[index - 1].value
+						: exchangers + cumulativeArray[index - 1].value,
+			});
 		});
+		return cumulativeArray;
 	};
 
 	const setChartData = (data: TradesRequestData[], type: 'trade' | 'trader') => {
 		const formattedChartData = formatChartData(data, type);
-		const totalInPeriod = formattedChartData.reduce((acc, curr) => acc + curr.value, 0);
 		if (type === 'trade') {
-			setTotalTradesOverPeriod(totalInPeriod);
+			setTotalTradesOverPeriod(
+				formattedChartData.length > 0 ? formattedChartData[formattedChartData.length - 1].value : 0
+			);
 			setTradesChartData(formattedChartData);
 		} else if (type === 'trader') {
-			setTotalTradersOverPeriod(totalInPeriod);
+			setTotalTradersOverPeriod(
+				formattedChartData.length > 0 ? formattedChartData[formattedChartData.length - 1].value : 0
+			);
 			setTradersChartData(formattedChartData);
 		}
 	};
@@ -120,7 +134,7 @@ const Trading: FC = () => {
 					percentChange={null}
 					subText="Total Synth trading volume over the past 24 hours"
 					color={COLORS.green}
-					numberStyle="number"
+					numberStyle="currency0"
 					numBoxes={3}
 				/>
 			</StatsRow>
@@ -133,14 +147,14 @@ const Trading: FC = () => {
 					fetchNewChartData(period, 'trade');
 				}}
 				data={tradesChartData}
-				title="NUMBER OF TRADES"
+				title="CUMULATIVE NUMBER OF TRADES"
 				num={totalTradesOverPeriod}
 				numFormat="number"
 				percentChange={null}
 				timeSeries="1d"
 			/>
 			<SingleStatRow
-				text="TOTAL NUMBER OF TRADERS"
+				text="TOTAL NUMBER OF UNIQUE TRADERS"
 				subtext="Total number of Ethereum addresses trading synths"
 				num={totalUsers}
 				color={COLORS.pink}
@@ -155,7 +169,7 @@ const Trading: FC = () => {
 					fetchNewChartData(period, 'trader');
 				}}
 				data={tradersChartData}
-				title="NUMBER OF TRADERS"
+				title="CUMULATIVE DAILY TRADERS"
 				num={totalTradersOverPeriod}
 				numFormat="number"
 				percentChange={null}

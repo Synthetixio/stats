@@ -8,11 +8,11 @@ type DoubleStatsBoxProps = {
 	title: string;
 	subtitle: string;
 	firstMetricTitle: string;
-	firstMetric: number;
+	firstMetric: number | null;
 	firstColor: NumberColor;
 	firstMetricStyle: NumberStyle;
 	secondMetricTitle: string;
-	secondMetric: number;
+	secondMetric: number | null;
 	secondColor: NumberColor;
 	secondMetricStyle: NumberStyle;
 };

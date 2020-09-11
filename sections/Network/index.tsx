@@ -341,7 +341,7 @@ const NetworkSection: FC = () => {
 				<StatsBox
 					key="UTILRATIO"
 					title="UTILIZATION RATIO"
-					num={utilizationRatio}
+					num={utilizationRatio != null ? 1 - utilizationRatio : null}
 					percentChange={null}
 					subText="Percent of sUSD tokens held in stakers wallets. Extrapolated from a sample of the top 150 stakers and their sUSD holdings"
 					color={COLORS.pink}
