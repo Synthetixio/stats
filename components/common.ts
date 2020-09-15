@@ -1,4 +1,7 @@
 import styled from 'styled-components';
+import Link from '@material-ui/core/Link';
+import { withStyles } from '@material-ui/core/styles';
+import Tooltip from '@material-ui/core/Tooltip';
 
 import { COLORS, NumberColor } from 'constants/styles';
 
@@ -36,4 +39,28 @@ export const ChartSubtitle = styled.div`
 	color: ${(props) => props.theme.colors.gray};
 	padding-left: 20px;
 	padding-bottom: 15px;
+`;
+
+export const InfoIconWrap = styled.div`
+	margin-left: 10px;
+	padding-top: 5px;
+	cursor: pointer;
+`;
+
+export const LinkText = styled(Link).attrs(() => ({
+	target: '_blank',
+	rel: 'noopener',
+}))`
+	color: ${(props) => props.theme.colors.brightBlue};
+	text-decoration: none;
+`;
+
+export const FullLineLink = styled(LinkText)`
+	display: block;
+	margin: 10px 0;
+`;
+
+export const NewParagraph = styled.div`
+	display: block;
+	margin: 10px 0;
 `;

@@ -1,10 +1,11 @@
-import { FC } from 'react';
+import { FC, ReactNode } from 'react';
 import { Skeleton } from '@material-ui/lab';
 import styled, { css } from 'styled-components';
 
 import { getFormattedNumber } from 'utils/formatter';
 import { COLORS, NumberColor, NumberStyle } from 'constants/styles';
 import { PercentChangeBox } from './common';
+import InfoPopover from './InfoPopover';
 
 interface StatsBoxProps {
 	title: string;
@@ -14,6 +15,7 @@ interface StatsBoxProps {
 	color: NumberColor;
 	numberStyle: NumberStyle;
 	numBoxes: number;
+	infoData: ReactNode | null;
 }
 
 // TODO what if num is 0 and is supposed to be zero!!
@@ -25,6 +27,7 @@ const StatsBox: FC<StatsBoxProps> = ({
 	color,
 	numberStyle,
 	numBoxes,
+	infoData,
 }) => {
 	const formattedNumber = getFormattedNumber(num, numberStyle);
 	return (
@@ -39,7 +42,10 @@ const StatsBox: FC<StatsBoxProps> = ({
 				/>
 			) : (
 				<>
-					<StatsBoxTitle>{title}</StatsBoxTitle>
+					<TitleWrapper>
+						<StatsBoxTitle>{title}</StatsBoxTitle>
+						{infoData != null ? <InfoPopover infoData={infoData} /> : null}
+					</TitleWrapper>
 					<StatsBoxNumber color={color}>{formattedNumber}</StatsBoxNumber>
 					{percentChange != null ? (
 						<PercentChangeBox color={color}>{percentChange}</PercentChangeBox>
@@ -103,6 +109,10 @@ const StatsBoxContainer = styled.div<{ num: number | null; numBoxes: number }>`
 	@media only screen and (max-width: 854px) {
 		width: 100%;
 	}
+`;
+
+const TitleWrapper = styled.div`
+	display: flex;
 `;
 
 const StatsBoxTitle = styled.div`

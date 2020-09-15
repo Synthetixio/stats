@@ -77,6 +77,7 @@ const DoubleStatsBoxSubtitle = styled.div`
 	line-height: 18px;
 	color: ${(props) => props.theme.colors.gray};
 	padding-bottom: 20px;
+	height: 50px;
 `;
 
 const DoubleStatsBoxMetric = styled.div<{ color: NumberColor }>`

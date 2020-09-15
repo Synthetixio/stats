@@ -10,6 +10,8 @@ import { COLORS } from 'constants/styles';
 import OptionsPieChart from './OptionsPieChart';
 import { SynthTotalSupply, OptionsMarket } from 'types/data';
 import { formatCurrency } from 'utils/formatter';
+import { LinkText } from 'components/common';
+import { synthetixOptionsSubgraph } from 'constants/links';
 
 const MIN_PERCENT_FOR_PIE_CHART = 0.03;
 
@@ -110,6 +112,15 @@ const Options: FC = () => {
 					color={COLORS.green}
 					numberStyle="currency0"
 					numBoxes={3}
+					infoData={
+						<>
+							To get the largest active binary options market, we pull all the "Market" entities
+							from the{' '}
+							<LinkText href={synthetixOptionsSubgraph}>Synthetix options subgraph</LinkText> and
+							then filter out any markets past their "expiryDate" and then sort them by "poolSize"
+							to get the largest.
+						</>
+					}
 				/>
 				<StatsBox
 					key="LGSTBINMKTTODATE"
@@ -126,16 +137,27 @@ const Options: FC = () => {
 					color={COLORS.pink}
 					numberStyle="currency0"
 					numBoxes={3}
+					infoData={
+						<>
+							To get the largest active binary options market, we pull all the "Market" entities
+							from the{' '}
+							<LinkText href={synthetixOptionsSubgraph}>Synthetix options subgraph</LinkText> and
+							sort them by poolSize to get the largest to date.
+						</>
+					}
 				/>
 				<StatsBox
 					key="TOTALVOLUMETRDED"
 					title="TOTAL VOLUME TRADED (USD)"
 					num={0}
 					percentChange={null}
-					subText="The total volume traded for binary options markets to date"
+					subText="The total volume traded for binary options markets to date. Coming soon!"
 					color={COLORS.pink}
 					numberStyle="currency0"
 					numBoxes={3}
+					infoData={
+						<>We are in the process of updating our subgraph to make getting this data easier.</>
+					}
 				/>
 			</StatsRow>
 			<StatsRow>
@@ -148,6 +170,15 @@ const Options: FC = () => {
 					color={COLORS.green}
 					numberStyle="number"
 					numBoxes={3}
+					infoData={
+						<>
+							To get the number of active binary options market, we pull all the "Market" entities
+							from the{' '}
+							<LinkText href={synthetixOptionsSubgraph}>Synthetix options subgraph</LinkText> and
+							then filter out any markets past their "expiryDate" and then count the number of
+							markets remaining.
+						</>
+					}
 				/>
 				<StatsBox
 					key="TTLAMOUNTPOOLEDBINOPT"
@@ -158,6 +189,15 @@ const Options: FC = () => {
 					color={COLORS.pink}
 					numberStyle="currency0"
 					numBoxes={3}
+					infoData={
+						<>
+							To get the total amount pooled in active binary options market, we pull all the
+							"Market" entities from the{' '}
+							<LinkText href={synthetixOptionsSubgraph}>Synthetix options subgraph</LinkText> and
+							then filter out any markets past their "expiryDate" and then sum the "poolSize" of the
+							remaining active markets.
+						</>
+					}
 				/>
 				<StatsBox
 					key="TRADESBINOPTION"
@@ -168,6 +208,14 @@ const Options: FC = () => {
 					color={COLORS.pink}
 					numberStyle="number"
 					numBoxes={3}
+					infoData={
+						<>
+							To get the total amount pooled in active binary options market, we pull all the
+							"OptionTransaction" entities from the{' '}
+							<LinkText href={synthetixOptionsSubgraph}>Synthetix options subgraph</LinkText> within
+							the past 24 hours and then count all the items.
+						</>
+					}
 				/>
 			</StatsRow>
 			<OptionsPieChart data={pieChartData} />

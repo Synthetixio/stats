@@ -1,23 +1,28 @@
-import { FC } from 'react';
+import { FC, ReactNode } from 'react';
 import styled from 'styled-components';
 
-import { Z_INDEX, NumberStyle } from '../../constants/styles';
+import { Z_INDEX, NumberStyle } from 'constants/styles';
 
-import { PercentChangeBox } from '../common';
-import { getFormattedNumber, formatPercentage } from '../../utils/formatter';
+import { PercentChangeBox } from 'components/common';
+import { getFormattedNumber, formatPercentage } from 'utils/formatter';
+import InfoPopover from '../InfoPopover';
 
 interface ChartTitleProps {
 	title: string;
 	num: number | null;
 	numFormat: NumberStyle;
 	percentChange: number | null;
+	infoData: ReactNode;
 }
 
-const ChartTitle: FC<ChartTitleProps> = ({ title, num, numFormat, percentChange }) => {
+const ChartTitle: FC<ChartTitleProps> = ({ title, num, numFormat, percentChange, infoData }) => {
 	let formattedNum = getFormattedNumber(num, numFormat);
 	return (
 		<ContentContainer>
-			<MainTitle>{title}</MainTitle>
+			<TitleWrap>
+				<MainTitle>{title}</MainTitle>
+				<InfoPopover infoData={infoData} />
+			</TitleWrap>
 			<BottomSegment>
 				<MainNumber>{formattedNum}</MainNumber>
 				{percentChange ? (
@@ -57,6 +62,10 @@ const BottomSegment = styled.div`
 	width: 100px;
 	margin-top: 10px;
 	justify-content: space-between;
+`;
+
+const TitleWrap = styled.div`
+	display: flex;
 `;
 
 export default ChartTitle;

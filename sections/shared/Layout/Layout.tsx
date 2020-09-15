@@ -69,6 +69,24 @@ const GlobalStyle = createGlobalStyle`
 		svg.recharts-surface tspan {
 			font-size: 10px !important;
 		}
+
+		.MuiPopover-paper {
+			width: 250px;
+			color: ${(props) => props.theme.colors.white};
+			background-color: ${(props) => props.theme.colors.tooltipBlue};
+			padding: 15px;
+			font-family: 'Inter', sans-serif;
+			font-size: 14px;
+			line-height: 18px;
+			text-align: center;
+		}
+
+		.MuiTypography-colorPrimary {
+			color: ${(props) => props.theme.colors.brightBlue};
+		}
+		.MuiTypography-root {
+			margin: 10px 0;
+		}
   }
 `;
 

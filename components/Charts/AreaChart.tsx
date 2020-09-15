@@ -18,6 +18,7 @@ interface AreaChartProps {
 	onPeriodSelect: (period: ChartPeriod) => void;
 	timeSeries: TimeSeriesType;
 	activePeriod: ChartPeriod;
+	infoData: React.ReactNode;
 }
 
 const AreaChart: FC<AreaChartProps> = ({
@@ -30,10 +31,17 @@ const AreaChart: FC<AreaChartProps> = ({
 	numFormat,
 	percentChange,
 	timeSeries,
+	infoData,
 }) => (
 	<ChartContainer>
 		<ChartHeader>
-			<ChartTitle title={title} num={num} numFormat={numFormat} percentChange={percentChange} />
+			<ChartTitle
+				infoData={infoData}
+				title={title}
+				num={num}
+				numFormat={numFormat}
+				percentChange={percentChange}
+			/>
 			<ChartTimeSelectors activePeriod={activePeriod} periods={periods} onClick={onPeriodSelect} />
 		</ChartHeader>
 		<BasicAreaChart valueType={numFormat} data={data} timeSeries={timeSeries} />

@@ -16,10 +16,19 @@ import StatsRow from 'components/StatsRow';
 import AreaChart from 'components/Charts/AreaChart';
 import SectionHeader from 'components/SectionHeader';
 import { COLORS } from 'constants/styles';
+import {
+	githubSubgraph,
+	synthetixSubgraph,
+	synthetixRatesSubgraph,
+	synthetixJSGithub,
+	curveDocumentation,
+	synthetixDataGithub,
+} from 'constants/links';
 import SUSDDistribution from '../Network/SUSDDistribution';
 import { SNXJSContext, SUSDContext, SNXContext } from 'pages/_app';
 import { formatIdToIsoString } from 'utils/formatter';
 import { getSUSDHoldersName } from 'utils/dataMapping';
+import { LinkText, FullLineLink, NewParagraph } from 'components/common';
 
 const CMC_API = 'https://coinmarketcap-api.synthetix.io/public/prices?symbols=SNX';
 
@@ -31,6 +40,7 @@ const NetworkSection: FC = () => {
 	const [SNXChartPriceData, setSNXChartPriceData] = useState<AreaChartData[]>([]);
 	const [stakersChartData, setStakersChartData] = useState<AreaChartData[]>([]);
 	const [SNXTotalSupply, setSNXTotalSupply] = useState<number | null>(null);
+	const [totalSupplySUSD, setTotalSupplySUSD] = useState<number | null>(null);
 	const [SNX24HVolume, setSNX24HVolume] = useState<number | null>(null);
 	const [activeCRatio, setActiveCRatio] = useState<number | null>(null);
 	const [networkCRatio, setNetworkCRatio] = useState<number | null>(null);
@@ -81,7 +91,10 @@ const NetworkSection: FC = () => {
 				snxData.snx.total(),
 				snxjs.contracts.SynthsUSD.totalSupply(),
 			]);
-			const topSUSDHolders = [];
+			const topSUSDHolders = tempMockData.map((blnc) => {
+				blnc.balanceOf = blnc.balanceOf / 1e18;
+				return blnc;
+			});
 
 			setSNXHolders(snxTotals.snxHolders);
 			const formattedSNXPrice = Number(formatEther(unformattedSnxPrice));
@@ -142,8 +155,8 @@ const NetworkSection: FC = () => {
 			}
 
 			const topHolders = topSUSDHolders.map(
-				({ balanceOf, account }: { balanceOf: number; account: string }) => ({
-					name: getSUSDHoldersName(account),
+				({ balanceOf, id }: { balanceOf: number; id: string }) => ({
+					name: getSUSDHoldersName(id),
 					value: balanceOf,
 				})
 			);
@@ -151,6 +164,7 @@ const NetworkSection: FC = () => {
 			const percentLocked = snxLocked / snxTotal;
 			setSNXPercentLocked(percentLocked);
 			setSNXStaked(totalSupply * percentLocked);
+			setTotalSupplySUSD(sUSDTotalSupply);
 			setActiveCRatio(1 / (stakersTotalDebt / stakersTotalCollateral));
 			setNetworkCRatio((totalSupply * formattedSNXPrice) / totalIssuedSynths);
 			await Promise.all(sUSDBalancePromises).then((results) => {
@@ -248,6 +262,18 @@ const NetworkSection: FC = () => {
 					SNXPrice != null && priorSNXPrice != null ? SNXPrice / priorSNXPrice - 1 : null
 				}
 				timeSeries={priceChartPeriod === 'D' ? '15m' : '1d'}
+				infoData={
+					<>
+						The price of SNX is obtained from chainlink oracles, which are retrieved using the{' '}
+						<LinkText href={synthetixJSGithub}>synthetix-js repo.</LinkText>
+						<NewParagraph>
+							For the chart, the data is collected from the "DailySNXPrice" and
+							"FifteenMinuteSNXPrice" entities in the Synthetix rates subgraph{' '}
+							<LinkText href={synthetixRatesSubgraph}>(view playground)</LinkText>.
+						</NewParagraph>
+						<FullLineLink href={githubSubgraph}>See GitHub repo for this subgraph</FullLineLink>
+					</>
+				}
 			/>
 			<StatsRow>
 				<StatsBox
@@ -259,6 +285,13 @@ const NetworkSection: FC = () => {
 					color={COLORS.pink}
 					numberStyle="currency0"
 					numBoxes={3}
+					infoData={
+						<>
+							The market cap is calculated using the price of SNX from chainlink oracles times the
+							total supply of SNX tokens (fully diluted including escrow). These data points are
+							retrieved using the <LinkText href={synthetixJSGithub}>synthetix-js repo.</LinkText>
+						</>
+					}
 				/>
 				<StatsBox
 					key="SUSDPRICE"
@@ -269,6 +302,14 @@ const NetworkSection: FC = () => {
 					color={COLORS.green}
 					numberStyle="currency2"
 					numBoxes={3}
+					infoData={
+						<>
+							The price of sUSD is calculated using the peg from Curve, which holds the majority of
+							sUSD. We followed the{' '}
+							<LinkText href={curveDocumentation}>Curve documentation</LinkText> to obtain this
+							data.
+						</>
+					}
 				/>
 				<StatsBox
 					key="SNXVOLUME"
@@ -279,6 +320,7 @@ const NetworkSection: FC = () => {
 					color={COLORS.green}
 					numberStyle="currency0"
 					numBoxes={3}
+					infoData={null}
 				/>
 			</StatsRow>
 			<StatsRow>
@@ -295,6 +337,19 @@ const NetworkSection: FC = () => {
 					color={COLORS.pink}
 					numberStyle="currency0"
 					numBoxes={3}
+					infoData={
+						<>
+							To calculate the value of SNX tokens staked we sample the top 1000 SNX holders using
+							the <LinkText href={synthetixDataGithub}>Synthetix data repo</LinkText> and then
+							determine what percent of SNX they have staked. We extrapolate this amount across the
+							total supply of SNX tokens which we get from the{' '}
+							<LinkText href={synthetixJSGithub}>synthetix-js repo.</LinkText>.
+							<NewParagraph>
+								Taking a small sample produces a result that is very close to taking the entire set
+								of holders and allows the page to load faster.
+							</NewParagraph>
+						</>
+					}
 				/>
 				<StatsBox
 					key="NETWORKCRATIO"
@@ -305,19 +360,37 @@ const NetworkSection: FC = () => {
 					color={COLORS.green}
 					numberStyle="percent0"
 					numBoxes={3}
+					infoData={
+						<>
+							To calculate the network c-ratio we use the following formula "(totalSupply *
+							formattedSNXPrice) / totalIssuedSynths" with data obtained from the{' '}
+							<LinkText href={synthetixJSGithub}>synthetix-js repo.</LinkText>.
+						</>
+					}
 				/>
 				<StatsBox
 					key="ACTIVECRATIO"
 					title="ACTIVE COLLATERALIZATION RATIO"
 					num={activeCRatio}
 					percentChange={null}
-					subText="Collateralization ratio for staked SNX tokens"
+					subText="Collateralization ratio for active SNX stakers"
 					color={COLORS.green}
 					numberStyle="percent0"
 					numBoxes={3}
+					infoData={
+						<>
+							To calculate the c-ratio of acrtive stakers we sample the top 1000 SNX holders using
+							the <LinkText href={synthetixDataGithub}>Synthetix data repo</LinkText> and then
+							determine what the ratio is of their collateral to debt.
+							<NewParagraph>
+								Taking a small sample produces a result that is very close to taking the entire set
+								of holders and allows the page to load faster.
+							</NewParagraph>
+						</>
+					}
 				/>
 			</StatsRow>
-			<SUSDDistribution data={SUSDHolders} />
+			<SUSDDistribution data={SUSDHolders} totalSupplySUSD={totalSupplySUSD} />
 			<AreaChart
 				periods={stakingPeriods}
 				activePeriod={stakersChartPeriod}
@@ -336,6 +409,14 @@ const NetworkSection: FC = () => {
 						: null
 				}
 				timeSeries="1d"
+				infoData={
+					<>
+						The number of total active stakers is obtained from the "TotalActiveStaker" entity from
+						the Synthetix subgraph <LinkText href={synthetixSubgraph}>(view playground).</LinkText>{' '}
+						The chart data shows the "TotalDailyActiveStaker" entity over time.{' '}
+						<FullLineLink href={githubSubgraph}>See GitHub repo for this subgraph</FullLineLink>
+					</>
+				}
 			/>
 			<StatsRow>
 				<StatsBox
@@ -343,10 +424,23 @@ const NetworkSection: FC = () => {
 					title="UTILIZATION RATIO"
 					num={utilizationRatio != null ? 1 - utilizationRatio : null}
 					percentChange={null}
-					subText="Percent of sUSD tokens held in stakers wallets. Extrapolated from a sample of the top 150 stakers and their sUSD holdings"
+					subText="Percent of sUSD tokens held in stakers wallets"
 					color={COLORS.pink}
 					numberStyle="percent2"
 					numBoxes={2}
+					infoData={
+						<>
+							While we are obtaining staking data from sampling the top 1000 SNX holders using the{' '}
+							<LinkText href={synthetixDataGithub}>Synthetix data repo</LinkText>, we also make an
+							additional call using <LinkText href={synthetixJSGithub}>synthetix-js</LinkText> for
+							each of the top 150 stakers to get their sUSD holdings; we use this sample to
+							extrapolate what % of stakers still have sUSD in their wallet.
+							<NewParagraph>
+								Taking a small sample produces a result that is very close to taking the entire set
+								of holders and allows the page to load faster.
+							</NewParagraph>
+						</>
+					}
 				/>
 				<StatsBox
 					key="SNXHOLDRS"
@@ -357,6 +451,12 @@ const NetworkSection: FC = () => {
 					color={COLORS.green}
 					numberStyle="number"
 					numBoxes={2}
+					infoData={
+						<>
+							The number of snx holders is obtained from the "Synthetix" entity from the Synthetix
+							subgraph <LinkText href={synthetixSubgraph}>(view playground).</LinkText>
+						</>
+					}
 				/>
 			</StatsRow>
 		</>
@@ -397,3 +497,31 @@ export const curveSusdSwapContract = {
 };
 
 export default NetworkSection;
+
+const tempMockData = [
+	{
+		balanceOf: 33105588684386385866501438,
+		id: '0xa5407eae9ba41422680e2e00537571bcc53efbfd-sUSD',
+		synth: 'sUSD',
+	},
+	{
+		balanceOf: 20536181827074703429922386,
+		id: '0xf1f85b2c54a2bd284b1cf4141d64fd171bd85539-sUSD',
+		synth: 'sUSD',
+	},
+	{
+		balanceOf: 15111182093637518880289745,
+		id: '0xf80758ab42c3b07da84053fd88804bcb6baa4b5c-sUSD',
+		synth: 'sUSD',
+	},
+	{
+		balanceOf: 2676952152553875806417741,
+		id: '0x859d545374e2baaa73d912015bd9383a9fc11f96-sUSD',
+		synth: 'sUSD',
+	},
+	{
+		balanceOf: 2496242784237612628079862,
+		id: '0x49be88f0fcc3a8393a59d3688480d7d253c37d2a-sUSD',
+		synth: 'sUSD',
+	},
+];

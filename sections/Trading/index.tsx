@@ -9,6 +9,8 @@ import AreaChart from 'components/Charts/AreaChart';
 import { COLORS } from 'constants/styles';
 import { ChartPeriod, AreaChartData, TradesRequestData } from 'types/data';
 import { formatIdToIsoString } from 'utils/formatter';
+import { LinkText, FullLineLink, NewParagraph } from 'components/common';
+import { synthetixExchangesSubgraph, githubSubgraph } from 'constants/links';
 
 const Trading: FC = () => {
 	const [totalTradingVolume, setTotalTradingVolume] = useState<number | null>(null);
@@ -116,6 +118,7 @@ const Trading: FC = () => {
 					color={COLORS.green}
 					numberStyle="currency0"
 					numBoxes={3}
+					infoData={null}
 				/>
 				<StatsBox
 					key="TOTLNOTRDES"
@@ -126,6 +129,7 @@ const Trading: FC = () => {
 					color={COLORS.green}
 					numberStyle="number"
 					numBoxes={3}
+					infoData={null}
 				/>
 				<StatsBox
 					key="TOTLDAILYVOLUME"
@@ -136,6 +140,7 @@ const Trading: FC = () => {
 					color={COLORS.green}
 					numberStyle="currency0"
 					numBoxes={3}
+					infoData={null}
 				/>
 			</StatsRow>
 			<AreaChart
@@ -152,6 +157,14 @@ const Trading: FC = () => {
 				numFormat="number"
 				percentChange={null}
 				timeSeries="1d"
+				infoData={
+					<>
+						The cumulative number of trades is the sum of all the periods charted here. The number
+						of trades is captured daily in the synthetix exchanges subgraph using the "DailyTotal"
+						entity <LinkText href={synthetixExchangesSubgraph}>(view playground).</LinkText>
+						<FullLineLink href={githubSubgraph}>See GitHub repo for this subgraph</FullLineLink>
+					</>
+				}
 			/>
 			<SingleStatRow
 				text="TOTAL NUMBER OF UNIQUE TRADERS"
@@ -174,6 +187,22 @@ const Trading: FC = () => {
 				numFormat="number"
 				percentChange={null}
 				timeSeries="1d"
+				infoData={
+					<>
+						Each day we capture the number of unique traders using the Synthetix protocol via the
+						synthetix exchanges subgraph using the "DailyTotal" entity{' '}
+						<LinkText href={synthetixExchangesSubgraph}>(view playground).</LinkText>
+						<NewParagraph>
+							To capture the number of unique traders on a specific day, simply subtract the number
+							of traders from the previous day.
+						</NewParagraph>
+						<NewParagraph>
+							The cumulative daily traders is the sum of all the daily traders over this time period
+							(we double count unique traders across different days).
+						</NewParagraph>
+						<FullLineLink href={githubSubgraph}>See GitHub repo for this subgraph</FullLineLink>
+					</>
+				}
 			/>
 		</>
 	);

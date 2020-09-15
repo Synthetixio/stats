@@ -6,6 +6,7 @@ import StatsBox from 'components/StatsBox';
 import { COLORS } from 'constants/styles';
 import { SNXJSContext, SNXContext, SUSDContext } from 'pages/_app';
 import { FeePeriod } from 'types/data';
+import { LinkText, NewParagraph } from '../../components/common';
 
 const Staking: FC = () => {
 	const [currentFeePeriod, setCurrentFeePeriod] = useState<FeePeriod | null>(null);
@@ -58,6 +59,15 @@ const Staking: FC = () => {
 					color={COLORS.green}
 					numberStyle="percent2"
 					numBoxes={3}
+					infoData={
+						<>
+							To calculate the total APY for staking SNX we calculate both the SNX rewards and sUSD
+							rewards given out each week.{' '}
+							<NewParagraph>
+								For more info on those calculations see the following 2 boxes.
+							</NewParagraph>
+						</>
+					}
 				/>
 				<StatsBox
 					key="SNXSTKAPYSUSD"
@@ -68,6 +78,7 @@ const Staking: FC = () => {
 					color={COLORS.green}
 					numberStyle="percent2"
 					numBoxes={3}
+					infoData={null}
 				/>
 				<StatsBox
 					key="SNXSTKAPYSNX"
@@ -78,6 +89,7 @@ const Staking: FC = () => {
 					color={COLORS.pink}
 					numberStyle="percent2"
 					numBoxes={3}
+					infoData={null}
 				/>
 			</StatsRow>
 			<StatsRow>
@@ -90,6 +102,7 @@ const Staking: FC = () => {
 					color={COLORS.pink}
 					numberStyle="currency0"
 					numBoxes={4}
+					infoData={null}
 				/>
 				<StatsBox
 					key="CRRNTFEERWPOOLSNX"
@@ -100,6 +113,7 @@ const Staking: FC = () => {
 					color={COLORS.green}
 					numberStyle="currency0"
 					numBoxes={4}
+					infoData={null}
 				/>
 				<StatsBox
 					key="UNCLMFEESUSD"
@@ -116,6 +130,7 @@ const Staking: FC = () => {
 					color={COLORS.green}
 					numberStyle="currency0"
 					numBoxes={4}
+					infoData={null}
 				/>
 				<StatsBox
 					key="UPCOMINGFEESUSD"
@@ -126,6 +141,7 @@ const Staking: FC = () => {
 					color={COLORS.pink}
 					numberStyle="currency0"
 					numBoxes={4}
+					infoData={null}
 				/>
 			</StatsRow>
 		</>

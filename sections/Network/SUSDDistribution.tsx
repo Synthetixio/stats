@@ -7,13 +7,14 @@ import { TreeMapData } from 'types/data';
 
 interface SUSDDistributionProps {
 	data: TreeMapData[];
+	totalSupplySUSD: number | null;
 }
 
-const SUSDDistribution: FC<SUSDDistributionProps> = ({ data }) => (
+const SUSDDistribution: FC<SUSDDistributionProps> = ({ data, totalSupplySUSD }) => (
 	<SectionWrap>
 		<SectionTitle>SUSD DISTRIBUTION</SectionTitle>
 		<SectionSubtitle>Distribution of sUSD desposited/stored</SectionSubtitle>
-		<BasicTreeMap data={data} />
+		<BasicTreeMap data={data} totalSupplySUSD={totalSupplySUSD} />
 	</SectionWrap>
 );
 
