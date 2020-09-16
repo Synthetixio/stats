@@ -61,10 +61,10 @@ const Staking: FC = () => {
 					numBoxes={3}
 					infoData={
 						<>
-							To calculate the total APY for staking SNX we calculate both the SNX rewards and sUSD
-							rewards given out each week.{' '}
+							To calculate the APY for staking SNX, we sum both the SNX rewards APY and sUSD rewards
+							APY given out each week.{' '}
 							<NewParagraph>
-								For more info on those calculations see the following 2 boxes.
+								For a rewards breakdown of SNX vs sUSD, see the following 2 boxes.
 							</NewParagraph>
 						</>
 					}
@@ -102,7 +102,20 @@ const Staking: FC = () => {
 					color={COLORS.pink}
 					numberStyle="currency0"
 					numBoxes={4}
-					infoData={null}
+					infoData={
+						<>
+							SNX and sUSD rewards are paid weekly to stakers who maintain their collateral ratio of
+							SNX/debt.{' '}
+							<NewParagraph>
+								Each week, stakers can claim trading fees generated from the prior week, meanwhile,
+								new fees are accumulating for the following week based on trading activiy.
+							</NewParagraph>
+							<NewParagraph>
+								This box as well as the next two boxes represent data for the fee/ rewards pool that
+								is finalized and currently claimable.
+							</NewParagraph>
+						</>
+					}
 				/>
 				<StatsBox
 					key="CRRNTFEERWPOOLSNX"
@@ -141,7 +154,24 @@ const Staking: FC = () => {
 					color={COLORS.pink}
 					numberStyle="currency0"
 					numBoxes={4}
-					infoData={null}
+					infoData={
+						<>
+							SNX and sUSD rewards are paid weekly to stakers who maintain their collateral ratio of
+							SNX/debt.{' '}
+							<NewParagraph>
+								Each week, stakers can claim trading fees generated from the prior week, meanwhile,
+								new fees are accumulating for the following week based on trading activiy.
+							</NewParagraph>
+							<NewParagraph>
+								This box represents data for the fee pool that is accumulating for stakers to claim
+								the following week.
+							</NewParagraph>
+							<NewParagraph>
+								Note this box only represents trading fees for the next period and does not include
+								SNX rewards, which are on a fixed schedule and decline by 1.25% week over week.
+							</NewParagraph>
+						</>
+					}
 				/>
 			</StatsRow>
 		</>

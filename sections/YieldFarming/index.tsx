@@ -129,8 +129,10 @@ const YieldFarming: FC = () => {
 			<StatsRow>
 				<DoubleStatsBox
 					key="CRVSUSDRWRDS"
-					title="Curvepool sUSD"
-					subtitle={subtitleText('sUSD') + '. Excludes rewards from CRV tokens. Will be added soon'}
+					title="Curvepool sUSD *"
+					subtitle={
+						subtitleText('sUSD') + '. * Excludes rewards from CRV tokens, which will be added soon'
+					}
 					firstMetricTitle="WEEKLY REWARDS (SNX)"
 					firstMetricStyle="number"
 					firstMetric={

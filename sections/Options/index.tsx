@@ -104,7 +104,7 @@ const Options: FC = () => {
 					percentChange={null}
 					subText={`The largest active binary options market is ${
 						largestActiveMarket?.currencyKey ?? '...'
-					} > ${largestActiveMarket?.strikePrice ?? '...'} expiring at ${
+					} > ${formatCurrency(largestActiveMarket?.strikePrice ?? 0)} expiring at ${
 						largestActiveMarket?.maturityDate
 							? format(new Date(largestActiveMarket?.maturityDate), 'MM/dd/yyyy')
 							: '...'
@@ -129,7 +129,7 @@ const Options: FC = () => {
 					percentChange={null}
 					subText={`The largest binary options market to date is ${
 						largestMarket?.currencyKey ?? '...'
-					} > ${largestMarket?.strikePrice ?? '...'} expiring at ${
+					} > ${formatCurrency(largestMarket?.strikePrice ?? 0)} expiring at ${
 						largestMarket?.maturityDate
 							? format(new Date(largestMarket?.maturityDate), 'MM/dd/yyyy')
 							: '...'
@@ -139,16 +139,16 @@ const Options: FC = () => {
 					numBoxes={3}
 					infoData={
 						<>
-							To get the largest active binary options market, we pull all the "Market" entities
+							To get the largest binary options market to date, we pull all the "Market" entities
 							from the{' '}
 							<LinkText href={synthetixOptionsSubgraph}>Synthetix options subgraph</LinkText> and
-							sort them by poolSize to get the largest to date.
+							sort them by "poolSize" to get the largest.
 						</>
 					}
 				/>
 				<StatsBox
 					key="TOTALVOLUMETRDED"
-					title="TOTAL VOLUME TRADED (USD)"
+					title="COMING SOON: TOTAL VOLUME TRADED (USD)"
 					num={0}
 					percentChange={null}
 					subText="The total volume traded for binary options markets to date. Coming soon!"
@@ -210,8 +210,8 @@ const Options: FC = () => {
 					numBoxes={3}
 					infoData={
 						<>
-							To get the total amount pooled in active binary options market, we pull all the
-							"OptionTransaction" entities from the{' '}
+							To get the total number of trades over the past 24 hours in binary options markets, we
+							pull all the "OptionTransaction" entities from the{' '}
 							<LinkText href={synthetixOptionsSubgraph}>Synthetix options subgraph</LinkText> within
 							the past 24 hours and then count all the items.
 						</>

@@ -17,3 +17,7 @@ export const synthetixDataGithub = 'https://github.com/Synthetixio/synthetix-dat
 
 export const synthetixOptionsSubgraph =
 	'https://thegraph.com/explorer/subgraph/synthetixio-team/synthetix-binary-options';
+
+export const etherscanArchernarBlock = 'https://etherscan.io/block/9518914';
+
+export const frontRunningWiki = 'https://en.wikipedia.org/wiki/Front_running';

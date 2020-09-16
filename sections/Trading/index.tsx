@@ -10,7 +10,12 @@ import { COLORS } from 'constants/styles';
 import { ChartPeriod, AreaChartData, TradesRequestData } from 'types/data';
 import { formatIdToIsoString } from 'utils/formatter';
 import { LinkText, FullLineLink, NewParagraph } from 'components/common';
-import { synthetixExchangesSubgraph, githubSubgraph } from 'constants/links';
+import {
+	synthetixExchangesSubgraph,
+	githubSubgraph,
+	etherscanArchernarBlock,
+	frontRunningWiki,
+} from 'constants/links';
 
 const Trading: FC = () => {
 	const [totalTradingVolume, setTotalTradingVolume] = useState<number | null>(null);
@@ -114,11 +119,18 @@ const Trading: FC = () => {
 					title="TOTAL TRADING VOLUME"
 					num={totalTradingVolume}
 					percentChange={null}
-					subText="Total historical trading volume for synths"
+					subText="Historical trading volume for synths"
 					color={COLORS.green}
 					numberStyle="currency0"
 					numBoxes={3}
-					infoData={null}
+					infoData={
+						<>
+							The total trading volume only shows data from after the Archernar release on{' '}
+							<LinkText href={etherscanArchernarBlock}>block 9,518,914 (Feb 20, 2020).</LinkText>{' '}
+							Prior to this release there was a lot of volume generated via{' '}
+							<LinkText href={frontRunningWiki}>front running transactions.</LinkText>
+						</>
+					}
 				/>
 				<StatsBox
 					key="TOTLNOTRDES"
@@ -129,7 +141,14 @@ const Trading: FC = () => {
 					color={COLORS.green}
 					numberStyle="number"
 					numBoxes={3}
-					infoData={null}
+					infoData={
+						<>
+							The total number of trades only shows data from after the Archernar release on{' '}
+							<LinkText href={etherscanArchernarBlock}>block 9,518,914 (Feb 20, 2020).</LinkText>{' '}
+							Prior to this release there was a lot of volume generated via{' '}
+							<LinkText href={frontRunningWiki}>front running transactions.</LinkText>
+						</>
+					}
 				/>
 				<StatsBox
 					key="TOTLDAILYVOLUME"
@@ -159,16 +178,20 @@ const Trading: FC = () => {
 				timeSeries="1d"
 				infoData={
 					<>
-						The cumulative number of trades is the sum of all the periods charted here. The number
-						of trades is captured daily in the synthetix exchanges subgraph using the "DailyTotal"
-						entity <LinkText href={synthetixExchangesSubgraph}>(view playground).</LinkText>
+						The cumulative number of trades is the sum of all daily periods in each chart below. The
+						weekly chart (default) has 7 unique periods, monthly has 30 and annual has 365.{' '}
+						<NewParagraph>
+							The number of trades is captured daily in the synthetix exchanges subgraph using the
+							"DailyTotal" entity{' '}
+							<LinkText href={synthetixExchangesSubgraph}>(view playground).</LinkText>
+						</NewParagraph>
 						<FullLineLink href={githubSubgraph}>See GitHub repo for this subgraph</FullLineLink>
 					</>
 				}
 			/>
 			<SingleStatRow
 				text="TOTAL NUMBER OF UNIQUE TRADERS"
-				subtext="Total number of Ethereum addresses trading synths"
+				subtext="Ethereum addresses that have traded synths"
 				num={totalUsers}
 				color={COLORS.pink}
 				numberStyle="number"
@@ -193,12 +216,12 @@ const Trading: FC = () => {
 						synthetix exchanges subgraph using the "DailyTotal" entity{' '}
 						<LinkText href={synthetixExchangesSubgraph}>(view playground).</LinkText>
 						<NewParagraph>
-							To capture the number of unique traders on a specific day, simply subtract the number
-							of traders from the previous day.
-						</NewParagraph>
-						<NewParagraph>
 							The cumulative daily traders is the sum of all the daily traders over this time period
 							(we double count unique traders across different days).
+						</NewParagraph>
+						<NewParagraph>
+							To capture the number of unique traders on a specific day, simply subtract the number
+							of traders for that day from the previous day.
 						</NewParagraph>
 						<FullLineLink href={githubSubgraph}>See GitHub repo for this subgraph</FullLineLink>
 					</>

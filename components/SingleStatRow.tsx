@@ -42,7 +42,7 @@ const SingleStatRowContainer = styled.div`
 const SingleStats = styled.div`
 	display: flex;
 	flex-direction: column;
-	width: 430px;
+	width: 400px;
 `;
 
 const SingleStatsLeft = styled(SingleStats)`

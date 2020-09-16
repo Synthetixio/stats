@@ -305,9 +305,8 @@ const NetworkSection: FC = () => {
 					infoData={
 						<>
 							The price of sUSD is calculated using the peg from Curve, which holds the majority of
-							sUSD. We followed the{' '}
-							<LinkText href={curveDocumentation}>Curve documentation</LinkText> to obtain this
-							data.
+							sUSD. The <LinkText href={curveDocumentation}>Curve documentation</LinkText> explains
+							how the peg is calculated.
 						</>
 					}
 				/>
@@ -339,11 +338,13 @@ const NetworkSection: FC = () => {
 					numBoxes={3}
 					infoData={
 						<>
-							To calculate the value of SNX tokens staked we sample the top 1000 SNX holders using
+							To calculate the value of SNX tokens staked we sample the top 1,000 SNX stakers using
 							the <LinkText href={synthetixDataGithub}>Synthetix data repo</LinkText> and then
-							determine what percent of SNX they have staked. We extrapolate this amount across the
-							total supply of SNX tokens which we get from the{' '}
-							<LinkText href={synthetixJSGithub}>synthetix-js repo.</LinkText>.
+							determine what percent of SNX they have staked.{' '}
+							<NewParagraph>
+								We then multiply this percent across the total supply of SNX tokens which we get
+								from the <LinkText href={synthetixJSGithub}>synthetix-js repo.</LinkText>.
+							</NewParagraph>
 							<NewParagraph>
 								Taking a small sample produces a result that is very close to taking the entire set
 								of holders and allows the page to load faster.
@@ -362,8 +363,8 @@ const NetworkSection: FC = () => {
 					numBoxes={3}
 					infoData={
 						<>
-							To calculate the network c-ratio we use the following formula "(totalSupply *
-							formattedSNXPrice) / totalIssuedSynths" with data obtained from the{' '}
+							To calculate the network c-ratio we use the following formula "Total SNX Supply * SNX
+							Price / Total Issued Synths." We get this data from the{' '}
 							<LinkText href={synthetixJSGithub}>synthetix-js repo.</LinkText>.
 						</>
 					}
@@ -379,9 +380,9 @@ const NetworkSection: FC = () => {
 					numBoxes={3}
 					infoData={
 						<>
-							To calculate the c-ratio of acrtive stakers we sample the top 1000 SNX holders using
+							To calculate the c-ratio of active stakers we sample the top 1,000 SNX stakers using
 							the <LinkText href={synthetixDataGithub}>Synthetix data repo</LinkText> and then
-							determine what the ratio is of their collateral to debt.
+							determine the cumulative c-ratio using their collateral to debt ratio.
 							<NewParagraph>
 								Taking a small sample produces a result that is very close to taking the entire set
 								of holders and allows the page to load faster.
@@ -424,17 +425,17 @@ const NetworkSection: FC = () => {
 					title="UTILIZATION RATIO"
 					num={utilizationRatio != null ? 1 - utilizationRatio : null}
 					percentChange={null}
-					subText="Percent of sUSD tokens held in stakers wallets"
+					subText="Percent of sUSD tokens held outside of stakers wallets"
 					color={COLORS.pink}
 					numberStyle="percent2"
 					numBoxes={2}
 					infoData={
 						<>
-							While we are obtaining staking data from sampling the top 1000 SNX holders using the{' '}
+							While we are obtaining staking data from sampling the top 1,000 SNX stakers using the{' '}
 							<LinkText href={synthetixDataGithub}>Synthetix data repo</LinkText>, we also make an
-							additional call using <LinkText href={synthetixJSGithub}>synthetix-js</LinkText> for
-							each of the top 150 stakers to get their sUSD holdings; we use this sample to
-							extrapolate what % of stakers still have sUSD in their wallet.
+							additional call for each of the top 150 stakers using{' '}
+							<LinkText href={synthetixJSGithub}>synthetix-js</LinkText> to get their sUSD holdings;
+							we use this sample to extrapolate what % of stakers still have sUSD in their wallet.
 							<NewParagraph>
 								Taking a small sample produces a result that is very close to taking the entire set
 								of holders and allows the page to load faster.
@@ -453,7 +454,7 @@ const NetworkSection: FC = () => {
 					numBoxes={2}
 					infoData={
 						<>
-							The number of snx holders is obtained from the "Synthetix" entity from the Synthetix
+							The number of SNX holders is obtained from the "Synthetix" entity on the Synthetix
 							subgraph <LinkText href={synthetixSubgraph}>(view playground).</LinkText>
 						</>
 					}
