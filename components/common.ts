@@ -1,7 +1,5 @@
 import styled from 'styled-components';
 import Link from '@material-ui/core/Link';
-import { withStyles } from '@material-ui/core/styles';
-import Tooltip from '@material-ui/core/Tooltip';
 
 import { COLORS, NumberColor } from 'constants/styles';
 
@@ -58,6 +56,12 @@ export const LinkText = styled(Link).attrs(() => ({
 export const FullLineLink = styled(LinkText)`
 	display: block;
 	margin: 10px 0;
+`;
+
+export const FullLineText = styled.div`
+	display: block;
+	margin: 10px 0;
+	color: ${(props) => props.theme.colors.brightBlue};
 `;
 
 export const NewParagraph = styled.div`
