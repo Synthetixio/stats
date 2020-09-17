@@ -60,6 +60,7 @@ const NetworkSection: FC = () => {
 
 			const curveContract = new ethers.Contract(
 				curveSusdSwapContract.address,
+				// @ts-ignore
 				curveSusdSwapContract.abi,
 				provider
 			);

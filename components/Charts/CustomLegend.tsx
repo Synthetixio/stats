@@ -5,7 +5,7 @@ import colors from '../../styles/colors';
 import { formatCurrency, formatPercentage } from '../../utils/formatter';
 
 interface CustomLegendProps {
-	payload: { value: number; payload: { value: number } }[];
+	payload?: { value: number; payload: { value: number } }[];
 }
 
 const BRIGHT_COLORS = [
@@ -18,6 +18,9 @@ const BRIGHT_COLORS = [
 ];
 
 const CustomLegend: FC<CustomLegendProps> = ({ payload }) => {
+	if (payload == null) {
+		return null;
+	}
 	const total = payload.reduce((acc, { payload: { value } }) => (acc += value || 0), 0);
 	return (
 		<CustomLegendContainer>

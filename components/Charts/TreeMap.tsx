@@ -64,7 +64,7 @@ const BasicTreeMap: FC<BasicTreeMapProps> = ({ data, totalSupplySUSD }) => {
 		...data,
 		{
 			name: 'others',
-			value: totalSupplySUSD - totalTopHolders,
+			value: (totalSupplySUSD ?? 0) - totalTopHolders,
 		},
 	];
 	return (
@@ -74,6 +74,8 @@ const BasicTreeMap: FC<BasicTreeMapProps> = ({ data, totalSupplySUSD }) => {
 					height={400}
 					data={formattedData}
 					dataKey="value"
+					/*
+          // @ts-ignore */
 					ratio={4 / 3}
 					stroke={colors.brightGreen}
 					fill={colors.mutedBrightGreen}

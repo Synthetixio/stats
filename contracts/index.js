@@ -5,6 +5,7 @@ import curveSusdPool from './curveSusdPool';
 import curveSusdPoolToken from './curveSusdPoolToken';
 import curveSusdGauge from './curveSusdGauge';
 import curveGaugeController from './curveGaugeController';
+import synthSummaryUtil from './synthSummaryUtil';
 
 export {
 	curvepoolRewards,
@@ -14,4 +15,5 @@ export {
 	curveSusdPoolToken,
 	curveSusdGauge,
 	curveGaugeController,
+	synthSummaryUtil,
 };
