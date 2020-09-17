@@ -12,11 +12,15 @@ import {
 	iEth2Rewards,
 	curveSusdPool,
 	curveSusdPoolToken,
-} from 'contracts';
+	curveSusdGauge,
+	curveGaugeController,
+} from 'contracts/index.js';
 
 import { COLORS } from 'constants/styles';
 import { SNXJSContext, SNXContext } from 'pages/_app';
-import { getAaveDepositRate } from 'utils/customGraphQueries';
+import { getAaveDepositRate, getCurveTokenPrice } from 'utils/customGraphQueries';
+import { formatPercentage } from 'utils/formatter';
+import { FullLineText } from '../../components/common';
 
 const subtitleText = (name: string) =>
 	`Data for Synthetix Liquidity Provider (LP) ${name} rewards program`;
@@ -32,7 +36,8 @@ const YieldFarming: FC = () => {
 	const [iBtcAPYFields, setiBtcAPYFields] = useState<APYFields | null>(null);
 	const [iEthAPYFields, setiEthAPYFields] = useState<APYFields | null>(null);
 	const [curveAPYFields, setCurveAPYFields] = useState<APYFields | null>(null);
-	const [curveSwapAPY, setCurveSwapAPY] = useState<number>(0);
+	const [curveSwapAPY, setCurveSwapAPY] = useState<number | null>(null);
+	const [curveTokenAPY, setCurveTokenAPY] = useState<number | null>(null);
 	const snxjs = useContext(SNXJSContext);
 	const { SNXPrice } = useContext(SNXContext);
 
@@ -62,6 +67,16 @@ const YieldFarming: FC = () => {
 			curveSusdPoolToken.abi,
 			ethers.getDefaultProvider()
 		);
+		const curveSusdGaugeContract = new ethers.Contract(
+			curveSusdGauge.address,
+			curveSusdGauge.abi,
+			ethers.getDefaultProvider()
+		);
+		const curveGaugeControllerContract = new ethers.Contract(
+			curveGaugeController.address,
+			curveGaugeController.abi,
+			ethers.getDefaultProvider()
+		);
 
 		const fetchData = async () => {
 			try {
@@ -82,6 +97,16 @@ const YieldFarming: FC = () => {
 				});
 				setDistributions(contractRewards);
 
+				console.log('plain contract curveGaugeControllerContract', curveGaugeControllerContract);
+				console.log(
+					'calling curveGaugeControllerContract',
+					await curveGaugeControllerContract.time_total()
+				);
+				console.log(
+					'calling curveGaugeControllerContract',
+					await curveGaugeControllerContract.gauge_relative_weight(curveSusdGauge.address, '0')
+				);
+
 				const fetchedData = await Promise.all([
 					snxjs.contracts.ProxyiETH.balanceOf(iEth2Rewards.address),
 					snxjs.contracts.ProxyiBTC.balanceOf(iBtcRewards.address),
@@ -89,7 +114,11 @@ const YieldFarming: FC = () => {
 					snxjs.contracts.ExchangeRates.rateForCurrency(snxjs.toBytes32('iBTC')),
 					curveSusdPoolTokenContract.balanceOf(curvepoolRewards.address),
 					curveSusdPoolContract.get_virtual_price(),
+					curveSusdGaugeContract.inflation_rate(),
+					curveSusdGaugeContract.working_supply(),
+					curveSusdGaugeContract.working_supply(),
 					getAaveDepositRate(),
+					getCurveTokenPrice(),
 					axios.get('https://www.curve.fi/raw-stats/apys.json'),
 				]);
 
@@ -100,16 +129,26 @@ const YieldFarming: FC = () => {
 					iBtcPrice,
 					curveSusdBalance,
 					curveSusdTokenPrice,
-				] = fetchedData.slice(0, 6).map((data) => Number(snxjs.utils.formatEther(data)));
+					curveInflationRate,
+					curveWorkingSupply,
+				] = fetchedData.slice(0, 8).map((data) => Number(snxjs.utils.formatEther(data)));
+
+				const gaugeRelativeWeight = 0.112; // TODO fix w number from contract
+				const rate =
+					(((curveInflationRate * gaugeRelativeWeight * 31536000) / curveWorkingSupply) * 0.4) /
+					curveSusdTokenPrice;
+				const curvePrice = fetchedData[9];
+				setCurveTokenAPY(rate * curvePrice);
 
 				setiBtcAPYFields({ balanceOf: iBtcBalance, price: iBtcPrice });
 				setiEthAPYFields({ balanceOf: iEthBalance, price: iEthPrice });
 				setCurveAPYFields({ balanceOf: curveSusdBalance, price: curveSusdTokenPrice });
-				setAaveDepositRate(fetchedData[6]);
+				setAaveDepositRate(fetchedData[9]);
 
-				const swapAPY = fetchedData[7]?.data?.apy?.day?.susd ?? 0;
+				const swapAPY = fetchedData[11]?.data?.apy?.day?.susd ?? 0;
 				setCurveSwapAPY(swapAPY);
 			} catch (e) {
+				console.log('err', e);
 				setDistributions(null);
 			}
 		};
@@ -129,10 +168,8 @@ const YieldFarming: FC = () => {
 			<StatsRow>
 				<DoubleStatsBox
 					key="CRVSUSDRWRDS"
-					title="Curvepool sUSD *"
-					subtitle={
-						subtitleText('sUSD') + '. * Excludes rewards from CRV tokens, which will be added soon'
-					}
+					title="Curvepool sUSD"
+					subtitle={subtitleText('sUSD')}
 					firstMetricTitle="WEEKLY REWARDS (SNX)"
 					firstMetricStyle="number"
 					firstMetric={
@@ -141,15 +178,39 @@ const YieldFarming: FC = () => {
 					firstColor={COLORS.pink}
 					secondMetricTitle="Annual Percentage Yield"
 					secondMetric={
-						distributions != null && curveAPYFields != null
+						distributions != null &&
+						curveAPYFields != null &&
+						curveSwapAPY != null &&
+						curveTokenAPY != null
 							? ((distributions[curvepoolRewards.address] * SNXPrice) /
 									(curveAPYFields.balanceOf * curveAPYFields.price)) *
 									52 +
-							  curveSwapAPY
+							  curveSwapAPY +
+							  curveTokenAPY
 							: null
 					}
 					secondColor={COLORS.green}
 					secondMetricStyle="percent2"
+					infoData={
+						<>
+							The APY for the sUSD Curve Pool consists of 3 different rewards:
+							<FullLineText>{`1. Swap fees at ${
+								curveSwapAPY != null ? formatPercentage(curveSwapAPY) : '...'
+							}`}</FullLineText>
+							<FullLineText>{`2. SNX rewards at ${
+								distributions != null && curveAPYFields != null
+									? formatPercentage(
+											((distributions[curvepoolRewards.address] * SNXPrice) /
+												(curveAPYFields.balanceOf * curveAPYFields.price)) *
+												52
+									  )
+									: '...'
+							}`}</FullLineText>
+							<FullLineText>{`3. CRV rewards ${
+								curveTokenAPY != null ? formatPercentage(curveTokenAPY) : '...'
+							}`}</FullLineText>
+						</>
+					}
 				/>
 				<DoubleStatsBox
 					key="iETHRWRDS"

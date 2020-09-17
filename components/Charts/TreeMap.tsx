@@ -93,11 +93,12 @@ const BasicTreeMap: FC<BasicTreeMapProps> = ({ data, totalSupplySUSD }) => {
 
 const TreeMapLegendContainer = styled.div`
 	max-width: ${MAX_PAGE_WIDTH}px;
-	margin: 0 auto;
+	margin: 10px auto 0 auto;
 	display: flex;
 	justify-content: space-around;
 	height: 75px;
 	align-items: center;
+	flex-wrap: wrap;
 `;
 
 const TreeMapLegendItem = styled.div<{ index: number }>`

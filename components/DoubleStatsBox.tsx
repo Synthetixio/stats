@@ -1,8 +1,9 @@
-import { FC } from 'react';
+import { FC, ReactNode } from 'react';
 import styled from 'styled-components';
 
 import { NumberColor, COLORS, NumberStyle } from 'constants/styles';
 import { getFormattedNumber } from 'utils/formatter';
+import InfoPopover from './InfoPopover';
 
 type DoubleStatsBoxProps = {
 	title: string;
@@ -15,6 +16,7 @@ type DoubleStatsBoxProps = {
 	secondMetric: number | null;
 	secondColor: NumberColor;
 	secondMetricStyle: NumberStyle;
+	infoData?: ReactNode;
 };
 
 const DoubleStatsBox: FC<DoubleStatsBoxProps> = ({
@@ -28,12 +30,16 @@ const DoubleStatsBox: FC<DoubleStatsBoxProps> = ({
 	secondMetric,
 	secondMetricTitle,
 	secondMetricStyle,
+	infoData,
 }) => {
 	const formattedFirstMetric = getFormattedNumber(firstMetric, firstMetricStyle);
 	const formattedSecondMetric = getFormattedNumber(secondMetric, secondMetricStyle);
 	return (
 		<DoubleStatsBoxContainer>
-			<DoubleStatsBoxTitle>{title}</DoubleStatsBoxTitle>
+			<TitleWrapper>
+				<DoubleStatsBoxTitle>{title}</DoubleStatsBoxTitle>
+				{infoData != null ? <InfoPopover infoData={infoData} /> : null}
+			</TitleWrapper>
 			<DoubleStatsBoxSubtitle>{subtitle}</DoubleStatsBoxSubtitle>
 			<DoubleStatsBoxMetricTitle>{firstMetricTitle}</DoubleStatsBoxMetricTitle>
 			<DoubleStatsBoxMetric color={firstColor}>{formattedFirstMetric}</DoubleStatsBoxMetric>
@@ -57,6 +63,11 @@ const DoubleStatsBoxContainer = styled.div`
 	@media only screen and (max-width: 854px) {
 		width: 100%;
 	}
+`;
+
+export const TitleWrapper = styled.div`
+	display: flex;
+	align-items: center;
 `;
 
 const DoubleStatsBoxTitle = styled.div`
