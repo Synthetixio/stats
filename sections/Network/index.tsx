@@ -129,8 +129,7 @@ const NetworkSection: FC = () => {
 				let debtBalance =
 					((totalIssuedSynths * lastDebtLedgerEntry) / debtEntryAtIndex) * initialDebtOwnership;
 				let collateralRatio = debtBalance / collateral / usdToSnxPrice;
-				// ignore if 0 balance
-				//if (Number(collateral) <= 0) continue;
+
 				if (isNaN(debtBalance)) {
 					debtBalance = 0;
 					collateralRatio = 0;
