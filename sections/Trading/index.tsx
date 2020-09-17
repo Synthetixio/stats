@@ -16,6 +16,7 @@ import {
 	etherscanArchernarBlock,
 	frontRunningWiki,
 } from 'constants/links';
+import { getPostArchernarTotals } from 'utils/customGraphQueries';
 
 const Trading: FC = () => {
 	const [totalTradingVolume, setTotalTradingVolume] = useState<number | null>(null);
@@ -34,16 +35,18 @@ const Trading: FC = () => {
 			const ts = Math.floor(Date.now() / 1e3);
 			const oneDayAgo = ts - 3600 * 24;
 
-			const [exchangeVolumeData, exchanges] = await Promise.all([
-				snxData.exchanges.total(),
+			const [exchangeVolumeData, exchanges, allTimeData] = await Promise.all([
+				getPostArchernarTotals(),
 				snxData.exchanges.since({ minTimestamp: oneDayAgo }),
+				snxData.exchanges.total(),
 			]);
+			// @ts-ignore
 			const last24Hours = exchanges.reduce((acc, { fromAmountInUSD }) => acc + fromAmountInUSD, 0);
 
 			setTotalDailyTradingVolume(last24Hours);
 			setTotalTradingVolume(exchangeVolumeData.exchangeUSDTally);
 			setTotalTrades(exchangeVolumeData.trades);
-			setTotalUsers(exchangeVolumeData.exchangers);
+			setTotalUsers(allTimeData.exchangers);
 		};
 		fetchData();
 	}, []);

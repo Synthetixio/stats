@@ -54,5 +54,7 @@ export type OptionsMarket = {
 	strikePrice: number;
 	maturityDate: number;
 	currencyKey: string;
-	poolSize: number;
+	poolSize: string;
+	expiryDate?: string;
+	value?: number;
 };

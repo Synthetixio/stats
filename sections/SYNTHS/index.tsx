@@ -5,14 +5,16 @@ import orderBy from 'lodash/orderBy';
 import findIndex from 'lodash/findIndex';
 
 import SectionHeader from 'components/SectionHeader';
-import SynthsBarChart from './SynthsBarChart';
-import SynthsPieChart from './SynthsPieChart';
 import { MAX_PAGE_WIDTH, COLORS } from 'constants/styles';
 import { SNXJSContext, SUSDContext, ProviderContext } from 'pages/_app';
 import { OpenInterest, SynthTotalSupply } from 'types/data';
 import SingleStatRow from 'components/SingleStatRow';
 import DoubleStatsBox from 'components/DoubleStatsBox';
 import StatsRow from 'components/StatsRow';
+import { synthSummaryUtil } from 'contracts';
+
+import SynthsBarChart from './SynthsBarChart';
+import SynthsPieChart from './SynthsPieChart';
 
 const MIN_PERCENT_FOR_PIE_CHART = 0.03;
 const NUMBER_OF_TOP_SYNTHS = 3;
@@ -28,8 +30,8 @@ const SynthsSection: FC<{}> = () => {
 	useEffect(() => {
 		const fetchData = async () => {
 			const SynthSummaryUtil = new ethers.Contract(
-				synthSummaryUtilContract.address,
-				synthSummaryUtilContract.abi,
+				synthSummaryUtil.address,
+				synthSummaryUtil.abi,
 				provider
 			);
 
@@ -53,12 +55,12 @@ const SynthsSection: FC<{}> = () => {
 
 			const openInterest: OpenInterest = orderBy(unsortedOpenInterest, 'value', 'desc')
 				.filter((item) => openInterestSynths.includes(item.name))
-				.reduce((acc: OpenInterest | {}, curr: SynthTotalSupply): OpenInterest | {} => {
+				.reduce((acc: OpenInterest, curr: SynthTotalSupply): OpenInterest => {
 					const name = curr.name.slice(1);
 					const subObject = {
 						[curr.name]: {
 							value: curr.value,
-							totalSupply: curr.totalSupply,
+							totalSupply: curr.totalSupply ?? 0,
 						},
 					};
 					if (acc[name]) {
@@ -71,13 +73,17 @@ const SynthsSection: FC<{}> = () => {
 
 			const formattedPieChartData = unsortedOpenInterest.reduce((acc, curr) => {
 				if (curr.value / totalValue < MIN_PERCENT_FOR_PIE_CHART) {
+					// @ts-ignore
 					const othersIndex = findIndex(acc, (o) => o.name === 'others');
 					if (othersIndex === -1) {
+						// @ts-ignore
 						acc.push({ name: 'others', value: curr.value });
 					} else {
+						// @ts-ignore
 						acc[othersIndex].value = acc[othersIndex].value + curr.value;
 					}
 				} else {
+					// @ts-ignore
 					acc.push(curr);
 				}
 				return acc;
@@ -148,33 +154,5 @@ const SubsectionHeader = styled.div`
 	line-height: 120%;
 	margin: 40px auto 20px auto;
 `;
-
-export const synthSummaryUtilContract = {
-	address: '0x0D69755e12107695E544842BF7F61D9193f09a54',
-	abi: [
-		{
-			constant: true,
-			inputs: [],
-			name: 'synthsTotalSupplies',
-			outputs: [
-				{
-					name: '',
-					type: 'bytes32[]',
-				},
-				{
-					name: '',
-					type: 'uint256[]',
-				},
-				{
-					name: '',
-					type: 'uint256[]',
-				},
-			],
-			payable: false,
-			stateMutability: 'view',
-			type: 'function',
-		},
-	],
-};
 
 export default SynthsSection;

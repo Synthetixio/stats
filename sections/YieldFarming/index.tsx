@@ -56,6 +56,7 @@ const YieldFarming: FC = () => {
 		const iBtcRewardsContract = new ethers.Contract(iBtcRewards.address, iBtcRewards.abi, provider);
 		const curveSusdPoolContract = new ethers.Contract(
 			curveSusdPool.address,
+			// @ts-ignore
 			curveSusdPool.abi,
 			provider
 		);
@@ -66,11 +67,13 @@ const YieldFarming: FC = () => {
 		);
 		const curveSusdGaugeContract = new ethers.Contract(
 			curveSusdGauge.address,
+			// @ts-ignore
 			curveSusdGauge.abi,
 			provider
 		);
 		const curveGaugeControllerContract = new ethers.Contract(
 			curveGaugeController.address,
+			// @ts-ignore
 			curveGaugeController.abi,
 			provider
 		);
@@ -88,6 +91,7 @@ const YieldFarming: FC = () => {
 				rewardsData.forEach(([duration, rate, periodFinish], i) => {
 					const durationInWeeks = Number(duration) / 3600 / 24 / 7;
 					const isPeriodFinished = new Date().getTime() > Number(periodFinish) * 1000;
+					// @ts-ignore
 					contractRewards[contracts[i].address] = isPeriodFinished
 						? 0
 						: Math.trunc(Number(duration) * (rate / 1e18)) / durationInWeeks;

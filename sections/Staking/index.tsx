@@ -49,10 +49,12 @@ const Staking: FC = () => {
 					key="SNXSTKAPY"
 					title="CURRENT SNX STAKING APY"
 					num={
-						(((sUSDPrice * currentFeePeriod?.feesToDistribute ?? 0) +
-							(SNXPrice * currentFeePeriod?.rewardsToDistribute ?? 0)) *
-							52) /
-						SNXValueStaked
+						currentFeePeriod != null && SNXValueStaked != null
+							? ((sUSDPrice * currentFeePeriod.feesToDistribute +
+									SNXPrice * currentFeePeriod.rewardsToDistribute) *
+									52) /
+							  SNXValueStaked
+							: null
 					}
 					percentChange={null}
 					subText="Current annual percentage yield from staking SNX"
@@ -72,7 +74,11 @@ const Staking: FC = () => {
 				<StatsBox
 					key="SNXSTKAPYSUSD"
 					title="CURRENT SNX STAKING APY (SUSD REWARDS)"
-					num={((sUSDPrice * currentFeePeriod?.feesToDistribute ?? 0) * 52) / SNXValueStaked}
+					num={
+						currentFeePeriod != null && SNXValueStaked != null
+							? (sUSDPrice * currentFeePeriod.feesToDistribute * 52) / SNXValueStaked
+							: null
+					}
 					percentChange={null}
 					subText="Current annual percentage yield from staking SNX from sUSD trading volume fees"
 					color={COLORS.green}
@@ -83,7 +89,11 @@ const Staking: FC = () => {
 				<StatsBox
 					key="SNXSTKAPYSNX"
 					title="CURRENT SNX STAKING APY (SNX rewards)"
-					num={((SNXPrice * currentFeePeriod?.rewardsToDistribute ?? 0) * 52) / SNXValueStaked}
+					num={
+						currentFeePeriod != null && SNXValueStaked != null
+							? ((SNXPrice * currentFeePeriod?.rewardsToDistribute ?? 0) * 52) / SNXValueStaked
+							: null
+					}
 					percentChange={null}
 					subText="Current annual percentage yield from staking SNX from SNX rewards"
 					color={COLORS.pink}
@@ -96,7 +106,11 @@ const Staking: FC = () => {
 				<StatsBox
 					key="CRRNTFEERWPOOLUSD"
 					title="CURRENT FEE REWARDS POOL (USD)"
-					num={sUSDPrice * currentFeePeriod?.feesToDistribute ?? 0}
+					num={
+						currentFeePeriod != null && sUSDPrice != null
+							? sUSDPrice * currentFeePeriod.feesToDistribute
+							: null
+					}
 					percentChange={null}
 					subText="The total value of all trading fee based rewards claimed and claimable in the current period"
 					color={COLORS.pink}
@@ -120,7 +134,11 @@ const Staking: FC = () => {
 				<StatsBox
 					key="CRRNTFEERWPOOLSNX"
 					title="CURRENT FEE REWARDS POOL (SNX)"
-					num={SNXPrice * currentFeePeriod?.rewardsToDistribute ?? 0}
+					num={
+						currentFeePeriod != null && SNXPrice != null
+							? SNXPrice * currentFeePeriod.rewardsToDistribute
+							: null
+					}
 					percentChange={null}
 					subText="The total value of all SNX rewards both claimed and claimable in the current period"
 					color={COLORS.green}
@@ -132,11 +150,10 @@ const Staking: FC = () => {
 					key="UNCLMFEESUSD"
 					title="UNCLAIMED FEES AND REWARDS (USD)"
 					num={
-						sUSDPrice *
-							((currentFeePeriod?.feesToDistribute ?? 0) - (currentFeePeriod?.feesClaimed ?? 0)) +
-						SNXPrice *
-							((currentFeePeriod?.rewardsToDistribute ?? 0) -
-								(currentFeePeriod?.rewardsClaimed ?? 0))
+						currentFeePeriod != null && sUSDPrice != null && SNXPrice != null
+							? sUSDPrice * (currentFeePeriod.feesToDistribute - currentFeePeriod.feesClaimed) +
+							  SNXPrice * (currentFeePeriod.rewardsToDistribute - currentFeePeriod.rewardsClaimed)
+							: null
 					}
 					percentChange={null}
 					subText="The total value of all unclaimed fees and rewards in the current period"
@@ -148,7 +165,11 @@ const Staking: FC = () => {
 				<StatsBox
 					key="UPCOMINGFEESUSD"
 					title="FEES IN NEXT PERIOD (USD)"
-					num={sUSDPrice * nextFeePeriod?.feesToDistribute ?? 0}
+					num={
+						nextFeePeriod != null && sUSDPrice != null
+							? sUSDPrice * nextFeePeriod.feesToDistribute
+							: null
+					}
 					percentChange={null}
 					subText="The total value of all trading fee based rewards accumulated for the next period"
 					color={COLORS.pink}

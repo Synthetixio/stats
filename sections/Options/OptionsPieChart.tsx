@@ -15,7 +15,7 @@ const OptionsPieChart: FC<OptionsPieChartProps> = ({ data }) => {
 		<OptionsPieChartContainer>
 			<ChartTitle>BINARY MARKETS DOMINANCE</ChartTitle>
 			<ChartSubtitle>Distribution of synths within the network</ChartSubtitle>
-			<PieChart legendRight={true} data={data} />
+			<PieChart data={data} />
 		</OptionsPieChartContainer>
 	);
 };

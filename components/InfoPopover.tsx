@@ -9,9 +9,9 @@ interface InfoPopoverProps {
 }
 
 const InfoPopover: FC<InfoPopoverProps> = ({ infoData }) => {
-	const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
+	const [anchorEl, setAnchorEl] = useState<HTMLDivElement | null>(null);
 
-	const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
+	const handleClick = (event: MouseEvent<any>) => {
 		setAnchorEl(event.currentTarget);
 	};
 
@@ -24,7 +24,9 @@ const InfoPopover: FC<InfoPopoverProps> = ({ infoData }) => {
 
 	return (
 		<PopoverContainer>
-			<div aria-describedby={id} variant="contained" onClick={handleClick}>
+			<div aria-describedby={id} onClick={handleClick}>
+				{/* 
+				// @ts-ignore */}
 				<InfoIcon width="13px" height="13px" />
 			</div>
 			<Popover

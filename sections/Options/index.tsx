@@ -30,21 +30,21 @@ const Options: FC = () => {
 				snxData.binaryOptions.markets({ max: 5000 }),
 			]);
 			const now = new Date();
-			const sortedMarkets = unformattedMarkets.sort((a, b) => {
+			const sortedMarkets = unformattedMarkets.sort((a: OptionsMarket, b: OptionsMarket) => {
 				return parseFloat(b.poolSize) - parseFloat(a.poolSize);
 			});
 
 			const marketsData = sortedMarkets
-				.filter((market, index) => {
+				.filter((market: OptionsMarket, index: number) => {
 					if (index === 0) {
 						const { currencyKey, poolSize, maturityDate, strikePrice } = market;
 						setLargestMarket({ currencyKey, poolSize, maturityDate, strikePrice });
 					}
-					const expiryDate = new Date(market.expiryDate);
+					const expiryDate = new Date(market.expiryDate as string);
 					return expiryDate > now;
 				})
 				.reduce(
-					([count, sum], activeMarket, index) => {
+					([count, sum]: [number, number], activeMarket: OptionsMarket, index: number) => {
 						if (index === 0) {
 							const { currencyKey, poolSize, maturityDate, strikePrice } = activeMarket;
 							setLargestActiveMarket({ currencyKey, poolSize, maturityDate, strikePrice });
@@ -58,25 +58,28 @@ const Options: FC = () => {
 
 			const totalPoolSizes = marketsData[1];
 
-			const formattedPieChartData = sortedMarkets.reduce((acc, curr) => {
-				if (curr.poolSize / totalPoolSizes < MIN_PERCENT_FOR_PIE_CHART) {
-					const othersIndex = findIndex(acc, (o) => o.name === 'others');
-					if (othersIndex === -1) {
-						acc.push({ name: 'others', value: curr.value });
+			const formattedPieChartData = sortedMarkets.reduce(
+				(acc: SynthTotalSupply[], curr: OptionsMarket) => {
+					if (Number(curr.poolSize) / totalPoolSizes < MIN_PERCENT_FOR_PIE_CHART) {
+						const othersIndex = findIndex(acc, (o) => o.name === 'others');
+						if (othersIndex === -1) {
+							acc.push({ name: 'others', value: curr?.value ?? 0 });
+						} else {
+							acc[othersIndex].value = acc[othersIndex].value + Number(curr.poolSize);
+						}
 					} else {
-						acc[othersIndex].value = acc[othersIndex].value + curr.poolSize;
+						acc.push({
+							name: `${curr.currencyKey} > ${formatCurrency(curr.strikePrice)} @${format(
+								new Date(curr.maturityDate),
+								'MM/dd/yyyy'
+							)}`,
+							value: Number(curr.poolSize),
+						});
 					}
-				} else {
-					acc.push({
-						name: `${curr.currencyKey} > ${formatCurrency(curr.strikePrice)} @${format(
-							new Date(curr.maturityDate),
-							'MM/dd/yyyy'
-						)}`,
-						value: curr.poolSize,
-					});
-				}
-				return acc;
-			}, []);
+					return acc;
+				},
+				[]
+			);
 
 			setNumMarkets(marketsData[0]);
 			setTotalPoolSizes(totalPoolSizes);
@@ -84,9 +87,11 @@ const Options: FC = () => {
 
 			const yesterday = new Date();
 			yesterday.setDate(yesterday.getDate() - 1);
-			const optionTransactions = unformattedOptionTransactions.filter((optionTx) => {
-				return new Date(optionTx.timestamp) > yesterday;
-			});
+			const optionTransactions = unformattedOptionTransactions.filter(
+				(optionTx: { timestamp: number }) => {
+					return new Date(optionTx.timestamp) > yesterday;
+				}
+			);
 
 			setNum24HRTx(optionTransactions.length);
 		};
@@ -100,7 +105,7 @@ const Options: FC = () => {
 				<StatsBox
 					key="LGSTACTVBINMKT"
 					title="LARGEST ACTIVE BINARY MARKET (USD)"
-					num={largestActiveMarket?.poolSize ?? 0}
+					num={Number(largestActiveMarket?.poolSize ?? 0)}
 					percentChange={null}
 					subText={`The largest active binary options market is ${
 						largestActiveMarket?.currencyKey ?? '...'
@@ -111,7 +116,7 @@ const Options: FC = () => {
 					}`}
 					color={COLORS.green}
 					numberStyle="currency0"
-					numBoxes={3}
+					numBoxes={2}
 					infoData={
 						<>
 							To get the largest active binary options market, we pull all the "Market" entities
@@ -125,7 +130,7 @@ const Options: FC = () => {
 				<StatsBox
 					key="LGSTBINMKTTODATE"
 					title="LARGEST BINARY MARKET TO DATE (USD)"
-					num={largestMarket?.poolSize ?? 0}
+					num={Number(largestMarket?.poolSize ?? 0)}
 					percentChange={null}
 					subText={`The largest binary options market to date is ${
 						largestMarket?.currencyKey ?? '...'
@@ -136,7 +141,7 @@ const Options: FC = () => {
 					}`}
 					color={COLORS.pink}
 					numberStyle="currency0"
-					numBoxes={3}
+					numBoxes={2}
 					infoData={
 						<>
 							To get the largest binary options market to date, we pull all the "Market" entities
@@ -144,19 +149,6 @@ const Options: FC = () => {
 							<LinkText href={synthetixOptionsSubgraph}>Synthetix options subgraph</LinkText> and
 							sort them by "poolSize" to get the largest.
 						</>
-					}
-				/>
-				<StatsBox
-					key="TOTALVOLUMETRDED"
-					title="COMING SOON: TOTAL VOLUME TRADED (USD)"
-					num={0}
-					percentChange={null}
-					subText="The total volume traded for binary options markets to date. Coming soon!"
-					color={COLORS.pink}
-					numberStyle="currency0"
-					numBoxes={3}
-					infoData={
-						<>We are in the process of updating our subgraph to make getting this data easier.</>
 					}
 				/>
 			</StatsRow>
