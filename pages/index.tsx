@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 
 import SnxSection from 'sections/Network';
 import TradingSection from 'sections/Trading';
-import SynthsSection from 'sections/Synth';
+import SynthsSection from 'sections/Synths';
 import OptionsSection from 'sections/Options';
 import StakingSection from 'sections/Staking';
 import YieldFarmingSection from 'sections/YieldFarming';
