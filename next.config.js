@@ -17,4 +17,5 @@ module.exports = {
 		PORTIS_APP_ID: '26e198be-a8bb-4240-ad78-ae88579085bc',
 		INFURA_KEY: '88763c0ddb9b411dbcc2e6d1e4c1a5ac',
 	},
+	basePath: '/',
 };
