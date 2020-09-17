@@ -6,7 +6,6 @@ import { formatCurrency, formatPercentage } from '../../utils/formatter';
 
 interface CustomLegendProps {
 	payload: { value: number; payload: { value: number } }[];
-	legendRight: boolean | null;
 }
 
 const BRIGHT_COLORS = [
@@ -18,7 +17,7 @@ const BRIGHT_COLORS = [
 	colors.brightPurple,
 ];
 
-const CustomLegend: FC<CustomLegendProps> = ({ payload, legendRight }) => {
+const CustomLegend: FC<CustomLegendProps> = ({ payload }) => {
 	const total = payload.reduce((acc, { payload: { value } }) => (acc += value || 0), 0);
 	return (
 		<CustomLegendContainer>

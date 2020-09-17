@@ -7,7 +7,6 @@ import CustomLegend from './CustomLegend';
 
 interface BasicPieChartProps {
 	data: SynthTotalSupply[];
-	legendRight?: boolean;
 }
 
 const MUTED_COLORS = [
@@ -27,7 +26,7 @@ const BRIGHT_COLORS = [
 	colors.brightPurple,
 ];
 
-const BasicPieChart: FC<BasicPieChartProps> = ({ data, legendRight }) => (
+const BasicPieChart: FC<BasicPieChartProps> = ({ data }) => (
 	<ResponsiveContainer width="100%" height={380}>
 		<PieChart height={380}>
 			<Pie
@@ -48,7 +47,7 @@ const BasicPieChart: FC<BasicPieChartProps> = ({ data, legendRight }) => (
 					/>
 				))}
 			</Pie>
-			<Legend content={<CustomLegend legendRight={legendRight} />} />
+			<Legend content={<CustomLegend />} />
 		</PieChart>
 	</ResponsiveContainer>
 );
