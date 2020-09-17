@@ -8,7 +8,7 @@ import SectionHeader from 'components/SectionHeader';
 import SynthsBarChart from './SynthsBarChart';
 import SynthsPieChart from './SynthsPieChart';
 import { MAX_PAGE_WIDTH, COLORS } from 'constants/styles';
-import { SNXJSContext, SUSDContext } from 'pages/_app';
+import { SNXJSContext, SUSDContext, ProviderContext } from 'pages/_app';
 import { OpenInterest, SynthTotalSupply } from 'types/data';
 import SingleStatRow from 'components/SingleStatRow';
 import DoubleStatsBox from 'components/DoubleStatsBox';
@@ -23,12 +23,14 @@ const SynthsSection: FC<{}> = () => {
 	const [barChartData, setBarChartData] = useState<OpenInterest>({});
 	const snxjs = useContext(SNXJSContext);
 	const { sUSDPrice } = useContext(SUSDContext);
+	const provider = useContext(ProviderContext);
+
 	useEffect(() => {
 		const fetchData = async () => {
 			const SynthSummaryUtil = new ethers.Contract(
 				synthSummaryUtilContract.address,
 				synthSummaryUtilContract.abi,
-				ethers.getDefaultProvider()
+				provider
 			);
 
 			const synthTotalSupplies = await SynthSummaryUtil.synthsTotalSupplies();

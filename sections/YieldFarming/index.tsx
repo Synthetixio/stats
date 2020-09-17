@@ -17,7 +17,7 @@ import {
 } from 'contracts/index.js';
 
 import { COLORS } from 'constants/styles';
-import { SNXJSContext, SNXContext } from 'pages/_app';
+import { SNXJSContext, SNXContext, ProviderContext } from 'pages/_app';
 import { getAaveDepositRate, getCurveTokenPrice } from 'utils/customGraphQueries';
 import { formatPercentage } from 'utils/formatter';
 import { FullLineText } from '../../components/common';
@@ -40,42 +40,39 @@ const YieldFarming: FC = () => {
 	const [curveTokenAPY, setCurveTokenAPY] = useState<number | null>(null);
 	const snxjs = useContext(SNXJSContext);
 	const { SNXPrice } = useContext(SNXContext);
+	const provider = useContext(ProviderContext);
 
 	useEffect(() => {
 		const curvepoolContract = new ethers.Contract(
 			curvepoolRewards.address,
 			curvepoolRewards.abi,
-			ethers.getDefaultProvider()
+			provider
 		);
 		const iEth2RewardsContract = new ethers.Contract(
 			iEth2Rewards.address,
 			iEth2Rewards.abi,
-			ethers.getDefaultProvider()
+			provider
 		);
-		const iBtcRewardsContract = new ethers.Contract(
-			iBtcRewards.address,
-			iBtcRewards.abi,
-			ethers.getDefaultProvider()
-		);
+		const iBtcRewardsContract = new ethers.Contract(iBtcRewards.address, iBtcRewards.abi, provider);
 		const curveSusdPoolContract = new ethers.Contract(
 			curveSusdPool.address,
 			curveSusdPool.abi,
-			ethers.getDefaultProvider()
+			provider
 		);
 		const curveSusdPoolTokenContract = new ethers.Contract(
 			curveSusdPoolToken.address,
 			curveSusdPoolToken.abi,
-			ethers.getDefaultProvider()
+			provider
 		);
 		const curveSusdGaugeContract = new ethers.Contract(
 			curveSusdGauge.address,
 			curveSusdGauge.abi,
-			ethers.getDefaultProvider()
+			provider
 		);
 		const curveGaugeControllerContract = new ethers.Contract(
 			curveGaugeController.address,
 			curveGaugeController.abi,
-			ethers.getDefaultProvider()
+			provider
 		);
 
 		const fetchData = async () => {

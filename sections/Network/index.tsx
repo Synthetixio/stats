@@ -25,7 +25,7 @@ import {
 	synthetixDataGithub,
 } from 'constants/links';
 import SUSDDistribution from '../Network/SUSDDistribution';
-import { SNXJSContext, SUSDContext, SNXContext } from 'pages/_app';
+import { SNXJSContext, SUSDContext, SNXContext, ProviderContext } from 'pages/_app';
 import { formatIdToIsoString } from 'utils/formatter';
 import { getSUSDHoldersName } from 'utils/dataMapping';
 import { LinkText, FullLineLink, NewParagraph } from 'components/common';
@@ -51,6 +51,7 @@ const NetworkSection: FC = () => {
 	const snxjs = useContext(SNXJSContext);
 	const { sUSDPrice, setsUSDPrice } = useContext(SUSDContext);
 	const { SNXPrice, setSNXPrice, setSNXStaked } = useContext(SNXContext);
+	const provider = useContext(ProviderContext);
 
 	// NOTE: use interval? or save data calls?
 	useEffect(() => {
@@ -60,7 +61,7 @@ const NetworkSection: FC = () => {
 			const curveContract = new ethers.Contract(
 				curveSusdSwapContract.address,
 				curveSusdSwapContract.abi,
-				ethers.getDefaultProvider()
+				provider
 			);
 
 			const usdcContractNumber = 1;
@@ -79,6 +80,7 @@ const NetworkSection: FC = () => {
 				holders,
 				snxTotals,
 				unformattedSUSDTotalSupply,
+				topSUSDHolders,
 			] = await Promise.all([
 				snxjs.contracts.ExchangeRates.rateForCurrency(snxjs.toBytes32('SNX')),
 				snxjs.contracts.Synthetix.totalSupply(),
@@ -90,11 +92,8 @@ const NetworkSection: FC = () => {
 				snxData.snx.holders({ max: 1000 }),
 				snxData.snx.total(),
 				snxjs.contracts.SynthsUSD.totalSupply(),
+				snxData.synths.holders({ max: 5, synth: 'sUSD' }),
 			]);
-			const topSUSDHolders = tempMockData.map((blnc) => {
-				blnc.balanceOf = blnc.balanceOf / 1e18;
-				return blnc;
-			});
 
 			setSNXHolders(snxTotals.snxHolders);
 			const formattedSNXPrice = Number(formatEther(unformattedSnxPrice));
@@ -155,8 +154,8 @@ const NetworkSection: FC = () => {
 			}
 
 			const topHolders = topSUSDHolders.map(
-				({ balanceOf, id }: { balanceOf: number; id: string }) => ({
-					name: getSUSDHoldersName(id),
+				({ balanceOf, address }: { balanceOf: number; address: string }) => ({
+					name: getSUSDHoldersName(address),
 					value: balanceOf,
 				})
 			);
@@ -498,31 +497,3 @@ export const curveSusdSwapContract = {
 };
 
 export default NetworkSection;
-
-const tempMockData = [
-	{
-		balanceOf: 33105588684386385866501438,
-		id: '0xa5407eae9ba41422680e2e00537571bcc53efbfd-sUSD',
-		synth: 'sUSD',
-	},
-	{
-		balanceOf: 20536181827074703429922386,
-		id: '0xf1f85b2c54a2bd284b1cf4141d64fd171bd85539-sUSD',
-		synth: 'sUSD',
-	},
-	{
-		balanceOf: 15111182093637518880289745,
-		id: '0xf80758ab42c3b07da84053fd88804bcb6baa4b5c-sUSD',
-		synth: 'sUSD',
-	},
-	{
-		balanceOf: 2676952152553875806417741,
-		id: '0x859d545374e2baaa73d912015bd9383a9fc11f96-sUSD',
-		synth: 'sUSD',
-	},
-	{
-		balanceOf: 2496242784237612628079862,
-		id: '0x49be88f0fcc3a8393a59d3688480d7d253c37d2a-sUSD',
-		synth: 'sUSD',
-	},
-];

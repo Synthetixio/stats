@@ -1,6 +1,7 @@
 import { createContext, FC, createRef, useState } from 'react';
 import { AppProps } from 'next/app';
 import Head from 'next/head';
+import { ethers } from 'ethers';
 import { useTranslation } from 'react-i18next';
 
 import { synthetix, Network } from '@synthetixio/js';
@@ -23,6 +24,9 @@ const headersAndScrollRef = {
 	OPTIONS: createRef(),
 };
 
+const provider = new ethers.providers.InfuraProvider('homestead', process.env.INFURA_KEY);
+export const ProviderContext = createContext(provider);
+
 export const HeadersContext = createContext(headersAndScrollRef);
 
 export const SUSDContext = createContext({
@@ -37,7 +41,7 @@ export const SNXContext = createContext({
 	setSNXStaked: (num: number) => null,
 });
 
-const snxjs = synthetix({ network: Network.Mainnet });
+const snxjs = synthetix({ network: Network.Mainnet, provider });
 
 export const SNXJSContext = createContext(snxjs);
 
@@ -74,13 +78,15 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
 				<MuiThemeProvider theme={muiTheme}>
 					<HeadersContext.Provider value={headersAndScrollRef}>
 						<SNXJSContext.Provider value={snxjs}>
-							<SUSDContext.Provider value={{ sUSDPrice, setsUSDPrice }}>
-								<SNXContext.Provider value={{ SNXPrice, setSNXPrice, SNXStaked, setSNXStaked }}>
-									<Layout>
-										<Component {...pageProps} />
-									</Layout>
-								</SNXContext.Provider>
-							</SUSDContext.Provider>
+							<ProviderContext.Provider value={provider}>
+								<SUSDContext.Provider value={{ sUSDPrice, setsUSDPrice }}>
+									<SNXContext.Provider value={{ SNXPrice, setSNXPrice, SNXStaked, setSNXStaked }}>
+										<Layout>
+											<Component {...pageProps} />
+										</Layout>
+									</SNXContext.Provider>
+								</SUSDContext.Provider>
+							</ProviderContext.Provider>
 						</SNXJSContext.Provider>
 					</HeadersContext.Provider>
 				</MuiThemeProvider>

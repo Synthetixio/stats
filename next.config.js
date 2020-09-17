@@ -15,5 +15,6 @@ module.exports = {
 		BN_ONBOARD_API_KEY: '70015a31-1125-4f17-8b12-e56548202d3f',
 		BN_NOTIFY_API_KEY: '95a4ea13-9af6-4ea1-89db-a2c333236a77',
 		PORTIS_APP_ID: '26e198be-a8bb-4240-ad78-ae88579085bc',
+		INFURA_KEY: '88763c0ddb9b411dbcc2e6d1e4c1a5ac',
 	},
 };

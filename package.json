@@ -34,7 +34,7 @@
 		"react-table": "7.5.0",
 		"recharts": "1.8.5",
 		"styled-components": "5.1.1",
-		"synthetix-data": "2.1.27",
+		"synthetix-data": "2.1.29",
 		"synthetix-js": "2.27.4",
 		"unstated-next": "1.1.0",
 		"use-immer": "0.4.1"
