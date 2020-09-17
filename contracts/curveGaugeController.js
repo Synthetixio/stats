@@ -143,16 +143,6 @@ export default {
 			type: 'function',
 		},
 		{
-			name: 'gauge_relative_weight',
-			outputs: [{ type: 'uint256', name: '' }],
-			inputs: [
-				{ type: 'address', name: 'addr' },
-				{ type: 'uint256', name: 'time' },
-			],
-			stateMutability: 'view',
-			type: 'function',
-		},
-		{
 			name: 'gauge_relative_weight_write',
 			outputs: [{ type: 'uint256', name: '' }],
 			inputs: [{ type: 'address', name: 'addr' }],

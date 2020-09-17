@@ -97,16 +97,6 @@ const YieldFarming: FC = () => {
 				});
 				setDistributions(contractRewards);
 
-				console.log('plain contract curveGaugeControllerContract', curveGaugeControllerContract);
-				console.log(
-					'calling curveGaugeControllerContract',
-					await curveGaugeControllerContract.time_total()
-				);
-				console.log(
-					'calling curveGaugeControllerContract',
-					await curveGaugeControllerContract.gauge_relative_weight(curveSusdGauge.address, '0')
-				);
-
 				const fetchedData = await Promise.all([
 					snxjs.contracts.ProxyiETH.balanceOf(iEth2Rewards.address),
 					snxjs.contracts.ProxyiBTC.balanceOf(iBtcRewards.address),
@@ -116,7 +106,7 @@ const YieldFarming: FC = () => {
 					curveSusdPoolContract.get_virtual_price(),
 					curveSusdGaugeContract.inflation_rate(),
 					curveSusdGaugeContract.working_supply(),
-					curveSusdGaugeContract.working_supply(),
+					curveGaugeControllerContract.gauge_relative_weight(curveSusdGauge.address),
 					getAaveDepositRate(),
 					getCurveTokenPrice(),
 					axios.get('https://www.curve.fi/raw-stats/apys.json'),
@@ -131,9 +121,9 @@ const YieldFarming: FC = () => {
 					curveSusdTokenPrice,
 					curveInflationRate,
 					curveWorkingSupply,
-				] = fetchedData.slice(0, 8).map((data) => Number(snxjs.utils.formatEther(data)));
+					gaugeRelativeWeight,
+				] = fetchedData.slice(0, 9).map((data) => Number(snxjs.utils.formatEther(data)));
 
-				const gaugeRelativeWeight = 0.112; // TODO fix w number from contract
 				const rate =
 					(((curveInflationRate * gaugeRelativeWeight * 31536000) / curveWorkingSupply) * 0.4) /
 					curveSusdTokenPrice;
@@ -148,7 +138,6 @@ const YieldFarming: FC = () => {
 				const swapAPY = fetchedData[11]?.data?.apy?.day?.susd ?? 0;
 				setCurveSwapAPY(swapAPY);
 			} catch (e) {
-				console.log('err', e);
 				setDistributions(null);
 			}
 		};
