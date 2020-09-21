@@ -66,13 +66,13 @@ const StatsBoxContainer = styled.div<{ num: number | null; numBoxes: number }>`
 		if (props.num == null && props.numBoxes === 2) {
 			return css`
 				width: calc(46% + 40px);
-				height: 180px;
+				height: 160px;
 			`;
 		}
 		if (props.num == null && props.numBoxes === 3) {
 			return css`
 				width: calc(29% + 40px);
-				height: 180px;
+				height: 160px;
 			`;
 		}
 		if (props.num == null && props.numBoxes === 4) {
@@ -84,13 +84,13 @@ const StatsBoxContainer = styled.div<{ num: number | null; numBoxes: number }>`
 		if (props.numBoxes === 2) {
 			return css`
 				width: 46%;
-				height: 140px;
+				height: 120px;
 			`;
 		}
 		if (props.numBoxes === 3) {
 			return css`
 				width: 29%;
-				height: 140px;
+				height: 120px;
 			`;
 		}
 		return css`

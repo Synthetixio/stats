@@ -1,7 +1,7 @@
 import { FC, ReactNode } from 'react';
 import styled from 'styled-components';
 
-import { Z_INDEX, NumberStyle } from 'constants/styles';
+import { Z_INDEX, NumberStyle, NumberColor, COLORS } from 'constants/styles';
 
 import { PercentChangeBox } from 'components/common';
 import { getFormattedNumber, formatPercentage } from 'utils/formatter';
@@ -24,9 +24,13 @@ const ChartTitle: FC<ChartTitleProps> = ({ title, num, numFormat, percentChange,
 				<InfoPopover infoData={infoData} />
 			</TitleWrap>
 			<BottomSegment>
-				<MainNumber>{formattedNum}</MainNumber>
+				<MainNumber color={percentChange != null && percentChange > 0 ? 'green' : 'pink'}>
+					{formattedNum}
+				</MainNumber>
 				{percentChange ? (
-					<PercentChangeBox color="green">{formatPercentage(percentChange)}</PercentChangeBox>
+					<PercentChangeBox color={percentChange > 0 ? 'green' : 'pink'}>
+						{formatPercentage(percentChange)}
+					</PercentChangeBox>
 				) : null}
 			</BottomSegment>
 		</ContentContainer>
@@ -47,12 +51,13 @@ const MainTitle = styled.div`
 	line-height: 24px;
 `;
 
-const MainNumber = styled.div`
+const MainNumber = styled.div<{ color: NumberColor }>`
 	font-style: normal;
 	font-weight: bold;
 	font-size: 28px;
 	line-height: 24px;
-	color: ${(props) => props.theme.colors.brightGreen};
+	color: ${(props) =>
+		props.color === COLORS.green ? props.theme.colors.brightGreen : props.theme.colors.brightPink};
 	margin-right: 10px;
 	font-family: ${(props) => `${props.theme.fonts.mono}, ${props.theme.fonts.regular}`};
 `;

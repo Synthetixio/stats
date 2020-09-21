@@ -30,14 +30,14 @@ export const ProviderContext = createContext(provider);
 export const HeadersContext = createContext(headersAndScrollRef);
 
 export const SUSDContext = createContext({
-	sUSDPrice: 0,
+	sUSDPrice: null,
 	setsUSDPrice: (num: number) => null,
 });
 
 export const SNXContext = createContext({
-	SNXPrice: 0,
+	SNXPrice: null,
 	setSNXPrice: (num: number) => null,
-	SNXStaked: 0,
+	SNXStaked: null,
 	setSNXStaked: (num: number) => null,
 });
 

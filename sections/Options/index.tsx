@@ -174,7 +174,7 @@ const Options: FC = () => {
 				/>
 				<StatsBox
 					key="TTLAMOUNTPOOLEDBINOPT"
-					title="TOTAL AMOUNT POOLED IN BINARY OPTIONS (USD)"
+					title="TOTAL POOLED IN BINARY OPTIONS (USD)"
 					num={totalPoolSizes}
 					percentChange={null}
 					subText="The total amount of capital pooled in active binary options markets"

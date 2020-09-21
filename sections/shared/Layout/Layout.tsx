@@ -59,11 +59,11 @@ const GlobalStyle = createGlobalStyle`
 		*::-webkit-scrollbar-thumb, ::-webkit-scrollbar-thumb {
 				-webkit-border-radius: 10px;
 				border-radius: 10px;
-				background: ${(props) => props.theme.colors.mutedBrightPink}; 
+				background: ${(props) => props.theme.colors.brightPink}; 
 				-webkit-box-shadow: inset 0 0 6px ${(props) => props.theme.colors.mediumBlue}; 
 		}
 		*::-webkit-scrollbar-thumb:window-inactive, ::-webkit-scrollbar-thumb:window-inactive {
-			background: ${(props) => props.theme.colors.mutedBrightPink}; 
+			background: ${(props) => props.theme.colors.brightPink}; 
 		}
 
 		svg.recharts-surface tspan {
