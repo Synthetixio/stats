@@ -227,7 +227,7 @@ const YieldFarming: FC = () => {
 				/>
 				<DoubleStatsBox
 					key="iBTCRWRDS"
-					title="iBTC"
+					title="iBTC (Ended)"
 					subtitle={subtitleText('iBTC')}
 					firstMetricTitle="WEEKLY REWARDS (SNX)"
 					firstMetricStyle="number"

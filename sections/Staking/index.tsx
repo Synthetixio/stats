@@ -163,7 +163,7 @@ const Staking: FC = () => {
 							: null
 					}
 					percentChange={null}
-					subText="The total value of all Synth trading fees already accumulated in this fee period that will be able to be claimed in the next fee period"
+					subText="The total value of Synth trading fees already accumulated in this fee period that are claimable in the next fee period"
 					color={COLORS.pink}
 					numberStyle="currency0"
 					numBoxes={4}
