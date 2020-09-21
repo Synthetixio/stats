@@ -51,6 +51,7 @@ const InfoPopover: FC<InfoPopoverProps> = ({ infoData }) => {
 
 const PopoverContainer = styled.div`
 	margin-left: 10px;
+	margin-right: 20px;
 	padding-top: 4px;
 	cursor: pointer;
 `;

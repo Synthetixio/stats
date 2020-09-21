@@ -126,6 +126,10 @@ const StatsBoxTitle = styled.div`
 	text-transform: uppercase;
 
 	color: ${(props) => props.theme.colors.white};
+
+	@media only screen and (max-width: 500px) {
+		margin-bottom: 25px;
+	}
 `;
 
 const StatsBoxNumber = styled.div<{ color: NumberColor }>`

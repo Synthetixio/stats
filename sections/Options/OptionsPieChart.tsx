@@ -14,7 +14,7 @@ const OptionsPieChart: FC<OptionsPieChartProps> = ({ data }) => {
 	return (
 		<OptionsPieChartContainer>
 			<ChartTitle>BINARY MARKETS DOMINANCE</ChartTitle>
-			<ChartSubtitle>Distribution of synths within the network</ChartSubtitle>
+			<ChartSubtitle>Distribution of Synths within the Synthetix protocol</ChartSubtitle>
 			<PieChart data={data} />
 		</OptionsPieChartContainer>
 	);
@@ -25,6 +25,10 @@ const OptionsPieChartContainer = styled.div`
 	max-width: ${MAX_PAGE_WIDTH}px;
 	height: 760px;
 	margin: 20px auto 50px auto;
+
+	@media only screen and (max-width: 500px) {
+		height: 900px;
+	}
 `;
 
 export default OptionsPieChart;

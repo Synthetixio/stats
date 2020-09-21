@@ -61,7 +61,6 @@ export const FullLineLink = styled(LinkText)`
 export const FullLineText = styled.div`
 	display: block;
 	margin: 10px 0;
-	color: ${(props) => props.theme.colors.brightBlue};
 `;
 
 export const NewParagraph = styled.div`

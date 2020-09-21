@@ -122,7 +122,7 @@ const Trading: FC = () => {
 					title="TOTAL TRADING VOLUME"
 					num={totalTradingVolume}
 					percentChange={null}
-					subText="Historical trading volume for synths"
+					subText="Historical trading volume for all Synths"
 					color={COLORS.green}
 					numberStyle="currency0"
 					numBoxes={3}
@@ -130,8 +130,8 @@ const Trading: FC = () => {
 						<>
 							The total trading volume only shows data from after the Archernar release on{' '}
 							<LinkText href={etherscanArchernarBlock}>block 9,518,914 (Feb 20, 2020).</LinkText>{' '}
-							Prior to this release there was a lot of volume generated via{' '}
-							<LinkText href={frontRunningWiki}>front running transactions.</LinkText>
+							Prior to this release significant volume was generated via{' '}
+							<LinkText href={frontRunningWiki}>front running</LinkText> attempts.
 						</>
 					}
 				/>
@@ -140,7 +140,7 @@ const Trading: FC = () => {
 					title="TOTAL NUMBER OF TRADES"
 					num={totalTrades}
 					percentChange={null}
-					subText="Total historical trades for synths"
+					subText="Total historical trades for all Synths"
 					color={COLORS.green}
 					numberStyle="number"
 					numBoxes={3}
@@ -148,8 +148,8 @@ const Trading: FC = () => {
 						<>
 							The total number of trades only shows data from after the Archernar release on{' '}
 							<LinkText href={etherscanArchernarBlock}>block 9,518,914 (Feb 20, 2020).</LinkText>{' '}
-							Prior to this release there was a lot of volume generated via{' '}
-							<LinkText href={frontRunningWiki}>front running transactions.</LinkText>
+							Prior to this release significant volume was generated via{' '}
+							<LinkText href={frontRunningWiki}>front running</LinkText> attempts.
 						</>
 					}
 				/>
@@ -216,17 +216,14 @@ const Trading: FC = () => {
 				infoData={
 					<>
 						Each day we capture the number of unique traders using the Synthetix protocol via the
-						synthetix exchanges subgraph using the "DailyTotal" entity{' '}
-						<LinkText href={synthetixExchangesSubgraph}>(view playground).</LinkText>
+						<LinkText href={synthetixExchangesSubgraph}>Synthetix exchanges subgraph</LinkText>{' '}
+						using the "DailyTotal" entity.
 						<NewParagraph>
 							The cumulative daily traders is the sum of all the daily traders over this time period
-							(we double count unique traders across different days).
+							(we double-count unique traders across different days). To capture the number of
+							unique traders on a specific day, simply subtract the number of traders for that day
+							from the previous day.
 						</NewParagraph>
-						<NewParagraph>
-							To capture the number of unique traders on a specific day, simply subtract the number
-							of traders for that day from the previous day.
-						</NewParagraph>
-						<FullLineLink href={githubSubgraph}>See GitHub repo for this subgraph</FullLineLink>
 					</>
 				}
 			/>

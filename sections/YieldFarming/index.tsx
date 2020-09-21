@@ -22,8 +22,12 @@ import { getAaveDepositRate, getCurveTokenPrice } from 'utils/customGraphQueries
 import { formatPercentage } from 'utils/formatter';
 import { FullLineText } from '../../components/common';
 
-const subtitleText = (name: string) =>
-	`Data for Synthetix Liquidity Provider (LP) ${name} rewards program`;
+const subtitleText = (name: string) => {
+	if (name === 'sUSD') {
+		return `Rewards for providing liquidity to the ${name} stablecoin liquidity pool on Curve`;
+	}
+	return `Rewards for holding ${name} and staking it in the rewards contract`;
+};
 
 type APYFields = {
 	price: number;
@@ -166,7 +170,7 @@ const YieldFarming: FC = () => {
 						distributions != null ? distributions[curvepoolRewards.address] : distributions
 					}
 					firstColor={COLORS.pink}
-					secondMetricTitle="Annual Percentage Yield"
+					secondMetricTitle="Total Annual Percentage Yield"
 					secondMetric={
 						distributions != null &&
 						curveAPYFields != null &&

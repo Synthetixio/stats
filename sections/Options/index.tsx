@@ -121,9 +121,9 @@ const Options: FC = () => {
 						<>
 							To get the largest active binary options market, we pull all the "Market" entities
 							from the{' '}
-							<LinkText href={synthetixOptionsSubgraph}>Synthetix options subgraph</LinkText> and
-							then filter out any markets past their "expiryDate" and then sort them by "poolSize"
-							to get the largest.
+							<LinkText href={synthetixOptionsSubgraph}>Synthetix options subgraph,</LinkText>{' '}
+							filter out any markets past their "expiryDate" and then sort them by "poolSize" to get
+							the largest.
 						</>
 					}
 				/>
@@ -166,9 +166,9 @@ const Options: FC = () => {
 						<>
 							To get the number of active binary options market, we pull all the "Market" entities
 							from the{' '}
-							<LinkText href={synthetixOptionsSubgraph}>Synthetix options subgraph</LinkText> and
-							then filter out any markets past their "expiryDate" and then count the number of
-							markets remaining.
+							<LinkText href={synthetixOptionsSubgraph}>Synthetix options subgraph,</LinkText>{' '}
+							filter out any markets past their "expiryDate" and then count the number of markets
+							remaining.
 						</>
 					}
 				/>
@@ -185,8 +185,8 @@ const Options: FC = () => {
 						<>
 							To get the total amount pooled in active binary options market, we pull all the
 							"Market" entities from the{' '}
-							<LinkText href={synthetixOptionsSubgraph}>Synthetix options subgraph</LinkText> and
-							then filter out any markets past their "expiryDate" and then sum the "poolSize" of the
+							<LinkText href={synthetixOptionsSubgraph}>Synthetix options subgraph,</LinkText>{' '}
+							filter out any markets past their "expiryDate" and then sum the "poolSize" of the
 							remaining active markets.
 						</>
 					}

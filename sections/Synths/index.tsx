@@ -99,7 +99,7 @@ const SynthsSection: FC<{}> = () => {
 			<SectionHeader title="SYNTHS" />
 			<SingleStatRow
 				text="TOTAL SYNTHS"
-				subtext="The total value of all synths in USD"
+				subtext="The total value of all Synths in USD"
 				num={totalValue}
 				color={COLORS.green}
 				numberStyle="currency0"

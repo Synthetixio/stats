@@ -12,7 +12,7 @@ interface SUSDDistributionProps {
 
 const SUSDDistribution: FC<SUSDDistributionProps> = ({ data, totalSupplySUSD }) => (
 	<SectionWrap>
-		<SectionTitle>SUSD DISTRIBUTION</SectionTitle>
+		<SectionTitle>sUSD DISTRIBUTION</SectionTitle>
 		<SectionSubtitle>Distribution of sUSD desposited/stored</SectionSubtitle>
 		<BasicTreeMap data={data} totalSupplySUSD={totalSupplySUSD} />
 	</SectionWrap>

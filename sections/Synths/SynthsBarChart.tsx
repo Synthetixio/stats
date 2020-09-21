@@ -12,7 +12,7 @@ type SynthsBarChartProps = {
 const SynthsBarChart: FC<SynthsBarChartProps> = ({ data }) => (
 	<SynthsBarChartContainer>
 		<ChartTitle>SYNTH vs iSYNTH</ChartTitle>
-		<ChartSubtitle>Long/short interest on crptoassets</ChartSubtitle>
+		<ChartSubtitle>Long/short interest on cryptoassets</ChartSubtitle>
 		<SidewaysBarChart data={data} />
 	</SynthsBarChartContainer>
 );
