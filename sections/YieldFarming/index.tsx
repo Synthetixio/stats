@@ -172,11 +172,12 @@ const YieldFarming: FC = () => {
 					firstColor={COLORS.pink}
 					secondMetricTitle="Total Annual Percentage Yield"
 					secondMetric={
+						SNXPrice != null &&
 						distributions != null &&
 						curveAPYFields != null &&
 						curveSwapAPY != null &&
 						curveTokenAPY != null
-							? ((distributions[curvepoolRewards.address] * SNXPrice) /
+							? ((distributions[curvepoolRewards.address] * (SNXPrice ?? 0)) /
 									(curveAPYFields.balanceOf * curveAPYFields.price)) *
 									52 +
 							  curveSwapAPY +
@@ -192,9 +193,9 @@ const YieldFarming: FC = () => {
 								curveSwapAPY != null ? formatPercentage(curveSwapAPY) : '...'
 							}`}</FullLineText>
 							<FullLineText>{`2. SNX rewards at ${
-								distributions != null && curveAPYFields != null
+								distributions != null && curveAPYFields != null && SNXPrice != null
 									? formatPercentage(
-											((distributions[curvepoolRewards.address] * SNXPrice) /
+											((distributions[curvepoolRewards.address] * (SNXPrice ?? 0)) /
 												(curveAPYFields.balanceOf * curveAPYFields.price)) *
 												52
 									  )
@@ -216,8 +217,8 @@ const YieldFarming: FC = () => {
 					firstColor={COLORS.green}
 					secondMetricTitle="Annual Percentage Yield"
 					secondMetric={
-						distributions != null && iEthAPYFields != null
-							? ((distributions[iEth2Rewards.address] * SNXPrice) /
+						distributions != null && iEthAPYFields != null && SNXPrice != null
+							? ((distributions[iEth2Rewards.address] * (SNXPrice ?? 0)) /
 									(iEthAPYFields.balanceOf * iEthAPYFields.price)) *
 							  52
 							: null
@@ -235,8 +236,8 @@ const YieldFarming: FC = () => {
 					firstColor={COLORS.green}
 					secondMetricTitle="Annual Percentage Yield"
 					secondMetric={
-						distributions != null && iBtcAPYFields != null
-							? ((distributions[iBtcRewards.address] * SNXPrice) /
+						distributions != null && iBtcAPYFields != null && SNXPrice != null
+							? ((distributions[iBtcRewards.address] * (SNXPrice ?? 0)) /
 									(iBtcAPYFields.balanceOf * iBtcAPYFields.price)) *
 							  52
 							: null

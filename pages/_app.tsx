@@ -47,9 +47,9 @@ export const SNXJSContext = createContext(snxjs);
 
 const App: FC<AppProps> = ({ Component, pageProps }) => {
 	const { t } = useTranslation();
-	const [sUSDPrice, setsUSDPrice] = useState<number>(0);
-	const [SNXPrice, setSNXPrice] = useState<number>(0);
-	const [SNXStaked, setSNXStaked] = useState<number>(0);
+	const [sUSDPrice, setsUSDPrice] = useState<number | null>(null);
+	const [SNXPrice, setSNXPrice] = useState<number | null>(null);
+	const [SNXStaked, setSNXStaked] = useState<number | null>(null);
 
 	return (
 		<>
