@@ -258,7 +258,7 @@ const NetworkSection: FC = () => {
 				num={SNXPrice}
 				numFormat="currency2"
 				percentChange={
-					SNXPrice != null && priorSNXPrice != null ? SNXPrice / priorSNXPrice - 1 : null
+					SNXPrice != null && priorSNXPrice != null ? (SNXPrice ?? 0) / priorSNXPrice - 1 : null
 				}
 				timeSeries={priceChartPeriod === 'D' ? '15m' : '1d'}
 				infoData={
@@ -277,7 +277,7 @@ const NetworkSection: FC = () => {
 				<StatsBox
 					key="SNXMKTCAP"
 					title="SNX MARKET CAP"
-					num={SNXPrice != null && SNXTotalSupply != null ? SNXTotalSupply * SNXPrice : null}
+					num={SNXPrice != null && SNXTotalSupply != null ? SNXTotalSupply * (SNXPrice ?? 0) : null}
 					percentChange={null}
 					subText="Fully diluted market cap for SNX"
 					color={COLORS.pink}
@@ -328,7 +328,7 @@ const NetworkSection: FC = () => {
 					title="TOTAL SNX STAKED"
 					num={
 						SNXPercentLocked != null && SNXTotalSupply != null && SNXPrice != null
-							? SNXPercentLocked * SNXTotalSupply * SNXPrice
+							? SNXPercentLocked * SNXTotalSupply * (SNXPrice ?? 0)
 							: null
 					}
 					percentChange={null}

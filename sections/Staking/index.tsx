@@ -39,7 +39,7 @@ const Staking: FC = () => {
 		fetchData();
 	}, []);
 
-	const SNXValueStaked = useMemo(() => SNXPrice * SNXStaked, [SNXPrice, SNXStaked]);
+	const SNXValueStaked = useMemo(() => (SNXPrice ?? 0) * (SNXStaked ?? 0), [SNXPrice, SNXStaked]);
 
 	return (
 		<>
@@ -49,9 +49,12 @@ const Staking: FC = () => {
 					key="SNXSTKAPY"
 					title="CURRENT SNX STAKING APY"
 					num={
-						currentFeePeriod != null && SNXValueStaked != null
-							? ((sUSDPrice * currentFeePeriod.feesToDistribute +
-									SNXPrice * currentFeePeriod.rewardsToDistribute) *
+						sUSDPrice != null &&
+						SNXPrice != null &&
+						currentFeePeriod != null &&
+						SNXValueStaked != null
+							? (((sUSDPrice ?? 0) * currentFeePeriod.feesToDistribute +
+									(SNXPrice ?? 0) * currentFeePeriod.rewardsToDistribute) *
 									52) /
 							  SNXValueStaked
 							: null
@@ -72,8 +75,8 @@ const Staking: FC = () => {
 					key="SNXSTKAPYSUSD"
 					title="CURRENT SNX STAKING APY (sUSD REWARDS)"
 					num={
-						currentFeePeriod != null && SNXValueStaked != null
-							? (sUSDPrice * currentFeePeriod.feesToDistribute * 52) / SNXValueStaked
+						sUSDPrice != null && currentFeePeriod != null && SNXValueStaked != null
+							? ((sUSDPrice ?? 0) * currentFeePeriod.feesToDistribute * 52) / SNXValueStaked
 							: null
 					}
 					percentChange={null}
@@ -87,8 +90,9 @@ const Staking: FC = () => {
 					key="SNXSTKAPYSNX"
 					title="CURRENT SNX STAKING APY (SNX rewards)"
 					num={
-						currentFeePeriod != null && SNXValueStaked != null
-							? ((SNXPrice * currentFeePeriod?.rewardsToDistribute ?? 0) * 52) / SNXValueStaked
+						SNXPrice != null && currentFeePeriod != null && SNXValueStaked != null
+							? (((SNXPrice ?? 0) * currentFeePeriod?.rewardsToDistribute ?? 0) * 52) /
+							  SNXValueStaked
 							: null
 					}
 					percentChange={null}
@@ -104,8 +108,8 @@ const Staking: FC = () => {
 					key="CRRNTFEERWPOOLUSD"
 					title="CURRENT FEE POOL (sUSD)"
 					num={
-						currentFeePeriod != null && sUSDPrice != null
-							? sUSDPrice * currentFeePeriod.feesToDistribute
+						sUSDPrice != null && currentFeePeriod != null && sUSDPrice != null
+							? (sUSDPrice ?? 0) * currentFeePeriod.feesToDistribute
 							: null
 					}
 					percentChange={null}
@@ -128,7 +132,7 @@ const Staking: FC = () => {
 					title="CURRENT REWARDS POOL (SNX)"
 					num={
 						currentFeePeriod != null && SNXPrice != null
-							? SNXPrice * currentFeePeriod.rewardsToDistribute
+							? (SNXPrice ?? 0) * currentFeePeriod.rewardsToDistribute
 							: null
 					}
 					percentChange={null}
@@ -143,8 +147,10 @@ const Staking: FC = () => {
 					title="UNCLAIMED FEES AND REWARDS (USD)"
 					num={
 						currentFeePeriod != null && sUSDPrice != null && SNXPrice != null
-							? sUSDPrice * (currentFeePeriod.feesToDistribute - currentFeePeriod.feesClaimed) +
-							  SNXPrice * (currentFeePeriod.rewardsToDistribute - currentFeePeriod.rewardsClaimed)
+							? (sUSDPrice ?? 0) *
+									(currentFeePeriod.feesToDistribute - currentFeePeriod.feesClaimed) +
+							  (SNXPrice ?? 0) *
+									(currentFeePeriod.rewardsToDistribute - currentFeePeriod.rewardsClaimed)
 							: null
 					}
 					percentChange={null}
@@ -159,7 +165,7 @@ const Staking: FC = () => {
 					title="FEES IN NEXT PERIOD (USD)"
 					num={
 						nextFeePeriod != null && sUSDPrice != null
-							? sUSDPrice * nextFeePeriod.feesToDistribute
+							? (sUSDPrice ?? 0) * nextFeePeriod.feesToDistribute
 							: null
 					}
 					percentChange={null}
