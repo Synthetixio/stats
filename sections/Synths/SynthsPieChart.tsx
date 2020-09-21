@@ -12,7 +12,7 @@ type SynthsPieChartProps = {
 const SynthsPieChart: FC<SynthsPieChartProps> = ({ data }) => (
 	<SynthsPieChartContainer>
 		<ChartTitle>SYNTH DOMINANCE</ChartTitle>
-		<ChartSubtitle>Distribution of synths within the network</ChartSubtitle>
+		<ChartSubtitle>Distribution of Synths within the Synthetix protocol</ChartSubtitle>
 		<PieChart data={data} />
 	</SynthsPieChartContainer>
 );
