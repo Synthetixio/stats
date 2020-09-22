@@ -209,7 +209,7 @@ const YieldFarming: FC = () => {
 				/>
 				<DoubleStatsBox
 					key="iETHRWRDS"
-					title="iETH"
+					title="iETH (Ended)"
 					subtitle={subtitleText('iETH')}
 					firstMetricTitle="WEEKLY REWARDS (SNX)"
 					firstMetricStyle="number"
