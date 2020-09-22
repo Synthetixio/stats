@@ -71,7 +71,7 @@ export const TitleWrapper = styled.div`
 `;
 
 const DoubleStatsBoxTitle = styled.div`
-	font-family: ${(props) => `${props.theme.fonts.mono}, ${props.theme.fonts.regular}`};
+	font-family: ${(props) => `${props.theme.fonts.expanded}, ${props.theme.fonts.regular}`};
 	font-style: normal;
 	font-weight: 900;
 	font-size: 20px;
@@ -103,7 +103,7 @@ const DoubleStatsBoxMetric = styled.div<{ color: NumberColor }>`
 `;
 
 const DoubleStatsBoxMetricTitle = styled.div`
-	font-family: ${(props) => `${props.theme.fonts.mono}, ${props.theme.fonts.regular}`};
+	font-family: ${(props) => `${props.theme.fonts.condensedMedium}, ${props.theme.fonts.regular}`};
 	font-style: normal;
 	font-weight: 500;
 	font-size: 14px;

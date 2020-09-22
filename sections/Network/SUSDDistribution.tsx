@@ -32,6 +32,7 @@ const SectionTitle = styled.div`
 	line-height: 24px;
 	color: ${(props) => props.theme.colors.white};
 	margin: 10px 0;
+	font-family: ${(props) => `${props.theme.fonts.expanded}, ${props.theme.fonts.regular}`};
 `;
 
 const SectionSubtitle = styled.div`
@@ -42,6 +43,7 @@ const SectionSubtitle = styled.div`
 	line-height: 18px;
 	color: ${(props) => props.theme.colors.white};
 	opacity: 0.5;
+	font-family: 'Inter', sans-serif;
 `;
 
 export default SUSDDistribution;
