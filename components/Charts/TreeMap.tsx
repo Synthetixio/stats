@@ -46,6 +46,7 @@ const CustomizedContent: FC<any> = ({ x, y, width, height, index, value, root })
 				textAnchor="middle"
 				fill={colors.brightGreen}
 				fontSize={14}
+				fontFamily="Inter"
 			>
 				{formatPercentage(value / root.value, 0)}
 			</text>

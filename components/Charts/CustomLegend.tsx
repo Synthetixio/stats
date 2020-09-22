@@ -3,19 +3,11 @@ import styled from 'styled-components';
 
 import colors from '../../styles/colors';
 import { formatCurrency, formatPercentage } from '../../utils/formatter';
+import { BRIGHT_COLORS } from './PieChart';
 
 interface CustomLegendProps {
 	payload?: { value: number; payload: { value: number } }[];
 }
-
-const BRIGHT_COLORS = [
-	colors.brightBlue,
-	colors.brightOrange,
-	colors.brightGreen,
-	colors.brightPink,
-	colors.brightYellow,
-	colors.brightPurple,
-];
 
 const CustomLegend: FC<CustomLegendProps> = ({ payload }) => {
 	if (payload == null) {
@@ -47,6 +39,7 @@ const CustomLegendContainer = styled.div`
 	width: 80%;
 	margin: 0 auto;
 	left: 10%;
+	font-family: 'Inter', sans-serif;
 `;
 
 const CustomLegendItemValue = styled.div`

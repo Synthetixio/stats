@@ -16,14 +16,24 @@ const MUTED_COLORS = [
 	colors.mutedBrightPink,
 	colors.mutedBrightYellow,
 	colors.mutedBrightPurple,
+	colors.mutedBrightGray,
+	colors.mutedBrightRed,
+	colors.mutedBrightFoamGreen,
+	colors.mutedBrightBurntOrange,
+	colors.mutedBrightForestGreen,
 ];
-const BRIGHT_COLORS = [
+export const BRIGHT_COLORS = [
 	colors.brightBlue,
 	colors.brightOrange,
 	colors.brightGreen,
 	colors.brightPink,
 	colors.brightYellow,
 	colors.brightPurple,
+	colors.brightGray,
+	colors.brightRed,
+	colors.brightFoamGreen,
+	colors.brightBurntOrange,
+	colors.brightForestGreen,
 ];
 
 const BasicPieChart: FC<BasicPieChartProps> = ({ data }) => (
