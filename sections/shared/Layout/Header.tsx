@@ -1,4 +1,4 @@
-import { FC, useContext, useState } from 'react';
+import { FC, useContext, useState, useEffect } from 'react';
 import styled from 'styled-components';
 
 import StatsLogo from 'assets/svg/stats-logo.svg';
@@ -11,12 +11,26 @@ import { HeadersContext } from 'pages/_app';
 const Header: FC = () => {
 	const [menuOpen, setMenuOpen] = useState(false);
 	const toggleMenu = () => setMenuOpen(!menuOpen);
-
 	const headersContext = useContext(HeadersContext);
-	const scrollToRef = (ref: any) => {
+
+	useEffect(() => {
+		const routeApp = async () => {
+			// NOTE that there needs to be a slight delay so that it can find the right section
+			await new Promise((resolve) => setTimeout(resolve, 500));
+			const formattedHash = window.location.hash.replace('#', '').toUpperCase();
+			const hashRef = headersContext[formattedHash];
+			if (hashRef) {
+				scrollToRef(hashRef, formattedHash.toLowerCase());
+			}
+		};
+		routeApp();
+	}, []);
+
+	const scrollToRef = (ref: any, hashLink: string) => {
 		const offsetTop = ref?.current?.offsetTop ?? 0;
 		const scrollEnd = offsetTop === 0 ? 0 : offsetTop - 120;
 		window.scrollTo(0, scrollEnd);
+		window.location.hash = '#' + hashLink;
 	};
 	return (
 		<>
@@ -29,7 +43,7 @@ const Header: FC = () => {
 					</HeaderSectionLeft>
 					<HeaderSectionRight>
 						{Object.entries(headersContext).map(([key, value]) => (
-							<HeaderLink key={key} onClick={() => scrollToRef(value)}>
+							<HeaderLink key={key} onClick={() => scrollToRef(value, key.toLowerCase())}>
 								{key}
 							</HeaderLink>
 						))}
