@@ -60,7 +60,7 @@ const Header: FC = () => {
 						<MobileLink
 							key={key}
 							onClick={() => {
-								scrollToRef(value);
+								scrollToRef(value, key.toLowerCase());
 								toggleMenu();
 							}}
 						>
