@@ -1,4 +1,4 @@
-import { createContext, FC, createRef, useState } from 'react';
+import { createContext, FC, createRef, useState, RefObject } from 'react';
 import { AppProps } from 'next/app';
 import Head from 'next/head';
 import { ethers } from 'ethers';
@@ -15,7 +15,7 @@ import '../i18n';
 
 import Layout from 'sections/shared/Layout';
 
-const headersAndScrollRef = {
+export const headersAndScrollRef: { [key: string]: RefObject<unknown> } = {
 	NETWORK: createRef(),
 	STAKING: createRef(),
 	'YIELD FARMING': createRef(),
