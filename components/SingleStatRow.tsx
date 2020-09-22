@@ -58,10 +58,15 @@ const SingleStatsRight = styled(SingleStats)`
 const SingleStatsText = styled.div`
 	color: ${(props) => props.theme.colors.white};
 	padding-bottom: 20px;
+	font-size: 14px;
+	font-family: ${(props) => `${props.theme.fonts.condensedMedium}, ${props.theme.fonts.regular}`};
 `;
 
 const SingleStatsSubtext = styled.div`
 	color: ${(props) => props.theme.colors.gray};
+	font-size: 14px;
+	font-family: 'Inter', sans-serif;
+
 	@media only screen and (max-width: 500px) {
 		display: none;
 	}

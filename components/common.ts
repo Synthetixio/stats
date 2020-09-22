@@ -27,6 +27,7 @@ export const ChartTitle = styled.div`
 	padding-left: 20px;
 	padding-top: 30px;
 	color: ${(props) => props.theme.colors.white};
+	font-family: ${(props) => `${props.theme.fonts.expanded}, ${props.theme.fonts.regular}`};
 `;
 
 export const ChartSubtitle = styled.div`
@@ -37,6 +38,7 @@ export const ChartSubtitle = styled.div`
 	color: ${(props) => props.theme.colors.gray};
 	padding-left: 20px;
 	padding-bottom: 15px;
+	font-family: 'Inter', sans-serif;
 `;
 
 export const InfoIconWrap = styled.div`
