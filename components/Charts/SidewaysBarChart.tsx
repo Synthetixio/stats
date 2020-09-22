@@ -93,6 +93,7 @@ export const SynthLabels = styled.div`
 	display: flex;
 	width: 100%;
 	justify-content: space-between;
+	font-family: 'Inter', sans-serif;
 `;
 
 const BarContainer = styled.div`
