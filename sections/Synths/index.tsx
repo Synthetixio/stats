@@ -108,7 +108,7 @@ const SynthsSection: FC<{}> = () => {
 				<SynthsBarChart data={barChartData} />
 				<SynthsPieChart data={pieChartData} />
 			</SynthsCharts>
-			<SubsectionHeader>CURRENT TOP 3 SYNTHS</SubsectionHeader>
+			<SubsectionHeader>CURRENT TOP 3 SYNTHS:</SubsectionHeader>
 			<StatsRow>
 				{pieChartData.map(({ name, totalSupply, value }: SynthTotalSupply, index: number) => {
 					if (index < NUMBER_OF_TOP_SYNTHS) {
@@ -147,12 +147,13 @@ const SynthsCharts = styled.div`
 
 const SubsectionHeader = styled.div`
 	max-width: ${MAX_PAGE_WIDTH}px;
-	font-family: ${(props) => `${props.theme.fonts.mono}, ${props.theme.fonts.regular}`};
+	font-family: ${(props) => `${props.theme.fonts.expanded}, ${props.theme.fonts.regular}`};
 	font-style: normal;
 	font-weight: 900;
 	font-size: 20px;
 	line-height: 120%;
 	margin: 40px auto 20px auto;
+	color: ${(props) => props.theme.colors.white};
 `;
 
 export default SynthsSection;

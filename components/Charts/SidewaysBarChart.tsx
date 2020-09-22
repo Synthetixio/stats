@@ -163,6 +163,7 @@ const StyledLabel = styled(LabelSmall)`
 	text-transform: uppercase;
 	text-align: center;
 	flex: 1;
+	font-family: ${(props) => `${props.theme.fonts.condensedBold}, ${props.theme.fonts.regular}`};
 `;
 
 const SynthLabel = styled(LabelSmall)`

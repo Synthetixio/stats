@@ -45,7 +45,7 @@ const CustomizedContent: FC<any> = ({ x, y, width, height, index, value, root })
 				y={y + height / 2 + 7}
 				textAnchor="middle"
 				fill={colors.brightGreen}
-				fontSize={14}
+				fontSize={12}
 				fontFamily="Inter"
 			>
 				{formatPercentage(value / root.value, 0)}
@@ -106,6 +106,8 @@ const TreeMapLegendContainer = styled.div`
 
 const TreeMapLegendItem = styled.div<{ index: number }>`
 	color: ${(props) => BRIGHT_COLORS[props.index % BRIGHT_COLORS.length]};
+	font-family: ${(props) => `${props.theme.fonts.condensedMedium}, ${props.theme.fonts.regular}`};
+	font-size: 14px;
 `;
 
 export default BasicTreeMap;
