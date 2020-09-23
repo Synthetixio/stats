@@ -122,7 +122,7 @@ const NetworkSection: FC = () => {
 			let snxLocked = 0;
 			let stakersTotalDebt = 0;
 			let stakersTotalCollateral = 0;
-			let numberOfStakersToSampleForSusd = 150;
+			let numberOfStakersToSampleForSusd = 75;
 			let sUSDBalancePromises = [];
 			let sUSDBalanceSamplePercent = 0;
 
@@ -145,7 +145,7 @@ const NetworkSection: FC = () => {
 				snxLocked += Number(lockedSnx);
 
 				if (numberOfStakersToSampleForSusd > 0) {
-					sUSDBalancePromises.push(snxjs.contracts.SynthsUSD.balanceOf(address));
+					sUSDBalancePromises.push(snxData.synths.holders({ max: 1, address, synth: 'sUSD' }));
 					numberOfStakersToSampleForSusd--;
 				} else if (numberOfStakersToSampleForSusd === 0) {
 					sUSDBalanceSamplePercent = snxTotal / totalSupply;
@@ -167,10 +167,13 @@ const NetworkSection: FC = () => {
 			setActiveCRatio(1 / (stakersTotalDebt / stakersTotalCollateral));
 			setNetworkCRatio((totalSupply * formattedSNXPrice) / totalIssuedSynths);
 			await Promise.all(sUSDBalancePromises).then((results) => {
-				const susdSampleBalances = results.reduce(
-					(acc, value) => (acc += Number(formatEther(value))),
-					0
-				);
+				console.log('balances results', results);
+				const susdSampleBalances = results.reduce((acc, curr) => {
+					if (curr.length > 0) {
+						acc += Number(curr[0]?.balanceOf ?? 0);
+					}
+					return acc;
+				}, 0);
 				setUtilizationRatio(susdSampleBalances / sUSDBalanceSamplePercent / sUSDTotalSupply);
 			});
 		};
@@ -432,7 +435,7 @@ const NetworkSection: FC = () => {
 						<>
 							While we are obtaining staking data from sampling the top 1,000 SNX stakers using the{' '}
 							<LinkText href={synthetixDataGithub}>Synthetix data repo</LinkText>, we also make an
-							additional call for each of the top 150 stakers using{' '}
+							additional call for each of the top 75 stakers using{' '}
 							<LinkText href={synthetixJSGithub}>synthetix-js</LinkText> to get their sUSD holdings;
 							we use this sample to extrapolate what % of stakers still have sUSD in their wallet.
 							<NewParagraph>
