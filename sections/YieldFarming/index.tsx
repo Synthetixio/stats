@@ -207,7 +207,7 @@ const YieldFarming: FC = () => {
 						</>
 					}
 				/>
-				<DoubleStatsBox
+				{/*<DoubleStatsBox
 					key="iETHRWRDS"
 					title="iETH (Ended)"
 					subtitle={subtitleText('iETH')}
@@ -244,7 +244,7 @@ const YieldFarming: FC = () => {
 					}
 					secondColor={COLORS.pink}
 					secondMetricStyle="percent2"
-				/>
+				/>*/}
 			</StatsRow>
 		</>
 	);
