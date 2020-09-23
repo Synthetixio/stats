@@ -4,12 +4,11 @@ import axios from 'axios';
 
 import SectionHeader from 'components/SectionHeader';
 import SingleStatRow from 'components/SingleStatRow';
-import StatsRow from 'components/StatsRow';
+import StatsRow, { StatsRowEmptySpace } from 'components/StatsRow';
 import DoubleStatsBox from 'components/DoubleStatsBox';
 import {
 	curvepoolRewards,
-	iBtcRewards,
-	iEth2Rewards,
+	iEth4Rewards,
 	curveSusdPool,
 	curveSusdPoolToken,
 	curveSusdGauge,
@@ -37,7 +36,6 @@ type APYFields = {
 const YieldFarming: FC = () => {
 	const [distributions, setDistributions] = useState<{ [address: string]: number } | null>(null);
 	const [aaveDepositRate, setAaveDepositRate] = useState<number | null>(null);
-	const [iBtcAPYFields, setiBtcAPYFields] = useState<APYFields | null>(null);
 	const [iEthAPYFields, setiEthAPYFields] = useState<APYFields | null>(null);
 	const [curveAPYFields, setCurveAPYFields] = useState<APYFields | null>(null);
 	const [curveSwapAPY, setCurveSwapAPY] = useState<number | null>(null);
@@ -52,12 +50,11 @@ const YieldFarming: FC = () => {
 			curvepoolRewards.abi,
 			provider
 		);
-		const iEth2RewardsContract = new ethers.Contract(
-			iEth2Rewards.address,
-			iEth2Rewards.abi,
+		const iEth4RewardsContract = new ethers.Contract(
+			iEth4Rewards.address,
+			iEth4Rewards.abi,
 			provider
 		);
-		const iBtcRewardsContract = new ethers.Contract(iBtcRewards.address, iBtcRewards.abi, provider);
 		const curveSusdPoolContract = new ethers.Contract(
 			curveSusdPool.address,
 			// @ts-ignore
@@ -84,7 +81,7 @@ const YieldFarming: FC = () => {
 
 		const fetchData = async () => {
 			try {
-				const contracts = [curvepoolContract, iEth2RewardsContract, iBtcRewardsContract];
+				const contracts = [curvepoolContract, iEth4RewardsContract];
 				const rewardsData = await Promise.all(
 					contracts.map((contract) => {
 						const getDuration = contract.DURATION || contract.rewardsDuration;
@@ -103,10 +100,8 @@ const YieldFarming: FC = () => {
 				setDistributions(contractRewards);
 
 				const fetchedData = await Promise.all([
-					snxjs.contracts.ProxyiETH.balanceOf(iEth2Rewards.address),
-					snxjs.contracts.ProxyiBTC.balanceOf(iBtcRewards.address),
+					snxjs.contracts.ProxyiETH.balanceOf(iEth4Rewards.address),
 					snxjs.contracts.ExchangeRates.rateForCurrency(snxjs.toBytes32('iETH')),
-					snxjs.contracts.ExchangeRates.rateForCurrency(snxjs.toBytes32('iBTC')),
 					curveSusdPoolTokenContract.balanceOf(curvepoolRewards.address),
 					curveSusdPoolContract.get_virtual_price(),
 					curveSusdGaugeContract.inflation_rate(),
@@ -119,28 +114,25 @@ const YieldFarming: FC = () => {
 
 				const [
 					iEthBalance,
-					iBtcBalance,
 					iEthPrice,
-					iBtcPrice,
 					curveSusdBalance,
 					curveSusdTokenPrice,
 					curveInflationRate,
 					curveWorkingSupply,
 					gaugeRelativeWeight,
-				] = fetchedData.slice(0, 9).map((data) => Number(snxjs.utils.formatEther(data)));
+				] = fetchedData.slice(0, 7).map((data) => Number(snxjs.utils.formatEther(data)));
 
 				const rate =
 					(((curveInflationRate * gaugeRelativeWeight * 31536000) / curveWorkingSupply) * 0.4) /
 					curveSusdTokenPrice;
-				const curvePrice = fetchedData[9];
+				const curvePrice = fetchedData[8];
 				setCurveTokenAPY(rate * curvePrice);
 
-				setiBtcAPYFields({ balanceOf: iBtcBalance, price: iBtcPrice });
 				setiEthAPYFields({ balanceOf: iEthBalance, price: iEthPrice });
 				setCurveAPYFields({ balanceOf: curveSusdBalance, price: curveSusdTokenPrice });
-				setAaveDepositRate(fetchedData[9]);
+				setAaveDepositRate(fetchedData[7]);
 
-				const swapAPY = fetchedData[11]?.data?.apy?.day?.susd ?? 0;
+				const swapAPY = fetchedData[9]?.data?.apy?.day?.susd ?? 0;
 				setCurveSwapAPY(swapAPY);
 			} catch (e) {
 				setDistributions(null);
@@ -159,7 +151,7 @@ const YieldFarming: FC = () => {
 				color={COLORS.green}
 				numberStyle="percent2"
 			/>
-			<StatsRow>
+			<StatsRowEmptySpace>
 				<DoubleStatsBox
 					key="CRVSUSDRWRDS"
 					title="Curvepool sUSD"
@@ -207,18 +199,18 @@ const YieldFarming: FC = () => {
 						</>
 					}
 				/>
-				{/*<DoubleStatsBox
+				<DoubleStatsBox
 					key="iETHRWRDS"
-					title="iETH (Ended)"
+					title="iETH"
 					subtitle={subtitleText('iETH')}
 					firstMetricTitle="WEEKLY REWARDS (SNX)"
 					firstMetricStyle="number"
-					firstMetric={distributions != null ? distributions[iEth2Rewards.address] : distributions}
+					firstMetric={distributions != null ? distributions[iEth4Rewards.address] : distributions}
 					firstColor={COLORS.green}
 					secondMetricTitle="Annual Percentage Yield"
 					secondMetric={
 						distributions != null && iEthAPYFields != null && SNXPrice != null
-							? ((distributions[iEth2Rewards.address] * (SNXPrice ?? 0)) /
+							? ((distributions[iEth4Rewards.address] * (SNXPrice ?? 0)) /
 									(iEthAPYFields.balanceOf * iEthAPYFields.price)) *
 							  52
 							: null
@@ -226,26 +218,7 @@ const YieldFarming: FC = () => {
 					secondColor={COLORS.green}
 					secondMetricStyle="percent2"
 				/>
-				<DoubleStatsBox
-					key="iBTCRWRDS"
-					title="iBTC (Ended)"
-					subtitle={subtitleText('iBTC')}
-					firstMetricTitle="WEEKLY REWARDS (SNX)"
-					firstMetricStyle="number"
-					firstMetric={distributions != null ? distributions[iBtcRewards.address] : distributions}
-					firstColor={COLORS.green}
-					secondMetricTitle="Annual Percentage Yield"
-					secondMetric={
-						distributions != null && iBtcAPYFields != null && SNXPrice != null
-							? ((distributions[iBtcRewards.address] * (SNXPrice ?? 0)) /
-									(iBtcAPYFields.balanceOf * iBtcAPYFields.price)) *
-							  52
-							: null
-					}
-					secondColor={COLORS.pink}
-					secondMetricStyle="percent2"
-				/>*/}
-			</StatsRow>
+			</StatsRowEmptySpace>
 		</>
 	);
 };

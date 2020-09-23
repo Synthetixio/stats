@@ -1,5 +1,5 @@
 export default {
-	address: '0xE5Ea1DDA3299C0b133a93A47eF9F5536C6892AcE',
+	address: '0x0031b7AC27d10c75072d2399323d4Ca4751C4642',
 	abi: [
 		{
 			inputs: [
@@ -25,6 +25,12 @@ export default {
 			anonymous: false,
 			inputs: [{ indexed: false, internalType: 'address', name: 'newOwner', type: 'address' }],
 			name: 'OwnerNominated',
+			type: 'event',
+		},
+		{
+			anonymous: false,
+			inputs: [{ indexed: false, internalType: 'bool', name: 'isPaused', type: 'bool' }],
+			name: 'PauseChanged',
 			type: 'event',
 		},
 		{
@@ -132,6 +138,15 @@ export default {
 		{
 			constant: true,
 			inputs: [],
+			name: 'lastPauseTime',
+			outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+			payable: false,
+			stateMutability: 'view',
+			type: 'function',
+		},
+		{
+			constant: true,
+			inputs: [],
 			name: 'lastTimeRewardApplicable',
 			outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
 			payable: false,
@@ -179,6 +194,15 @@ export default {
 			inputs: [],
 			name: 'owner',
 			outputs: [{ internalType: 'address', name: '', type: 'address' }],
+			payable: false,
+			stateMutability: 'view',
+			type: 'function',
+		},
+		{
+			constant: true,
+			inputs: [],
+			name: 'paused',
+			outputs: [{ internalType: 'bool', name: '', type: 'bool' }],
 			payable: false,
 			stateMutability: 'view',
 			type: 'function',
@@ -265,6 +289,15 @@ export default {
 			outputs: [{ internalType: 'contract IERC20', name: '', type: 'address' }],
 			payable: false,
 			stateMutability: 'view',
+			type: 'function',
+		},
+		{
+			constant: false,
+			inputs: [{ internalType: 'bool', name: '_paused', type: 'bool' }],
+			name: 'setPaused',
+			outputs: [],
+			payable: false,
+			stateMutability: 'nonpayable',
 			type: 'function',
 		},
 		{

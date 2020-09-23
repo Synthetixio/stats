@@ -22,3 +22,26 @@ const StatsRowContainer = styled.div`
 	margin: 0px auto;
 	flex-wrap: wrap;
 `;
+
+export const StatsRowEmptySpace: FC<StatsRowProps> = ({ children }) => (
+	<>
+		<StatsRowEmptySpaceContainer>{children}</StatsRowEmptySpaceContainer>
+	</>
+);
+
+const StatsRowEmptySpaceContainer = styled.div`
+	display: flex;
+	max-width: ${MAX_PAGE_WIDTH}px;
+	margin: 0px auto;
+	flex-wrap: wrap;
+	@media only screen and (min-width: 1016px) {
+		div {
+			margin-right: 20px;
+		}
+	}
+	@media only screen and (max-width: 1015px) {
+		div {
+			width: 100%;
+		}
+	}
+`;
