@@ -85,7 +85,7 @@ const BasicTreeMap: FC<BasicTreeMapProps> = ({ data, totalSupplySUSD }) => {
 			</ResponsiveContainer>
 			<TreeMapLegendContainer>
 				{formattedData.map(({ name }, index) => (
-					<TreeMapLegendItem key={name} index={index}>
+					<TreeMapLegendItem key={name + index} index={index}>
 						&#8226; {name}
 					</TreeMapLegendItem>
 				))}

@@ -1,6 +1,5 @@
 import curvepoolRewards from './curvepoolRewards';
-import iBtcRewards from './iBtcRewards';
-import iEth2Rewards from './iEth2Rewards';
+import iEth4Rewards from './iEth4Rewards';
 import curveSusdPool from './curveSusdPool';
 import curveSusdPoolToken from './curveSusdPoolToken';
 import curveSusdGauge from './curveSusdGauge';
@@ -9,8 +8,7 @@ import synthSummaryUtil from './synthSummaryUtil';
 
 export {
 	curvepoolRewards,
-	iBtcRewards,
-	iEth2Rewards,
+	iEth4Rewards,
 	curveSusdPool,
 	curveSusdPoolToken,
 	curveSusdGauge,
