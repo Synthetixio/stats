@@ -45,7 +45,6 @@ const NetworkSection: FC = () => {
 	const [activeCRatio, setActiveCRatio] = useState<number | null>(null);
 	const [networkCRatio, setNetworkCRatio] = useState<number | null>(null);
 	const [SNXPercentLocked, setSNXPercentLocked] = useState<number | null>(null);
-	const [utilizationRatio, setUtilizationRatio] = useState<number | null>(null);
 	const [SNXHolders, setSNXHolders] = useState<number | null>(null);
 	const [SUSDHolders, setSUSDHolders] = useState<TreeMapData[]>([]);
 	const snxjs = useContext(SNXJSContext);
@@ -122,9 +121,6 @@ const NetworkSection: FC = () => {
 			let snxLocked = 0;
 			let stakersTotalDebt = 0;
 			let stakersTotalCollateral = 0;
-			let numberOfStakersToSampleForSusd = 75;
-			let sUSDBalancePromises = [];
-			let sUSDBalanceSamplePercent = 0;
 
 			for (const { address, collateral, debtEntryAtIndex, initialDebtOwnership } of holders) {
 				let debtBalance =
@@ -143,14 +139,6 @@ const NetworkSection: FC = () => {
 				}
 				snxTotal += Number(collateral);
 				snxLocked += Number(lockedSnx);
-
-				if (numberOfStakersToSampleForSusd > 0) {
-					sUSDBalancePromises.push(snxData.synths.holders({ max: 1, address, synth: 'sUSD' }));
-					numberOfStakersToSampleForSusd--;
-				} else if (numberOfStakersToSampleForSusd === 0) {
-					sUSDBalanceSamplePercent = snxTotal / totalSupply;
-					numberOfStakersToSampleForSusd--;
-				}
 			}
 
 			const topHolders = topSUSDHolders.map(
@@ -166,16 +154,6 @@ const NetworkSection: FC = () => {
 			setTotalSupplySUSD(sUSDTotalSupply);
 			setActiveCRatio(1 / (stakersTotalDebt / stakersTotalCollateral));
 			setNetworkCRatio((totalSupply * formattedSNXPrice) / totalIssuedSynths);
-			await Promise.all(sUSDBalancePromises).then((results) => {
-				console.log('balances results', results);
-				const susdSampleBalances = results.reduce((acc, curr) => {
-					if (curr.length > 0) {
-						acc += Number(curr[0]?.balanceOf ?? 0);
-					}
-					return acc;
-				}, 0);
-				setUtilizationRatio(susdSampleBalances / sUSDBalanceSamplePercent / sUSDTotalSupply);
-			});
 		};
 		fetchData();
 	}, []);
@@ -338,7 +316,7 @@ const NetworkSection: FC = () => {
 					subText="The total value of all staked SNX"
 					color={COLORS.pink}
 					numberStyle="currency0"
-					numBoxes={3}
+					numBoxes={4}
 					infoData={
 						<>
 							To calculate the value of SNX tokens staked we sample the top 1,000 SNX stakers using
@@ -357,13 +335,13 @@ const NetworkSection: FC = () => {
 				/>
 				<StatsBox
 					key="NETWORKCRATIO"
-					title="NETWORK COLLATERALIZATION RATIO"
+					title="NETWORK C-RATIO"
 					num={networkCRatio}
 					percentChange={null}
 					subText="The aggregate collateralization ratio of all SNX wallets"
 					color={COLORS.green}
 					numberStyle="percent0"
-					numBoxes={3}
+					numBoxes={4}
 					infoData={
 						<>
 							To calculate the network C-Ratio we use the following formula "Total SNX Supply * SNX
@@ -374,13 +352,13 @@ const NetworkSection: FC = () => {
 				/>
 				<StatsBox
 					key="ACTIVECRATIO"
-					title="ACTIVE COLLATERALIZATION RATIO"
+					title="ACTIVE C-RATIO"
 					num={activeCRatio}
 					percentChange={null}
 					subText="The aggregate collateralization ratio of SNX wallets that are currently staking"
 					color={COLORS.green}
 					numberStyle="percent0"
-					numBoxes={3}
+					numBoxes={4}
 					infoData={
 						<>
 							To calculate the C-Ratio of active stakers we sample the top 1,000 SNX stakers using
@@ -390,6 +368,22 @@ const NetworkSection: FC = () => {
 								Taking a small sample produces a result that is very close to taking the entire set
 								of holders and allows the page to load faster.
 							</NewParagraph>
+						</>
+					}
+				/>
+				<StatsBox
+					key="SNXHOLDRS"
+					title="SNX HOLDERS"
+					num={SNXHolders}
+					percentChange={null}
+					subText="Total number of SNX holders"
+					color={COLORS.green}
+					numberStyle="number"
+					numBoxes={4}
+					infoData={
+						<>
+							The number of SNX holders is obtained from the{' '}
+							<LinkText href={synthetixSubgraph}>Synthetix subgraph.</LinkText>
 						</>
 					}
 				/>
@@ -421,8 +415,7 @@ const NetworkSection: FC = () => {
 					</>
 				}
 			/>
-			<StatsRow>
-				<StatsBox
+			{/*<StatsBox
 					key="UTILRATIO"
 					title="UTILIZATION RATIO"
 					num={utilizationRatio != null ? 1 - utilizationRatio : null}
@@ -444,24 +437,7 @@ const NetworkSection: FC = () => {
 							</NewParagraph>
 						</>
 					}
-				/>
-				<StatsBox
-					key="SNXHOLDRS"
-					title="SNX HOLDERS"
-					num={SNXHolders}
-					percentChange={null}
-					subText="Total number of SNX holders"
-					color={COLORS.green}
-					numberStyle="number"
-					numBoxes={2}
-					infoData={
-						<>
-							The number of SNX holders is obtained from the{' '}
-							<LinkText href={synthetixSubgraph}>Synthetix subgraph.</LinkText>
-						</>
-					}
-				/>
-			</StatsRow>
+				/>*/}
 		</>
 	);
 };
