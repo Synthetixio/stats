@@ -1,16 +1,24 @@
 import { FC, useState, useEffect, useContext, useMemo } from 'react';
+import snxData from 'synthetix-data';
 
 import SectionHeader from 'components/SectionHeader';
 import StatsRow from 'components/StatsRow';
 import StatsBox from 'components/StatsBox';
+import AreaChart from 'components/Charts/AreaChart';
+
 import { COLORS } from 'constants/styles';
 import { SNXJSContext, SNXContext, SUSDContext } from 'pages/_app';
-import { FeePeriod } from 'types/data';
-import { NewParagraph } from '../../components/common';
+import { FeePeriod, AreaChartData, ChartPeriod, ActiveStakersData } from 'types/data';
+import { formatIdToIsoString } from 'utils/formatter';
+import { NewParagraph, LinkText } from 'components/common';
+import { synthetixSubgraph } from 'constants/links';
 
 const Staking: FC = () => {
 	const [currentFeePeriod, setCurrentFeePeriod] = useState<FeePeriod | null>(null);
 	const [nextFeePeriod, setNextFeePeriod] = useState<FeePeriod | null>(null);
+	const [stakersChartPeriod, setStakersChartPeriod] = useState<ChartPeriod>('W');
+	const [totalActiveStakers, setTotalActiveStakers] = useState<number | null>(null);
+	const [stakersChartData, setStakersChartData] = useState<AreaChartData[]>([]);
 	const snxjs = useContext(SNXJSContext);
 	const { SNXPrice, SNXStaked } = useContext(SNXContext);
 	const { sUSDPrice } = useContext(SUSDContext);
@@ -39,8 +47,34 @@ const Staking: FC = () => {
 		fetchData();
 	}, []);
 
-	const SNXValueStaked = useMemo(() => (SNXPrice ?? 0) * (SNXStaked ?? 0), [SNXPrice, SNXStaked]);
+	const formatChartData = (data: ActiveStakersData[]) =>
+		(data as ActiveStakersData[]).map(({ id, count }) => {
+			return {
+				created: formatIdToIsoString(id, '1d'),
+				value: count,
+			};
+		});
 
+	const fetchNewChartData = async (fetchPeriod: ChartPeriod) => {
+		let newStakersData = [];
+		if (fetchPeriod === 'W') {
+			newStakersData = await snxData.snx.aggregateActiveStakers({ max: 7 });
+		} else if (fetchPeriod === 'M') {
+			newStakersData = await snxData.snx.aggregateActiveStakers({ max: 30 });
+		} else if (fetchPeriod === 'Y') {
+			newStakersData = await snxData.snx.aggregateActiveStakers({ max: 365 });
+		}
+		newStakersData = newStakersData.reverse();
+		setTotalActiveStakers(newStakersData[newStakersData.length - 1].count);
+		setStakersChartData(formatChartData(newStakersData));
+	};
+
+	useEffect(() => {
+		fetchNewChartData(stakersChartPeriod);
+	}, [stakersChartPeriod]);
+
+	const stakingPeriods: ChartPeriod[] = ['W', 'M', 'Y'];
+	const SNXValueStaked = useMemo(() => (SNXPrice ?? 0) * (SNXStaked ?? 0), [SNXPrice, SNXStaked]);
 	return (
 		<>
 			<SectionHeader title="STAKING" />
@@ -176,6 +210,32 @@ const Staking: FC = () => {
 					infoData={null}
 				/>
 			</StatsRow>
+			<AreaChart
+				periods={stakingPeriods}
+				activePeriod={stakersChartPeriod}
+				onPeriodSelect={(period: ChartPeriod) => {
+					setStakersChartData([]); // will force loading state
+					setStakersChartPeriod(period);
+					fetchNewChartData(period);
+				}}
+				data={stakersChartData}
+				title="TOTAL ACTIVE STAKERS"
+				num={totalActiveStakers}
+				numFormat="number"
+				percentChange={
+					stakersChartData.length > 0 && totalActiveStakers != null
+						? totalActiveStakers / stakersChartData[0].value - 1
+						: null
+				}
+				timeSeries="1d"
+				infoData={
+					<>
+						The number of total active stakers is obtained from the "TotalActiveStaker" entity from
+						the <LinkText href={synthetixSubgraph}>Synthetix subgraph.</LinkText> The chart data
+						shows the "TotalDailyActiveStaker" entity over time.{' '}
+					</>
+				}
+			/>
 		</>
 	);
 };
