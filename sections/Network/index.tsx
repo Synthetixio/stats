@@ -3,14 +3,7 @@ import axios from 'axios';
 import snxData from 'synthetix-data';
 import { ethers } from 'ethers';
 
-import {
-	AreaChartData,
-	ChartPeriod,
-	SNXPriceData,
-	TimeSeries,
-	TreeMapData,
-	ActiveStakersData,
-} from 'types/data';
+import { AreaChartData, ChartPeriod, SNXPriceData, TimeSeries, TreeMapData } from 'types/data';
 import StatsBox from 'components/StatsBox';
 import StatsRow from 'components/StatsRow';
 import AreaChart from 'components/Charts/AreaChart';
@@ -34,11 +27,8 @@ const CMC_API = 'https://coinmarketcap-api.synthetix.io/public/prices?symbols=SN
 
 const NetworkSection: FC = () => {
 	const [priorSNXPrice, setPriorSNXPrice] = useState<number | null>(null);
-	const [totalActiveStakers, setTotalActiveStakers] = useState<number | null>(null);
 	const [priceChartPeriod, setPriceChartPeriod] = useState<ChartPeriod>('D');
-	const [stakersChartPeriod, setStakersChartPeriod] = useState<ChartPeriod>('W');
 	const [SNXChartPriceData, setSNXChartPriceData] = useState<AreaChartData[]>([]);
-	const [stakersChartData, setStakersChartData] = useState<AreaChartData[]>([]);
 	const [SNXTotalSupply, setSNXTotalSupply] = useState<number | null>(null);
 	const [totalSupplySUSD, setTotalSupplySUSD] = useState<number | null>(null);
 	const [SNX24HVolume, setSNX24HVolume] = useState<number | null>(null);
@@ -158,71 +148,38 @@ const NetworkSection: FC = () => {
 		fetchData();
 	}, []);
 
-	const formatChartData = (
-		type: 'price' | 'stakers',
-		data: SNXPriceData[] | ActiveStakersData[],
-		timeSeries?: TimeSeries
-	): AreaChartData[] =>
-		type === 'price'
-			? (data as SNXPriceData[]).map(({ id, averagePrice }) => {
-					return {
-						created: formatIdToIsoString(id, timeSeries as TimeSeries),
-						value: averagePrice,
-					};
-			  })
-			: (data as ActiveStakersData[]).map(({ id, count }) => {
-					return {
-						created: formatIdToIsoString(id, '1d'),
-						value: count,
-					};
-			  });
+	const formatChartData = (data: SNXPriceData[], timeSeries: TimeSeries): AreaChartData[] =>
+		(data as SNXPriceData[]).map(({ id, averagePrice }) => {
+			return {
+				created: formatIdToIsoString(id, timeSeries as TimeSeries),
+				value: averagePrice,
+			};
+		});
 
-	const fetchNewChartData = async (
-		type: 'price' | 'stakers' | 'both',
-		fetchPeriod?: ChartPeriod
-	) => {
+	const fetchNewChartData = async (fetchPeriod: ChartPeriod) => {
 		let newSNXPriceData = [];
-		let newStakersData = [];
 		let timeSeries = '1d';
-		if (type === 'both') {
+		if (fetchPeriod === 'D') {
 			timeSeries = '15m';
 			newSNXPriceData = await snxData.rate.snxAggregate({ timeSeries, max: 24 * 4 });
-			newStakersData = await snxData.snx.aggregateActiveStakers({ max: 7 });
-		} else if (type === 'price' && fetchPeriod === 'D') {
-			timeSeries = '15m';
-			newSNXPriceData = await snxData.rate.snxAggregate({ timeSeries, max: 24 * 4 });
-		} else if (fetchPeriod === 'W' && type === 'price') {
+		} else if (fetchPeriod === 'W') {
 			timeSeries = '15m';
 			newSNXPriceData = await snxData.rate.snxAggregate({ timeSeries, max: 24 * 4 * 7 });
-		} else if (fetchPeriod === 'M' && type === 'price') {
+		} else if (fetchPeriod === 'M') {
 			newSNXPriceData = await snxData.rate.snxAggregate({ timeSeries, max: 30 });
-		} else if (fetchPeriod === 'Y' && type === 'price') {
+		} else if (fetchPeriod === 'Y') {
 			newSNXPriceData = await snxData.rate.snxAggregate({ timeSeries, max: 365 });
-		} else if (fetchPeriod === 'W' && type === 'stakers') {
-			newStakersData = await snxData.snx.aggregateActiveStakers({ max: 7 });
-		} else if (fetchPeriod === 'M' && type === 'stakers') {
-			newStakersData = await snxData.snx.aggregateActiveStakers({ max: 30 });
-		} else if (fetchPeriod === 'Y' && type === 'stakers') {
-			newStakersData = await snxData.snx.aggregateActiveStakers({ max: 365 });
 		}
-		if (type === 'both' || type === 'price') {
-			newSNXPriceData = newSNXPriceData.reverse();
-			setPriorSNXPrice(newSNXPriceData[0].averagePrice);
-			setSNXChartPriceData(formatChartData('price', newSNXPriceData, timeSeries as TimeSeries));
-		}
-		if (type === 'both' || type === 'stakers') {
-			newStakersData = newStakersData.reverse();
-			setTotalActiveStakers(newStakersData[newStakersData.length - 1].count);
-			setStakersChartData(formatChartData('stakers', newStakersData));
-		}
+		newSNXPriceData = newSNXPriceData.reverse();
+		setPriorSNXPrice(newSNXPriceData[0].averagePrice);
+		setSNXChartPriceData(formatChartData(newSNXPriceData, timeSeries as TimeSeries));
 	};
 
 	useEffect(() => {
-		fetchNewChartData('both');
-	}, []);
+		fetchNewChartData(priceChartPeriod);
+	}, [priceChartPeriod]);
 
-	const stakingPeriods: ChartPeriod[] = ['W', 'M', 'Y'];
-	const pricePeriods: ChartPeriod[] = ['D', ...stakingPeriods];
+	const pricePeriods: ChartPeriod[] = ['D', 'W', 'M', 'Y'];
 	return (
 		<>
 			<SectionHeader title="NETWORK" first={true} />
@@ -232,7 +189,7 @@ const NetworkSection: FC = () => {
 				onPeriodSelect={(period: ChartPeriod) => {
 					setSNXChartPriceData([]); // will force loading state
 					setPriceChartPeriod(period);
-					fetchNewChartData('price', period);
+					fetchNewChartData(period);
 				}}
 				data={SNXChartPriceData}
 				title="SNX PRICE"
@@ -389,55 +346,6 @@ const NetworkSection: FC = () => {
 				/>
 			</StatsRow>
 			<SUSDDistribution data={SUSDHolders} totalSupplySUSD={totalSupplySUSD} />
-			<AreaChart
-				periods={stakingPeriods}
-				activePeriod={stakersChartPeriod}
-				onPeriodSelect={(period: ChartPeriod) => {
-					setStakersChartData([]); // will force loading state
-					setStakersChartPeriod(period);
-					fetchNewChartData('stakers', period);
-				}}
-				data={stakersChartData}
-				title="TOTAL ACTIVE STAKERS"
-				num={totalActiveStakers}
-				numFormat="number"
-				percentChange={
-					stakersChartData.length > 0 && totalActiveStakers != null
-						? totalActiveStakers / stakersChartData[0].value - 1
-						: null
-				}
-				timeSeries="1d"
-				infoData={
-					<>
-						The number of total active stakers is obtained from the "TotalActiveStaker" entity from
-						the <LinkText href={synthetixSubgraph}>Synthetix subgraph.</LinkText> The chart data
-						shows the "TotalDailyActiveStaker" entity over time.{' '}
-					</>
-				}
-			/>
-			{/*<StatsBox
-					key="UTILRATIO"
-					title="UTILIZATION RATIO"
-					num={utilizationRatio != null ? 1 - utilizationRatio : null}
-					percentChange={null}
-					subText="Proportion of sUSD held outside of SNX stakers' wallets"
-					color={COLORS.pink}
-					numberStyle="percent2"
-					numBoxes={2}
-					infoData={
-						<>
-							While we are obtaining staking data from sampling the top 1,000 SNX stakers using the{' '}
-							<LinkText href={synthetixDataGithub}>Synthetix data repo</LinkText>, we also make an
-							additional call for each of the top 75 stakers using{' '}
-							<LinkText href={synthetixJSGithub}>synthetix-js</LinkText> to get their sUSD holdings;
-							we use this sample to extrapolate what % of stakers still have sUSD in their wallet.
-							<NewParagraph>
-								Taking a small sample produces a result that is very close to taking the entire set
-								of holders and allows the page to load faster.
-							</NewParagraph>
-						</>
-					}
-				/>*/}
 		</>
 	);
 };
