@@ -26,6 +26,8 @@ import { curveSusdPool } from 'contracts';
 const CMC_API = 'https://coinmarketcap-api.synthetix.io/public/prices?symbols=SNX';
 
 const NetworkSection: FC = () => {
+	const [etherLocked, setEtherLocked] = useState<number | null>(null);
+	const [sUSDFromEther, setsUSDFromEther] = useState<number | null>(null);
 	const [priorSNXPrice, setPriorSNXPrice] = useState<number | null>(null);
 	const [priceChartPeriod, setPriceChartPeriod] = useState<ChartPeriod>('D');
 	const [SNXChartPriceData, setSNXChartPriceData] = useState<AreaChartData[]>([]);
@@ -71,6 +73,9 @@ const NetworkSection: FC = () => {
 				snxTotals,
 				unformattedSUSDTotalSupply,
 				topSUSDHolders,
+				sUSDFromEth,
+				ethSusdCollateralBalance,
+				ethCollateralBalance,
 			] = await Promise.all([
 				snxjs.contracts.ExchangeRates.rateForCurrency(snxjs.toBytes32('SNX')),
 				snxjs.contracts.Synthetix.totalSupply(),
@@ -83,8 +88,15 @@ const NetworkSection: FC = () => {
 				snxData.snx.total(),
 				snxjs.contracts.SynthsUSD.totalSupply(),
 				snxData.synths.holders({ max: 5, synth: 'sUSD' }),
+				snxjs.contracts.EtherCollateralsUSD.totalIssuedSynths(),
+				provider.getBalance(snxjs.contracts.EtherCollateralsUSD.address),
+				provider.getBalance(snxjs.contracts.EtherCollateral.address),
 			]);
 
+			setEtherLocked(
+				Number(snxjs.utils.formatEther(ethSusdCollateralBalance)) +
+					Number(snxjs.utils.formatEther(ethSusdCollateralBalance))
+			);
 			setSNXHolders(snxTotals.snxHolders);
 			const formattedSNXPrice = Number(formatEther(unformattedSnxPrice));
 			setSNXPrice(formattedSNXPrice);
@@ -92,6 +104,7 @@ const NetworkSection: FC = () => {
 			setSNXTotalSupply(totalSupply);
 			const exchangeAmount = Number(formatUnits(unformattedExchangeAmount, 6));
 			setsUSDPrice(exchangeAmount / susdAmount);
+			setsUSDFromEther(Number(snxjs.utils.formatEther(sUSDFromEth)));
 
 			const dailyVolume = cmcSNXData?.data?.data?.SNX?.quote?.USD?.volume_24h;
 			if (dailyVolume) {
@@ -346,6 +359,30 @@ const NetworkSection: FC = () => {
 				/>
 			</StatsRow>
 			<SUSDDistribution data={SUSDHolders} totalSupplySUSD={totalSupplySUSD} />
+			<StatsRow>
+				<StatsBox
+					key="ETHLOCKED"
+					title="ETH COLLATERAL"
+					num={etherLocked}
+					percentChange={null}
+					subText="Total number of Ether locked as collateral"
+					color={COLORS.pink}
+					numberStyle="number4"
+					numBoxes={2}
+					infoData={null}
+				/>
+				<StatsBox
+					key="SUSDMINTEDETH"
+					title="sUSD MINTED FROM ETH"
+					num={sUSDFromEther}
+					percentChange={null}
+					subText="Total number of sUSD minted using Ether as collateral"
+					color={COLORS.green}
+					numberStyle="currency0"
+					numBoxes={2}
+					infoData={null}
+				/>
+			</StatsRow>
 		</>
 	);
 };
