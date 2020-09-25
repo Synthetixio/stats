@@ -4,9 +4,9 @@ import styled from 'styled-components';
 import BasicAreaChart from './BasicAreaChart';
 import ChartTimeSelectors from './ChartTimeSelectors';
 import ChartTitle from './ChartTitle';
-import { MAX_PAGE_WIDTH, NumberStyle } from '../../constants/styles';
-import { ChartPeriod, AreaChartData } from '../../types/data';
-import { TimeSeriesType } from '../../utils/formatter';
+import { MAX_PAGE_WIDTH, NumberStyle } from 'constants/styles';
+import { ChartPeriod, AreaChartData } from 'types/data';
+import { TimeSeriesType } from 'utils/formatter';
 
 interface AreaChartProps {
 	data: Array<AreaChartData>;

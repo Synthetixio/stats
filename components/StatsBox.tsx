@@ -6,6 +6,10 @@ import { getFormattedNumber } from 'utils/formatter';
 import { COLORS, NumberColor, NumberStyle } from 'constants/styles';
 import { PercentChangeBox } from './common';
 import InfoPopover from './InfoPopover';
+import { LoadingState } from '../types/data';
+import { LOADING_STATE } from '../constants/loading';
+import Retry from './Retry';
+import Failed from './Failed';
 
 interface StatsBoxProps {
 	title: string;
@@ -16,6 +20,8 @@ interface StatsBoxProps {
 	numberStyle: NumberStyle;
 	numBoxes: number;
 	infoData: ReactNode | null;
+	loadingState: LoadingState;
+	refetchData: (noRetry: boolean) => void;
 }
 
 // TODO what if num is 0 and is supposed to be zero!!
@@ -28,11 +34,13 @@ const StatsBox: FC<StatsBoxProps> = ({
 	numberStyle,
 	numBoxes,
 	infoData,
+	loadingState,
+	refetchData,
 }) => {
 	const formattedNumber = getFormattedNumber(num, numberStyle);
 	return (
 		<StatsBoxContainer num={num} numBoxes={numBoxes}>
-			{num == null ? (
+			{loadingState === LOADING_STATE.LOADING && (
 				<Skeleton
 					className="stats-box-skeleton"
 					variant="rect"
@@ -40,7 +48,13 @@ const StatsBox: FC<StatsBoxProps> = ({
 					width="100%"
 					height="100%"
 				/>
-			) : (
+			)}
+			{loadingState === LOADING_STATE.RETRY && <Retry />}
+			{loadingState === LOADING_STATE.FAILED && <Failed refetchData={refetchData} />}
+			{num == null && loadingState === LOADING_STATE.SUCCESS && (
+				<Failed refetchData={refetchData} />
+			)}
+			{num != null && loadingState === LOADING_STATE.SUCCESS && (
 				<>
 					<TitleWrapper>
 						<StatsBoxTitle>{title}</StatsBoxTitle>

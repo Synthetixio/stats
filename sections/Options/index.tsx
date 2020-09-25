@@ -8,14 +8,18 @@ import StatsBox from 'components/StatsBox';
 import StatsRow from 'components/StatsRow';
 import { COLORS } from 'constants/styles';
 import OptionsPieChart from './OptionsPieChart';
-import { SynthTotalSupply, OptionsMarket } from 'types/data';
+import { SynthTotalSupply, OptionsMarket, LoadingState } from 'types/data';
+import { refetchHelper, refetchErrorHelper, refetchTimeoutHelper } from 'utils/reloading';
 import { formatCurrency } from 'utils/formatter';
 import { LinkText } from 'components/common';
 import { synthetixOptionsSubgraph } from 'constants/links';
+import { RELOADING_TIMES, LOADING_STATE } from 'constants/loading';
 
 const MIN_PERCENT_FOR_PIE_CHART = 0.03;
 
 const Options: FC = () => {
+	const [loadingState, setLoadingState] = useState<LoadingState>(LOADING_STATE.LOADING);
+	const [numberLoadTries, setNumberLoadTries] = useState<number>(0);
 	const [num24HRTx, setNum24HRTx] = useState<number | null>(null);
 	const [largestMarket, setLargestMarket] = useState<OptionsMarket | null>(null);
 	const [largestActiveMarket, setLargestActiveMarket] = useState<OptionsMarket | null>(null);
@@ -23,8 +27,8 @@ const Options: FC = () => {
 	const [totalPoolSizes, setTotalPoolSizes] = useState<number | null>(null);
 	const [pieChartData, setPieChartData] = useState<SynthTotalSupply[]>([]);
 
-	useEffect(() => {
-		const fetchData = async () => {
+	const fetchData = async (noRetry: boolean = false) => {
+		try {
 			const [unformattedOptionTransactions, unformattedMarkets] = await Promise.all([
 				snxData.binaryOptions.optionTransactions(),
 				snxData.binaryOptions.markets({ max: 5000 }),
@@ -94,7 +98,41 @@ const Options: FC = () => {
 			);
 
 			setNum24HRTx(optionTransactions.length);
-		};
+
+			const isBadData =
+				unformattedOptionTransactions == null ||
+				unformattedMarkets == null ||
+				unformattedMarkets.length === 0;
+
+			refetchHelper({
+				numberLoadTries,
+				isBadData,
+				noRetry,
+				setLoadingState,
+				refetchData,
+				section: 'options',
+			});
+		} catch (e) {
+			refetchErrorHelper({
+				numberLoadTries,
+				noRetry,
+				setLoadingState,
+				refetchData,
+				error: e,
+				section: 'options',
+			});
+		}
+	};
+
+	const refetchData = () =>
+		refetchTimeoutHelper({
+			setLoadingState,
+			fetchData,
+			numberLoadTries,
+			setNumberLoadTries,
+		});
+
+	useEffect(() => {
 		fetchData();
 	}, []);
 
@@ -117,6 +155,8 @@ const Options: FC = () => {
 					color={COLORS.green}
 					numberStyle="currency0"
 					numBoxes={2}
+					loadingState={loadingState}
+					refetchData={fetchData}
 					infoData={
 						<>
 							To get the largest active binary options market, we pull all the "Market" entities
@@ -142,6 +182,8 @@ const Options: FC = () => {
 					color={COLORS.pink}
 					numberStyle="currency0"
 					numBoxes={2}
+					loadingState={loadingState}
+					refetchData={fetchData}
 					infoData={
 						<>
 							To get the largest binary options market to date, we pull all the "Market" entities
@@ -162,6 +204,8 @@ const Options: FC = () => {
 					color={COLORS.green}
 					numberStyle="number"
 					numBoxes={3}
+					loadingState={loadingState}
+					refetchData={fetchData}
 					infoData={
 						<>
 							To get the number of active binary options market, we pull all the "Market" entities
@@ -181,6 +225,8 @@ const Options: FC = () => {
 					color={COLORS.pink}
 					numberStyle="currency0"
 					numBoxes={3}
+					loadingState={loadingState}
+					refetchData={fetchData}
 					infoData={
 						<>
 							To get the total amount pooled in active binary options market, we pull all the
@@ -200,6 +246,8 @@ const Options: FC = () => {
 					color={COLORS.pink}
 					numberStyle="number"
 					numBoxes={3}
+					loadingState={loadingState}
+					refetchData={fetchData}
 					infoData={
 						<>
 							To get the total number of trades over the past 24 hours in binary options markets, we

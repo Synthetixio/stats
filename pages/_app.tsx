@@ -3,7 +3,6 @@ import { AppProps } from 'next/app';
 import Head from 'next/head';
 import { ethers } from 'ethers';
 import { useTranslation } from 'react-i18next';
-
 import { synthetix, Network } from '@synthetixio/js';
 import { ThemeProvider as SCThemeProvider } from 'styled-components';
 import { ThemeProvider as MuiThemeProvider } from '@material-ui/core/styles';
@@ -65,13 +64,13 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
 				<meta property="og:type" content="website" />
 				<meta property="og:title" content="Synthetix Stats" />
 				<meta property="og:description" content="Synthetix protocol statistics and network data" />
-				<meta property="og:image" content="/images/synthetix.png" />
+				<meta property="og:image" content="/assets/svg/stats-logo.svg" />
 				<meta property="og:image:alt" content="Synthetix Stats" />
 				<meta property="og:site_name" content="Synthetix Stats" />
 				{/* twitter */}
-				<meta name="twitter:image" content="/images/synthetix.png" />
+				<meta name="twitter:image" content="/assets/svg/stats-logo.svg" />
 				<meta name="twitter:url" content="https://stats.synthetix.io" />
-				<link rel="icon" href="/images/favicon.png" />
+				<link rel="icon" href="/static/favicon.ico" />
 				<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter" />
 			</Head>
 			<SCThemeProvider theme={scTheme}>

@@ -3,12 +3,20 @@ import axios from 'axios';
 import snxData from 'synthetix-data';
 import { ethers } from 'ethers';
 
-import { AreaChartData, ChartPeriod, SNXPriceData, TimeSeries, TreeMapData } from 'types/data';
+import {
+	AreaChartData,
+	ChartPeriod,
+	SNXPriceData,
+	TimeSeries,
+	TreeMapData,
+	LoadingState,
+} from 'types/data';
 import StatsBox from 'components/StatsBox';
 import StatsRow from 'components/StatsRow';
 import AreaChart from 'components/Charts/AreaChart';
 import SectionHeader from 'components/SectionHeader';
 import { COLORS } from 'constants/styles';
+import { LOADING_STATE } from 'constants/loading';
 import {
 	synthetixSubgraph,
 	synthetixRatesSubgraph,
@@ -20,6 +28,7 @@ import SUSDDistribution from '../Network/SUSDDistribution';
 import { SNXJSContext, SUSDContext, SNXContext, ProviderContext } from 'pages/_app';
 import { formatIdToIsoString } from 'utils/formatter';
 import { getSUSDHoldersName } from 'utils/dataMapping';
+import { refetchHelper, refetchErrorHelper, refetchTimeoutHelper } from 'utils/reloading';
 import { LinkText, NewParagraph } from 'components/common';
 import { curveSusdPool } from 'contracts';
 
@@ -28,6 +37,8 @@ const CMC_API = 'https://coinmarketcap-api.synthetix.io/public/prices?symbols=SN
 const NetworkSection: FC = () => {
 	const [etherLocked, setEtherLocked] = useState<number | null>(null);
 	const [sUSDFromEther, setsUSDFromEther] = useState<number | null>(null);
+	const [loadingState, setLoadingState] = useState<LoadingState>(LOADING_STATE.LOADING);
+	const [numberLoadTries, setNumberLoadTries] = useState<number>(0);
 	const [priorSNXPrice, setPriorSNXPrice] = useState<number | null>(null);
 	const [priceChartPeriod, setPriceChartPeriod] = useState<ChartPeriod>('D');
 	const [SNXChartPriceData, setSNXChartPriceData] = useState<AreaChartData[]>([]);
@@ -44,9 +55,8 @@ const NetworkSection: FC = () => {
 	const { SNXPrice, setSNXPrice, setSNXStaked } = useContext(SNXContext);
 	const provider = useContext(ProviderContext);
 
-	// NOTE: use interval? or save data calls?
-	useEffect(() => {
-		const fetchData = async () => {
+	const fetchData = async (noRetry: boolean = false) => {
+		try {
 			const { formatEther, formatUnits, parseUnits } = snxjs.utils;
 
 			const curveContract = new ethers.Contract(
@@ -125,7 +135,7 @@ const NetworkSection: FC = () => {
 			let stakersTotalDebt = 0;
 			let stakersTotalCollateral = 0;
 
-			for (const { address, collateral, debtEntryAtIndex, initialDebtOwnership } of holders) {
+			for (const { collateral, debtEntryAtIndex, initialDebtOwnership } of holders) {
 				let debtBalance =
 					((totalIssuedSynths * lastDebtLedgerEntry) / debtEntryAtIndex) * initialDebtOwnership;
 				let collateralRatio = debtBalance / collateral / usdToSnxPrice;
@@ -157,7 +167,51 @@ const NetworkSection: FC = () => {
 			setTotalSupplySUSD(sUSDTotalSupply);
 			setActiveCRatio(1 / (stakersTotalDebt / stakersTotalCollateral));
 			setNetworkCRatio((totalSupply * formattedSNXPrice) / totalIssuedSynths);
-		};
+
+			const isBadData =
+				topHolders == null ||
+				topHolders.length === 0 ||
+				holders == null ||
+				holders.length === 0 ||
+				snxTotals == null ||
+				formattedSNXPrice === 0 ||
+				formattedSNXPrice == null ||
+				totalSupply === 0 ||
+				totalSupply == null ||
+				exchangeAmount == null ||
+				exchangeAmount === 0 ||
+				sUSDTotalSupply === 0 ||
+				sUSDTotalSupply == null;
+
+			refetchHelper({
+				numberLoadTries,
+				isBadData,
+				noRetry,
+				setLoadingState,
+				refetchData,
+				section: 'network',
+			});
+		} catch (e) {
+			refetchErrorHelper({
+				numberLoadTries,
+				noRetry,
+				setLoadingState,
+				refetchData,
+				error: e,
+				section: 'network',
+			});
+		}
+	};
+
+	const refetchData = () =>
+		refetchTimeoutHelper({
+			setLoadingState,
+			fetchData,
+			numberLoadTries,
+			setNumberLoadTries,
+		});
+
+	useEffect(() => {
 		fetchData();
 	}, []);
 
@@ -234,6 +288,8 @@ const NetworkSection: FC = () => {
 					color={COLORS.pink}
 					numberStyle="currency0"
 					numBoxes={3}
+					loadingState={loadingState}
+					refetchData={fetchData}
 					infoData={
 						<>
 							The market cap is calculated using the price of SNX from Chainlink oracles multiplied
@@ -252,6 +308,8 @@ const NetworkSection: FC = () => {
 					color={COLORS.green}
 					numberStyle="currency2"
 					numBoxes={3}
+					loadingState={loadingState}
+					refetchData={fetchData}
 					infoData={
 						<>
 							The price of sUSD is calculated using the peg from Curve, which holds the majority of
@@ -268,6 +326,8 @@ const NetworkSection: FC = () => {
 					percentChange={null}
 					subText="SNX 24 hr volume from Coinmarketcap"
 					color={COLORS.green}
+					loadingState={loadingState}
+					refetchData={fetchData}
 					numberStyle="currency0"
 					numBoxes={3}
 					infoData={null}
@@ -286,6 +346,8 @@ const NetworkSection: FC = () => {
 					subText="The total value of all staked SNX"
 					color={COLORS.pink}
 					numberStyle="currency0"
+					loadingState={loadingState}
+					refetchData={fetchData}
 					numBoxes={4}
 					infoData={
 						<>
@@ -311,6 +373,8 @@ const NetworkSection: FC = () => {
 					subText="The aggregate collateralization ratio of all SNX wallets"
 					color={COLORS.green}
 					numberStyle="percent0"
+					loadingState={loadingState}
+					refetchData={fetchData}
 					numBoxes={4}
 					infoData={
 						<>
@@ -328,6 +392,8 @@ const NetworkSection: FC = () => {
 					subText="The aggregate collateralization ratio of SNX wallets that are currently staking"
 					color={COLORS.green}
 					numberStyle="percent0"
+					loadingState={loadingState}
+					refetchData={fetchData}
 					numBoxes={4}
 					infoData={
 						<>
@@ -348,6 +414,8 @@ const NetworkSection: FC = () => {
 					percentChange={null}
 					subText="Total number of SNX holders"
 					color={COLORS.green}
+					loadingState={loadingState}
+					refetchData={fetchData}
 					numberStyle="number"
 					numBoxes={4}
 					infoData={

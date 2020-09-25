@@ -8,34 +8,37 @@ import AreaChart from 'components/Charts/AreaChart';
 
 import { COLORS } from 'constants/styles';
 import { SNXJSContext, SNXContext, SUSDContext } from 'pages/_app';
-import { FeePeriod, AreaChartData, ChartPeriod, ActiveStakersData } from 'types/data';
+import { FeePeriod, AreaChartData, ChartPeriod, ActiveStakersData, LoadingState } from 'types/data';
 import { formatIdToIsoString } from 'utils/formatter';
 import { NewParagraph, LinkText } from 'components/common';
 import { synthetixSubgraph } from 'constants/links';
+import { LOADING_STATE, RELOADING_TIMES } from '../../constants/loading';
 
 const Staking: FC = () => {
+	const [loadingState, setLoadingState] = useState<LoadingState>(LOADING_STATE.LOADING);
+	const [numberLoadTries, setNumberLoadTries] = useState<number>(0);
 	const [currentFeePeriod, setCurrentFeePeriod] = useState<FeePeriod | null>(null);
 	const [nextFeePeriod, setNextFeePeriod] = useState<FeePeriod | null>(null);
-	const [stakersChartPeriod, setStakersChartPeriod] = useState<ChartPeriod>('W');
+	const [stakersChartPeriod, setStakersChartPeriod] = useState<ChartPeriod>('Y');
 	const [totalActiveStakers, setTotalActiveStakers] = useState<number | null>(null);
 	const [stakersChartData, setStakersChartData] = useState<AreaChartData[]>([]);
 	const snxjs = useContext(SNXJSContext);
 	const { SNXPrice, SNXStaked } = useContext(SNXContext);
 	const { sUSDPrice } = useContext(SUSDContext);
 
-	useEffect(() => {
-		const fetchFeePeriod = async (period: number): Promise<FeePeriod> => {
-			const { formatEther } = snxjs.utils;
-			const feePeriod = await snxjs.contracts.FeePool.recentFeePeriods(period);
-			return {
-				feesToDistribute: Number(formatEther(feePeriod.feesToDistribute)) || 0,
-				feesClaimed: Number(formatEther(feePeriod.feesClaimed)) || 0,
-				rewardsToDistribute: Number(formatEther(feePeriod.rewardsToDistribute)) || 0,
-				rewardsClaimed: Number(formatEther(feePeriod.rewardsClaimed)) || 0,
-			};
+	const fetchFeePeriod = async (period: number): Promise<FeePeriod> => {
+		const { formatEther } = snxjs.utils;
+		const feePeriod = await snxjs.contracts.FeePool.recentFeePeriods(period);
+		return {
+			feesToDistribute: Number(formatEther(feePeriod.feesToDistribute)) || 0,
+			feesClaimed: Number(formatEther(feePeriod.feesClaimed)) || 0,
+			rewardsToDistribute: Number(formatEther(feePeriod.rewardsToDistribute)) || 0,
+			rewardsClaimed: Number(formatEther(feePeriod.rewardsClaimed)) || 0,
 		};
+	};
 
-		const fetchData = async () => {
+	const fetchData = async (noRetry: boolean = false) => {
+		try {
 			const [newFeePeriod, currFeePeriod] = await Promise.all([
 				fetchFeePeriod(0),
 				fetchFeePeriod(1),
@@ -43,7 +46,40 @@ const Staking: FC = () => {
 
 			setCurrentFeePeriod(currFeePeriod);
 			setNextFeePeriod(newFeePeriod);
-		};
+
+			let isBadData =
+				newFeePeriod == null || currFeePeriod == null || currFeePeriod.rewardsToDistribute === 0;
+
+			if (numberLoadTries < 2 && isBadData && !noRetry) {
+				console.log('refetching options data due to bad responses');
+				refetchData();
+			} else if (numberLoadTries === 2 && isBadData && !noRetry) {
+				setLoadingState(LOADING_STATE.FAILED);
+			} else if (!noRetry) {
+				setLoadingState(LOADING_STATE.SUCCESS);
+			}
+		} catch (e) {
+			if (numberLoadTries < 2 && !noRetry) {
+				console.log('refetching options data due to error:', e);
+				refetchData();
+			} else if (numberLoadTries === 2 && !noRetry) {
+				setLoadingState(LOADING_STATE.FAILED);
+			}
+		}
+	};
+
+	const refetchData = () => {
+		setLoadingState(LOADING_STATE.RETRY);
+		setTimeout(
+			() => {
+				fetchData();
+			},
+			numberLoadTries === 0 ? RELOADING_TIMES.INITIAL : RELOADING_TIMES.SECOND
+		);
+		setNumberLoadTries(numberLoadTries + 1);
+	};
+
+	useEffect(() => {
 		fetchData();
 	}, []);
 
@@ -98,6 +134,8 @@ const Staking: FC = () => {
 					color={COLORS.green}
 					numberStyle="percent2"
 					numBoxes={3}
+					loadingState={loadingState}
+					refetchData={fetchData}
 					infoData={
 						<>
 							To calculate the total APY for staking SNX, we combine the SNX rewards APY and sUSD
@@ -118,6 +156,8 @@ const Staking: FC = () => {
 					color={COLORS.green}
 					numberStyle="percent2"
 					numBoxes={3}
+					loadingState={loadingState}
+					refetchData={fetchData}
 					infoData={null}
 				/>
 				<StatsBox
@@ -134,6 +174,8 @@ const Staking: FC = () => {
 					color={COLORS.pink}
 					numberStyle="percent2"
 					numBoxes={3}
+					loadingState={loadingState}
+					refetchData={fetchData}
 					infoData={null}
 				/>
 			</StatsRow>
@@ -151,6 +193,8 @@ const Staking: FC = () => {
 					color={COLORS.pink}
 					numberStyle="currency0"
 					numBoxes={4}
+					loadingState={loadingState}
+					refetchData={fetchData}
 					infoData={
 						<>
 							SNX and sUSD rewards are paid weekly to stakers who maintain their collateral ratio of
@@ -174,6 +218,8 @@ const Staking: FC = () => {
 					color={COLORS.green}
 					numberStyle="currency0"
 					numBoxes={4}
+					loadingState={loadingState}
+					refetchData={fetchData}
 					infoData={null}
 				/>
 				<StatsBox
@@ -192,6 +238,8 @@ const Staking: FC = () => {
 					color={COLORS.green}
 					numberStyle="currency0"
 					numBoxes={4}
+					loadingState={loadingState}
+					refetchData={fetchData}
 					infoData={null}
 				/>
 				<StatsBox
@@ -207,6 +255,8 @@ const Staking: FC = () => {
 					color={COLORS.pink}
 					numberStyle="currency0"
 					numBoxes={4}
+					loadingState={loadingState}
+					refetchData={fetchData}
 					infoData={null}
 				/>
 			</StatsRow>

@@ -43,6 +43,8 @@ export type ChartPeriod = 'D' | 'W' | 'M' | 'Y';
 
 export type TimeSeries = '1d' | '15m';
 
+export type LoadingState = 'loading' | 'retry' | 'failed' | 'success';
+
 export type FeePeriod = {
 	feesToDistribute: number;
 	feesClaimed: number;
