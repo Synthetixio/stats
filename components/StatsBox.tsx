@@ -123,8 +123,6 @@ const StatsBoxTitle = styled.div`
 	font-size: 14px;
 	line-height: 24px;
 
-	text-transform: uppercase;
-
 	color: ${(props) => props.theme.colors.white};
 
 	@media only screen and (max-width: 500px) {
