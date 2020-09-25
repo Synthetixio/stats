@@ -122,7 +122,7 @@ const Staking: FC = () => {
 				/>
 				<StatsBox
 					key="SNXSTKAPYSNX"
-					title="CURRENT SNX STAKING APY (SNX rewards)"
+					title="CURRENT SNX STAKING APY (SNX REWARDS)"
 					num={
 						SNXPrice != null && currentFeePeriod != null && SNXValueStaked != null
 							? (((SNXPrice ?? 0) * currentFeePeriod?.rewardsToDistribute ?? 0) * 52) /

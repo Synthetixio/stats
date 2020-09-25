@@ -1,5 +1,11 @@
 export type NumberColor = 'green' | 'pink';
-export type NumberStyle = 'percent0' | 'percent2' | 'number' | 'currency0' | 'currency2';
+export type NumberStyle =
+	| 'percent0'
+	| 'percent2'
+	| 'number'
+	| 'number4'
+	| 'currency0'
+	| 'currency2';
 
 export const MAX_PAGE_WIDTH = 1226;
 

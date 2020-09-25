@@ -51,6 +51,8 @@ export const getFormattedNumber = (num: number | null, numFormat: NumberStyle) =
 		formattedNum = formatCurrency(num, 2);
 	} else if (numFormat === 'number') {
 		formattedNum = formatNumber(num);
+	} else if (numFormat === 'number4') {
+		formattedNum = formatNumber(num, 4);
 	} else if (numFormat === 'percent2') {
 		formattedNum = formatPercentage(num);
 	} else if (numFormat === 'percent0') {
