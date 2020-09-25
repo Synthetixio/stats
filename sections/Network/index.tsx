@@ -94,7 +94,7 @@ const NetworkSection: FC = () => {
 			]);
 
 			setEtherLocked(
-				Number(snxjs.utils.formatEther(ethSusdCollateralBalance)) +
+				Number(snxjs.utils.formatEther(ethCollateralBalance)) +
 					Number(snxjs.utils.formatEther(ethSusdCollateralBalance))
 			);
 			setSNXHolders(snxTotals.snxHolders);
