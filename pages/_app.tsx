@@ -24,8 +24,6 @@ export const headersAndScrollRef: { [key: string]: RefObject<unknown> } = {
 	OPTIONS: createRef(),
 };
 
-console.log('process.env.NEXT_PUBLIC_INFURA_KEY', process.env.NEXT_PUBLIC_INFURA_KEY);
-
 const provider = new ethers.providers.InfuraProvider(
 	'homestead',
 	process.env.NEXT_PUBLIC_INFURA_KEY
