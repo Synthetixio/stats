@@ -120,11 +120,11 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
 				<meta property="og:type" content="website" />
 				<meta property="og:title" content="Synthetix Stats" />
 				<meta property="og:description" content="Synthetix protocol statistics and network data" />
-				<meta property="og:image" content="/images/stats-social.jpeg" />
+				<meta property="og:image" content="/static/images/stats-social.jpeg" />
 				<meta property="og:image:alt" content="Synthetix Stats" />
 				<meta property="og:site_name" content="Synthetix Stats" />
 				{/* twitter */}
-				<meta name="twitter:image" content="/images/stats-social.jpeg" />
+				<meta name="twitter:image" content="/static/images/stats-social.jpeg" />
 				<meta name="twitter:url" content="https://stats.synthetix.io" />
 				<link rel="icon" href="/images/favicon.png" />
 				<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter" />
