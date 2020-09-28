@@ -194,7 +194,7 @@ const Trading: FC = () => {
 			/>
 			<SingleStatRow
 				text="TOTAL NUMBER OF UNIQUE TRADERS"
-				subtext="Ethereum addresses that have traded synths"
+				subtext="Ethereum addresses that have traded Synths"
 				num={totalUsers}
 				color={COLORS.pink}
 				numberStyle="number"
