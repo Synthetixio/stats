@@ -101,6 +101,7 @@ const Trading: FC = () => {
 		} else if (fetchPeriod === 'Y') {
 			tradesOverPeriodData = await snxData.exchanges.aggregate({ timeSeries, max: 365 });
 		}
+		tradesOverPeriodData = tradesOverPeriodData.reverse();
 
 		if (type === 'both') {
 			setChartData(tradesOverPeriodData, 'trade');
