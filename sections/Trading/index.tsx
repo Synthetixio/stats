@@ -20,6 +20,7 @@ import { getPostArchernarTotals } from 'utils/customGraphQueries';
 
 const Trading: FC = () => {
 	const [totalTradingVolume, setTotalTradingVolume] = useState<number | null>(null);
+	const [totalTradingFees, setTotalTradingFees] = useState<number | null>(null);
 	const [totalDailyTradingVolume, setTotalDailyTradingVolume] = useState<number | null>(null);
 	const [totalTrades, setTotalTrades] = useState<number | null>(null);
 	const [totalUsers, setTotalUsers] = useState<number | null>(null);
@@ -45,6 +46,7 @@ const Trading: FC = () => {
 
 			setTotalDailyTradingVolume(last24Hours);
 			setTotalTradingVolume(exchangeVolumeData.exchangeUSDTally);
+			setTotalTradingFees(exchangeVolumeData.totalFeesGeneratedInUSD);
 			setTotalTrades(exchangeVolumeData.trades);
 			setTotalUsers(allTimeData.exchangers);
 		};
@@ -125,10 +127,28 @@ const Trading: FC = () => {
 					subText="Historical trading volume for all Synths"
 					color={COLORS.green}
 					numberStyle="currency0"
-					numBoxes={3}
+					numBoxes={4}
 					infoData={
 						<>
 							The total trading volume only shows data from after the Archernar release on{' '}
+							<LinkText href={etherscanArchernarBlock}>block 9,518,914 (Feb 20, 2020).</LinkText>{' '}
+							Prior to this release significant volume was generated via{' '}
+							<LinkText href={frontRunningWiki}>front running</LinkText> attempts.
+						</>
+					}
+				/>
+				<StatsBox
+					key="TOTLFEES"
+					title="TOTAL TRADING FEES"
+					num={totalTradingFees}
+					percentChange={null}
+					subText="Historical trading fees for all Synths"
+					color={COLORS.green}
+					numberStyle="currency0"
+					numBoxes={4}
+					infoData={
+						<>
+							The total trading fees only shows data from after the Archernar release on{' '}
 							<LinkText href={etherscanArchernarBlock}>block 9,518,914 (Feb 20, 2020).</LinkText>{' '}
 							Prior to this release significant volume was generated via{' '}
 							<LinkText href={frontRunningWiki}>front running</LinkText> attempts.
@@ -141,9 +161,9 @@ const Trading: FC = () => {
 					num={totalTrades}
 					percentChange={null}
 					subText="Total historical trades for all Synths"
-					color={COLORS.green}
+					color={COLORS.pink}
 					numberStyle="number"
-					numBoxes={3}
+					numBoxes={4}
 					infoData={
 						<>
 							The total number of trades only shows data from after the Archernar release on{' '}
@@ -161,7 +181,7 @@ const Trading: FC = () => {
 					subText="Total Synth trading volume over the past 24 hours"
 					color={COLORS.green}
 					numberStyle="currency0"
-					numBoxes={3}
+					numBoxes={4}
 					infoData={null}
 				/>
 			</StatsRow>

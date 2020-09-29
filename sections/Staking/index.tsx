@@ -16,7 +16,7 @@ import { synthetixSubgraph } from 'constants/links';
 const Staking: FC = () => {
 	const [currentFeePeriod, setCurrentFeePeriod] = useState<FeePeriod | null>(null);
 	const [nextFeePeriod, setNextFeePeriod] = useState<FeePeriod | null>(null);
-	const [stakersChartPeriod, setStakersChartPeriod] = useState<ChartPeriod>('W');
+	const [stakersChartPeriod, setStakersChartPeriod] = useState<ChartPeriod>('Y');
 	const [totalActiveStakers, setTotalActiveStakers] = useState<number | null>(null);
 	const [stakersChartData, setStakersChartData] = useState<AreaChartData[]>([]);
 	const snxjs = useContext(SNXJSContext);
