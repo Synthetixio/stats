@@ -2,6 +2,7 @@ import { FC, useEffect, useState, useContext } from 'react';
 import axios from 'axios';
 import snxData from 'synthetix-data';
 import { ethers } from 'ethers';
+import { Trans, useTranslation } from 'react-i18next';
 
 import { AreaChartData, ChartPeriod, SNXPriceData, TimeSeries, TreeMapData } from 'types/data';
 import StatsBox from 'components/StatsBox';
@@ -26,6 +27,7 @@ import { curveSusdPool } from 'contracts';
 const CMC_API = 'https://coinmarketcap-api.synthetix.io/public/prices?symbols=SNX';
 
 const NetworkSection: FC = () => {
+	const { t } = useTranslation();
 	const [etherLocked, setEtherLocked] = useState<number | null>(null);
 	const [sUSDFromEther, setsUSDFromEther] = useState<number | null>(null);
 	const [priorSNXPrice, setPriorSNXPrice] = useState<number | null>(null);
@@ -125,7 +127,7 @@ const NetworkSection: FC = () => {
 			let stakersTotalDebt = 0;
 			let stakersTotalCollateral = 0;
 
-			for (const { address, collateral, debtEntryAtIndex, initialDebtOwnership } of holders) {
+			for (const { collateral, debtEntryAtIndex, initialDebtOwnership } of holders) {
 				let debtBalance =
 					((totalIssuedSynths * lastDebtLedgerEntry) / debtEntryAtIndex) * initialDebtOwnership;
 				let collateralRatio = debtBalance / collateral / usdToSnxPrice;
@@ -195,7 +197,7 @@ const NetworkSection: FC = () => {
 	const pricePeriods: ChartPeriod[] = ['D', 'W', 'M', 'Y'];
 	return (
 		<>
-			<SectionHeader title="NETWORK" first={true} />
+			<SectionHeader title={t('homepage.section-header.network')} first={true} />
 			<AreaChart
 				periods={pricePeriods}
 				activePeriod={priceChartPeriod}
@@ -205,7 +207,7 @@ const NetworkSection: FC = () => {
 					fetchNewChartData(period);
 				}}
 				data={SNXChartPriceData}
-				title="SNX PRICE"
+				title={t('homepage.snx-price.title')}
 				num={SNXPrice}
 				numFormat="currency2"
 				percentChange={
@@ -213,60 +215,69 @@ const NetworkSection: FC = () => {
 				}
 				timeSeries={priceChartPeriod === 'D' ? '15m' : '1d'}
 				infoData={
-					<>
-						The price of SNX is obtained from Chainlink oracles, which are retrieved using the{' '}
-						<LinkText href={synthetixJSGithub}>synthetix-js repo.</LinkText>
-						<NewParagraph>
-							For the chart, the data is collected from the "DailySNXPrice" and
-							"FifteenMinuteSNXPrice" entities in the Synthetix rates subgraph{' '}
-							<LinkText href={synthetixRatesSubgraph}>(view playground)</LinkText>.
-						</NewParagraph>
-					</>
+					<Trans
+						i18nKey="homepage.snx-price.infoData"
+						values={{
+							sjsLinkText: t('homepage.snx-price.sjsLinkText'),
+							viewPlaygroundLinkText: t('homepage.snx-price.viewPlaygroundLinkText'),
+						}}
+						components={{
+							sjslink: <LinkText href={synthetixJSGithub} />,
+							viewPlaygroundLink: <LinkText href={synthetixRatesSubgraph} />,
+							newParagraph: <NewParagraph />,
+						}}
+					/>
 				}
 			/>
 			<StatsRow>
 				<StatsBox
 					key="SNXMKTCAP"
-					title="SNX MARKET CAP"
+					title={t('homepage.snx-market-cap.title')}
 					num={SNXPrice != null && SNXTotalSupply != null ? SNXTotalSupply * (SNXPrice ?? 0) : null}
 					percentChange={null}
-					subText="Fully diluted market cap for SNX"
+					subText={t('homepage.snx-market-cap.subtext')}
 					color={COLORS.pink}
 					numberStyle="currency0"
 					numBoxes={3}
 					infoData={
-						<>
-							The market cap is calculated using the price of SNX from Chainlink oracles multiplied
-							against the total supply of SNX tokens (fully diluted including escrow). These data
-							points are retrieved using the{' '}
-							<LinkText href={synthetixJSGithub}>synthetix-js repo.</LinkText>
-						</>
+						<Trans
+							i18nKey="homepage.snx-market-cap.infoData"
+							values={{
+								sjsLinkText: t('homepage.snx-market-cap.sjsLinkText'),
+							}}
+							components={{
+								linkText: <LinkText href={synthetixJSGithub} />,
+							}}
+						/>
 					}
 				/>
 				<StatsBox
 					key="SUSDPRICE"
-					title="sUSD PRICE"
+					title={t('homepage.susd-price.title')}
 					num={sUSDPrice}
 					percentChange={null}
-					subText="Price of sUSD on Curve"
+					subText={t('homepage.susd-price.subtext')}
 					color={COLORS.green}
 					numberStyle="currency2"
 					numBoxes={3}
 					infoData={
-						<>
-							The price of sUSD is calculated using the peg from Curve, which holds the majority of
-							sUSD in a liquidity pool of various stablecoins. The{' '}
-							<LinkText href={curveDocumentation}>Curve documentation</LinkText> explains how the
-							peg is calculated.
-						</>
+						<Trans
+							i18nKey="homepage.susd-price.infoData"
+							values={{
+								curveDocLinkText: t('homepage.susd-price.curveDocLinkText'),
+							}}
+							components={{
+								linkText: <LinkText href={curveDocumentation} />,
+							}}
+						/>
 					}
 				/>
 				<StatsBox
 					key="SNXVOLUME"
-					title="SNX VOLUME"
+					title={t('homepage.snx-volume.title')}
 					num={SNX24HVolume}
 					percentChange={null}
-					subText="SNX 24 hr volume from Coinmarketcap"
+					subText={t('homepage.snx-volume.subtext')}
 					color={COLORS.green}
 					numberStyle="currency0"
 					numBoxes={3}
@@ -276,85 +287,94 @@ const NetworkSection: FC = () => {
 			<StatsRow>
 				<StatsBox
 					key="TOTALSNXLOCKED"
-					title="TOTAL SNX STAKED"
+					title={t('homepage.total-snx-locked.title')}
 					num={
 						SNXPercentLocked != null && SNXTotalSupply != null && SNXPrice != null
 							? SNXPercentLocked * SNXTotalSupply * (SNXPrice ?? 0)
 							: null
 					}
 					percentChange={null}
-					subText="The total value of all staked SNX"
+					subText={t('homepage.total-snx-locked.subtext')}
 					color={COLORS.pink}
 					numberStyle="currency0"
 					numBoxes={4}
 					infoData={
-						<>
-							To calculate the value of SNX tokens staked we sample the top 1,000 SNX stakers using
-							the <LinkText href={synthetixDataGithub}>Synthetix data repo</LinkText> and then
-							determine what proportion of SNX they have staked.{' '}
-							<NewParagraph>
-								We then multiply this proportion across the total supply of SNX tokens which we get
-								from the <LinkText href={synthetixJSGithub}>synthetix-js repo.</LinkText>
-							</NewParagraph>
-							<NewParagraph>
-								Taking a small sample produces a result that is very close to taking the entire set
-								of holders and allows the page to load faster.
-							</NewParagraph>
-						</>
+						<Trans
+							i18nKey="homepage.total-snx-locked.infoData"
+							values={{
+								sDataLinkText: t('homepage.total-snx-locked.sDataLinkText'),
+								sjsLinkText: t('homepage.total-snx-locked.sjsLinkText'),
+							}}
+							components={{
+								sDataLink: <LinkText href={synthetixDataGithub} />,
+								sjsLink: <LinkText href={synthetixJSGithub} />,
+								newParagraph: <NewParagraph />,
+							}}
+						/>
 					}
 				/>
 				<StatsBox
 					key="NETWORKCRATIO"
-					title="NETWORK C-RATIO"
+					title={t('homepage.network-cratio.title')}
 					num={networkCRatio}
 					percentChange={null}
-					subText="The aggregate collateralization ratio of all SNX wallets"
+					subText={t('homepage.network-cratio.subtext')}
 					color={COLORS.green}
 					numberStyle="percent0"
 					numBoxes={4}
 					infoData={
-						<>
-							To calculate the network C-Ratio we use the following formula "Total SNX Supply * SNX
-							Price / Total Issued Synths." We get this data from the{' '}
-							<LinkText href={synthetixJSGithub}>synthetix-js repo.</LinkText>
-						</>
+						<Trans
+							i18nKey="homepage.network-cratio.infoData"
+							values={{
+								sjsLinkText: t('homepage.network-cratio.sjsLinkText'),
+							}}
+							components={{
+								sjsLink: <LinkText href={synthetixJSGithub} />,
+							}}
+						/>
 					}
 				/>
 				<StatsBox
 					key="ACTIVECRATIO"
-					title="ACTIVE C-RATIO"
+					title={t('homepage.active-cratio.title')}
 					num={activeCRatio}
 					percentChange={null}
-					subText="The aggregate collateralization ratio of SNX wallets that are currently staking"
+					subText={t('homepage.active-cratio.subtext')}
 					color={COLORS.green}
 					numberStyle="percent0"
 					numBoxes={4}
 					infoData={
-						<>
-							To calculate the C-Ratio of active stakers we sample the top 1,000 SNX stakers using
-							the <LinkText href={synthetixDataGithub}>Synthetix data repo</LinkText> and then
-							determine the cumulative C-Ratio using their collateral-to-debt ratio.
-							<NewParagraph>
-								Taking a small sample produces a result that is very close to taking the entire set
-								of holders and allows the page to load faster.
-							</NewParagraph>
-						</>
+						<Trans
+							i18nKey="homepage.active-cratio.infoData"
+							values={{
+								sDataLinkText: t('homepage.active-cratio.sDataLinkText'),
+							}}
+							components={{
+								sjsLink: <LinkText href={synthetixDataGithub} />,
+								newParagraph: <NewParagraph />,
+							}}
+						/>
 					}
 				/>
 				<StatsBox
 					key="SNXHOLDRS"
-					title="SNX HOLDERS"
+					title={t('homepage.snx-holders.title')}
 					num={SNXHolders}
 					percentChange={null}
-					subText="Total number of SNX holders"
+					subText={t('homepage.snx-holders.subtext')}
 					color={COLORS.green}
 					numberStyle="number"
 					numBoxes={4}
 					infoData={
-						<>
-							The number of SNX holders is obtained from the{' '}
-							<LinkText href={synthetixSubgraph}>Synthetix subgraph.</LinkText>
-						</>
+						<Trans
+							i18nKey="homepage.snx-holders.infoData"
+							values={{
+								subgraphLinkText: t('homepage.snx-holders.subgraphLinkText'),
+							}}
+							components={{
+								linkText: <LinkText href={synthetixSubgraph} />,
+							}}
+						/>
 					}
 				/>
 			</StatsRow>
@@ -362,10 +382,10 @@ const NetworkSection: FC = () => {
 			<StatsRow>
 				<StatsBox
 					key="ETHLOCKED"
-					title="ETH COLLATERAL"
+					title={t('homepage.eth-collateral.title')}
 					num={etherLocked}
 					percentChange={null}
-					subText="Total number of Ether locked as collateral"
+					subText={t('homepage.eth-collateral.subtext')}
 					color={COLORS.pink}
 					numberStyle="number4"
 					numBoxes={2}
@@ -373,10 +393,10 @@ const NetworkSection: FC = () => {
 				/>
 				<StatsBox
 					key="SUSDMINTEDETH"
-					title="sUSD MINTED FROM ETH"
+					title={t('homepage.susd-minted-from-eth.title')}
 					num={sUSDFromEther}
 					percentChange={null}
-					subText="Total number of sUSD minted using Ether as collateral"
+					subText={t('homepage.susd-minted-from-eth.subtext')}
 					color={COLORS.green}
 					numberStyle="currency0"
 					numBoxes={2}

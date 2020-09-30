@@ -1,6 +1,6 @@
 import { FC } from 'react';
 import styled from 'styled-components';
-
+import { useTranslation } from 'react-i18next';
 import BasicTreeMap from 'components/Charts/TreeMap';
 import { MAX_PAGE_WIDTH } from 'constants/styles';
 import { TreeMapData } from 'types/data';
@@ -10,13 +10,16 @@ interface SUSDDistributionProps {
 	totalSupplySUSD: number | null;
 }
 
-const SUSDDistribution: FC<SUSDDistributionProps> = ({ data, totalSupplySUSD }) => (
-	<SectionWrap>
-		<SectionTitle>sUSD DISTRIBUTION</SectionTitle>
-		<SectionSubtitle>Distribution of sUSD deposited/stored</SectionSubtitle>
-		<BasicTreeMap data={data} totalSupplySUSD={totalSupplySUSD} />
-	</SectionWrap>
-);
+const SUSDDistribution: FC<SUSDDistributionProps> = ({ data, totalSupplySUSD }) => {
+	const { t } = useTranslation();
+	return (
+		<SectionWrap>
+			<SectionTitle>{t('homepage.susd-distribution.title')}</SectionTitle>
+			<SectionSubtitle>{t('homepage.susd-distribution.subtext')}</SectionSubtitle>
+			<BasicTreeMap data={data} totalSupplySUSD={totalSupplySUSD} />
+		</SectionWrap>
+	);
+};
 
 const SectionWrap = styled.div`
 	background: ${(props) => props.theme.colors.mediumBlue};

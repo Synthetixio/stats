@@ -9,6 +9,68 @@
 		}
 	},
 	"homepage": {
-		"page-title": "Synthetix Stats | Synthetix protocol data"
+		"page-title": "Synthetix Stats | Synthetix protocol data",
+		"section-header": {
+			"network": "NETWORK"
+		},
+		"snx-price": {
+			"title": "SNX PRICE",
+			"infoData": "The price of SNX is obtained from Chainlink oracles, which are retrieved using the <sjslink>{{sjsLinkText}}</sjslink>. <newParagraph>For the chart, the data is collected from the \"DailySNXPrice\" and \"FifteenMinuteSNXPrice\" entities in the Synthetix rates subgraph <viewPlaygroundLink>{{viewPlaygroundLinkText}}</viewPlaygroundLink>.</newParagraph>",
+			"sjsLinkText": "synthetix-js repo",
+			"viewPlaygroundLinkText": "(view playground)"
+		},
+		"snx-market-cap": {
+			"title": "SNX MARKET CAP",
+			"subtext": "Fully diluted market cap for SNX",
+			"infoData": "The market cap is calculated using the price of SNX from Chainlink oracles multiplied against the total supply of SNX tokens (fully diluted including escrow). These data points are retrieved using the <linkText>{{sjsLinkText}}</linkText>.",
+			"sjsLinkText": "synthetix-js repo"
+		},
+		"susd-price": {
+			"title": "sUSD PRICE",
+			"subtext": "Price of sUSD on Curve",
+			"infoData": "The price of sUSD is calculated using the peg from Curve, which holds the majority of sUSD in a liquidity pool of various stablecoins. The <linkText>{{curveDocLinkText}}</linkText> explains how the peg is calculated.",
+			"curveDocLinkText": "Curve documentation"
+		},
+		"snx-volume": {
+			"title": "SNX VOLUME",
+			"subtext": "SNX 24 hr volume from Coinmarketcap"
+		},
+		"total-snx-locked": {
+			"title": "TOTAL SNX STAKED",
+			"subtext": "The total value of all staked SNX",
+			"infoData": "To calculate the value of SNX tokens staked we sample the top 1,000 SNX stakers using the <sDataLink>{{sDataLinkText}}</sDataLink> and then determine what proportion of SNX they have staked.<newParagraph>We then multiply this proportion across the total supply of SNX tokens which we get from the <sjsLink>{{sjsLinkText}}</sjsLink>.</newParagraph><newParagraph>Taking a small sample produces a result that is very close to taking the entire set of holders and allows the page to load faster.</newParagraph>",
+			"sDataLinkText": "Synthetix data repo",
+			"sjsLinkText":"synthetix-js repo"
+		},
+		"network-cratio": {
+			"title": "NETWORK C-RATIO",
+			"subtext": "The aggregate collateralization ratio of all SNX wallets",
+			"infoData": "To calculate the network C-Ratio we use the following formula \"Total SNX Supply * SNXPrice / Total Issued Synths.\" We get this data from the <sjsLink>{{sjsLinkText}}</sjsLink>.",
+			"sjsLinkText":"synthetix-js repo"
+		},
+		"active-cratio": {
+			"title": "ACTIVE C-RATIO",
+			"subtext": "The aggregate collateralization ratio of SNX wallets that are currently staking",
+			"infoData":"To calculate the C-Ratio of active stakers we sample the top 1,000 SNX stakers using the <sjsLink>{{sDataLinkText}}</sjsLink> and then determine the cumulative C-Ratio using their collateral-to-debt ratio.<newParagraph>Taking a small sample produces a result that is very close to taking the entire set of holders and allows the page to load faster.</newParagraph>",
+			"sDataLinkText":"Synthetix data repo"
+		},
+		"snx-holders": {
+			"title": "SNX HOLDERS",
+			"subtext": "Total number of SNX holders",
+			"infoData": "The number of SNX holders is obtained from the <linkText href={synthetixSubgraph}>{{subgraphLinkText}}</linkText>.",
+			"subgraphLinkText":"Synthetix subgraph"
+		},
+		"susd-distribution": {
+			"title": "sUSD DISTRIBUTION",
+			"subtext": "Distribution of sUSD deposited/stored"
+		},
+		"eth-collateral": {
+			"title": "ETH COLLATERAL",
+			"subtext": "Total number of Ether locked as collateral"
+		},
+		"susd-minted-from-eth": {
+			"title": "sUSD MINTED FROM ETH",
+			"subtext": "Total number of sUSD minted using Ether as collateral"
+		}
 	}
 }
