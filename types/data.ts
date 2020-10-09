@@ -27,6 +27,7 @@ export type TradesRequestData = {
 	id: string;
 	trades: number;
 	exchangers: number;
+	exchangeUSDTally: number;
 };
 
 export type AreaChartData = {
