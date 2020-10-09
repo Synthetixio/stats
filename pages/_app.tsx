@@ -18,9 +18,9 @@ import Layout from 'sections/shared/Layout';
 export const headersAndScrollRef: { [key: string]: RefObject<unknown> } = {
 	NETWORK: createRef(),
 	STAKING: createRef(),
+	TRADING: createRef(),
 	'YIELD FARMING': createRef(),
 	SYNTHS: createRef(),
-	TRADING: createRef(),
 	OPTIONS: createRef(),
 };
 
