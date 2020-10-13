@@ -12,7 +12,8 @@
 		"page-title": "Synthetix Stats | Synthetix protocol data",
 		"section-header": {
 			"network": "NETWORK",
-			"options": "OPTIONS"
+			"options": "OPTIONS",
+			"synths": "SYNTHS"
 		},
 		"snx-price": {
 			"title": "SNX PRICE",
@@ -135,6 +136,23 @@
 		"total-active-stakers": {
 			"title": "TOTAL ACTIVE STAKERS",
 			"infoData": "The number of total active stakers is obtained from the \"TotalActiveStaker\" entity from the <linkText>Synthetix subgraph.</linkText> The chart data shows the \"TotalDailyActiveStaker\" entity over time."
+		},
+		"total-synths": {
+			"title":"TOTAL SYNTHS",
+			"subtext":"The total value of all Synths in USD"
+		},
+		"top-synths": {
+			"title":"CURRENT TOP 3 SYNTHS:",
+			"price":"PRICE",
+			"marketCap":"MARKET CAP"
+		},
+		"synth-bar-chart": {
+			"title":"TOTAL SYNTHS",
+			"subtext":"The total value of all Synths in USD"
+		},
+		"synth-pie-chart": {
+			"title":"SYNTH DOMINANCE",
+			"subtext":"Distribution of Synths within the Synthetix protocol"
 		}
 	}
 }
