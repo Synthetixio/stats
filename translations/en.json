@@ -13,7 +13,8 @@
 		"section-header": {
 			"network": "NETWORK",
 			"options": "OPTIONS",
-			"synths": "SYNTHS"
+			"synths": "SYNTHS",
+			"trading": "TRADING"
 		},
 		"snx-price": {
 			"title": "SNX PRICE",
@@ -153,7 +154,41 @@
 		"synth-pie-chart": {
 			"title":"SYNTH DOMINANCE",
 			"subtext":"Distribution of Synths within the Synthetix protocol"
-		}
+		},
+		"total-trading-volume": {
+			"title":"TOTAL TRADING VOLUME",
+			"subtext":"Historical trading volume for all Synths",
+			"infoData":"The total trading volume only shows data from after the Archernar release on <linkText>block 9,518,914 (Feb 20, 2020).</linkText> Prior to this release significant volume was generated via <linkText2>front running</linkText2> attempts."
+		},
+		"total-trading-fees": {
+			"title": "TOTAL TRADING FEES",
+			"subtext":"Historical trading fees for all Synths",
+			"infoData":"The total trading fees only shows data from after the Archernar release on <linkText>block 9,518,914 (Feb 20, 2020).</linkText> Prior to this release significant volume was generated via <linkText2>front running</linkText2> attempts."
+		},
+		"total-number-of-trades": {
+			"title": "TOTAL NUMBER OF TRADES",
+			"subtext":"Total historical trades for all Synths",
+			"infoData":"The total number of trades only shows data from after the Archernar release on <linkText>block 9,518,914 (Feb 20, 2020).</linkText> Prior to this release significant volume was generated via <linkText2>front running</linkText2> attempts."
+		},
+		"24hr-exchange-volume": {
+			"title":"24HR EXCHANGE VOLUME",
+			"subtext":"Total Synth trading volume over the past 24 hours"
+		},
+		"trading-volume": {
+			"title":"TRADING VOLUME",
+			"infoData":"Each day we capture trading volume in the Synthetix protocol via the <linkText>Synthetix exchanges subgraph</linkText> using the \"DailyTotal\" entity. <newParagraph>The annual chart includes data from before the Archernar release on <linkText2 href={etherscanArchernarBlock}>block 9,518,914 (Feb 20, 2020).</linkText2> Prior to this release significant volume was generated via <linkText3 href={frontRunningWiki}>front running</linkText3> attempts.</newParagraph>"
+		},
+		"total-number-unique-traders": {
+			"title":"TOTAL NUMBER OF UNIQUE TRADERS",
+			"subtext":"Ethereum addresses that have traded Synths"
+		},
+		"average-daily-traders":{
+			"title":"AVERAGE DAILY TRADERS",
+			"subtext":"Average daily traders over the past 30 days"
+		},
+		"number-of-trades": {
+			"title":"NUMBER OF TRADES",
+			"infoData":"The number of trades is the sum of all daily periods in each chart below. The weekly chart (default) has 7 unique periods, monthly has 30 and annual has 365. <newParagraph>The number of trades is captured daily in the synthetix exchanges subgraph using the \"DailyTotal\" entity <linkText href={synthetixExchangesSubgraph}>(view playground).</linkText></newParagraph><fullLineLink>See GitHub repo for this subgraph</fullLineLink>"		},
 	}
 }
 

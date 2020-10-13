@@ -16,8 +16,10 @@ import {
 	frontRunningWiki,
 } from 'constants/links';
 import { getPostArchernarTotals } from 'utils/customGraphQueries';
+import { useTranslation, Trans } from 'react-i18next';
 
 const Trading: FC = () => {
+	const { t } = useTranslation();
 	const [totalTradingVolume, setTotalTradingVolume] = useState<number | null>(null);
 	const [totalTradingFees, setTotalTradingFees] = useState<number | null>(null);
 	const [totalDailyTradingVolume, setTotalDailyTradingVolume] = useState<number | null>(null);
@@ -109,68 +111,71 @@ const Trading: FC = () => {
 	const periods: ChartPeriod[] = ['W', 'M', 'Y'];
 	return (
 		<>
-			<SectionHeader title="TRADING" />
+			<SectionHeader title={t('homepage.section-header.trading')} />
 			<StatsRow>
 				<StatsBox
 					key="TOTALTRDVOLUME"
-					title="TOTAL TRADING VOLUME"
+					title={t('homepage.total-trading-volume.title')}
 					num={totalTradingVolume}
 					percentChange={null}
-					subText="Historical trading volume for all Synths"
+					subText={t('homepage.total-trading-volume.subtext')}
 					color={COLORS.green}
 					numberStyle="currency0"
 					numBoxes={4}
 					infoData={
-						<>
-							The total trading volume only shows data from after the Archernar release on{' '}
-							<LinkText href={etherscanArchernarBlock}>block 9,518,914 (Feb 20, 2020).</LinkText>{' '}
-							Prior to this release significant volume was generated via{' '}
-							<LinkText href={frontRunningWiki}>front running</LinkText> attempts.
-						</>
+						<Trans
+							i18nKey="homepage.total-trading-volume.infoData"
+							components={{
+								linkText: <LinkText href={etherscanArchernarBlock} />,
+								linkText2: <LinkText href={frontRunningWiki} />,
+							}}
+						/>
 					}
 				/>
 				<StatsBox
 					key="TOTLFEES"
-					title="TOTAL TRADING FEES"
+					title={t('homepage.total-trading-fees.title')}
 					num={totalTradingFees}
 					percentChange={null}
-					subText="Historical trading fees for all Synths"
+					subText={t('homepage.total-trading-fees.subtext')}
 					color={COLORS.green}
 					numberStyle="currency0"
 					numBoxes={4}
 					infoData={
-						<>
-							The total trading fees only shows data from after the Archernar release on{' '}
-							<LinkText href={etherscanArchernarBlock}>block 9,518,914 (Feb 20, 2020).</LinkText>{' '}
-							Prior to this release significant volume was generated via{' '}
-							<LinkText href={frontRunningWiki}>front running</LinkText> attempts.
-						</>
+						<Trans
+							i18nKey="homepage.total-trading-fees.infoData"
+							components={{
+								linkText: <LinkText href={etherscanArchernarBlock} />,
+								linkText2: <LinkText href={frontRunningWiki} />,
+							}}
+						/>
 					}
 				/>
 				<StatsBox
 					key="TOTLNOTRDES"
-					title="TOTAL NUMBER OF TRADES"
+					title={t('homepage.total-number-of-trades.title')}
 					num={totalTrades}
 					percentChange={null}
-					subText="Total historical trades for all Synths"
+					subText={t('homepage.total-number-of-trades.subtext')}
 					color={COLORS.pink}
 					numberStyle="number"
 					numBoxes={4}
 					infoData={
-						<>
-							The total number of trades only shows data from after the Archernar release on{' '}
-							<LinkText href={etherscanArchernarBlock}>block 9,518,914 (Feb 20, 2020).</LinkText>{' '}
-							Prior to this release significant volume was generated via{' '}
-							<LinkText href={frontRunningWiki}>front running</LinkText> attempts.
-						</>
+						<Trans
+							i18nKey="homepage.total-number-of-trades.infoData"
+							components={{
+								linkText: <LinkText href={etherscanArchernarBlock} />,
+								linkText2: <LinkText href={frontRunningWiki} />,
+							}}
+						/>
 					}
 				/>
 				<StatsBox
 					key="TOTLDAILYVOLUME"
-					title="24HR EXCHANGE VOLUME"
+					title={t('homepage.24hr-exchange-volume.title')}
 					num={totalDailyTradingVolume}
 					percentChange={null}
-					subText="Total Synth trading volume over the past 24 hours"
+					subText={t('homepage.24hr-exchange-volume.subtext')}
 					color={COLORS.green}
 					numberStyle="currency0"
 					numBoxes={4}
@@ -186,32 +191,30 @@ const Trading: FC = () => {
 					fetchNewChartData(period, 'volume');
 				}}
 				data={volumeChartData}
-				title="TRADING VOLUME"
+				title={t('homepage.trading-volume.title')}
 				num={totalVolumeOverPeriod}
 				numFormat="currency0"
 				percentChange={null}
 				timeSeries="1d"
 				infoData={
-					<>
-						Each day we capture trading volume in the Synthetix protocol via the{' '}
-						<LinkText href={synthetixExchangesSubgraph}>Synthetix exchanges subgraph</LinkText>{' '}
-						using the "DailyTotal" entity.
-						<NewParagraph>
-							The annual chart includes data from before the Archernar release on{' '}
-							<LinkText href={etherscanArchernarBlock}>block 9,518,914 (Feb 20, 2020).</LinkText>{' '}
-							Prior to this release significant volume was generated via{' '}
-							<LinkText href={frontRunningWiki}>front running</LinkText> attempts.
-						</NewParagraph>
-					</>
+					<Trans
+						i18nKey="homepage.trading-volume.infoData"
+						components={{
+							linkText: <LinkText href={synthetixExchangesSubgraph} />,
+							linkText2: <LinkText href={etherscanArchernarBlock} />,
+							linkText3: <LinkText href={frontRunningWiki} />,
+							newParagraph: <NewParagraph />,
+						}}
+					/>
 				}
 			/>
 			<StatsRow>
 				<StatsBox
 					key="TOTALNOUNQTRADERS"
-					title="TOTAL NUMBER OF UNIQUE TRADERS"
+					title={t('homepage.total-number-unique-traders.title')}
 					num={totalUsers}
 					percentChange={null}
-					subText="Ethereum addresses that have traded Synths"
+					subText={t('homepage.total-number-unique-traders.subtext')}
 					color={COLORS.pink}
 					numberStyle="number"
 					numBoxes={2}
@@ -219,10 +222,10 @@ const Trading: FC = () => {
 				/>
 				<StatsBox
 					key="AVGDAILYTRDRS"
-					title="AVERAGE DAILY TRADERS"
+					title={t('homepage.average-daily-traders.title')}
 					num={averageDailyTraders}
 					percentChange={null}
-					subText="Average daily traders over the past 30 days"
+					subText={t('homepage.average-daily-traders.subtext')}
 					color={COLORS.green}
 					numberStyle="number"
 					numBoxes={2}
@@ -238,22 +241,20 @@ const Trading: FC = () => {
 					fetchNewChartData(period, 'trade');
 				}}
 				data={tradesChartData}
-				title="NUMBER OF TRADES"
+				title={t('homepage.number-of-trades.title')}
 				num={totalTradesOverPeriod}
 				numFormat="number"
 				percentChange={null}
 				timeSeries="1d"
 				infoData={
-					<>
-						The number of trades is the sum of all daily periods in each chart below. The weekly
-						chart (default) has 7 unique periods, monthly has 30 and annual has 365.{' '}
-						<NewParagraph>
-							The number of trades is captured daily in the synthetix exchanges subgraph using the
-							"DailyTotal" entity{' '}
-							<LinkText href={synthetixExchangesSubgraph}>(view playground).</LinkText>
-						</NewParagraph>
-						<FullLineLink href={githubSubgraph}>See GitHub repo for this subgraph</FullLineLink>
-					</>
+					<Trans
+						i18nKey="homepage.trading-volume.infoData"
+						components={{
+							linkText: <LinkText href={synthetixExchangesSubgraph} />,
+							fullLineLink: <FullLineLink href={githubSubgraph} />,
+							newParagraph: <NewParagraph />,
+						}}
+					/>
 				}
 			/>
 		</>
