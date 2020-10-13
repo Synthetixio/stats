@@ -22,7 +22,7 @@ import { getAaveDepositRate, getCurveTokenPrice } from 'utils/customGraphQueries
 import { formatPercentage } from 'utils/formatter';
 import { FullLineText } from '../../components/common';
 
-const subtitleText = (name: string) =>
+const SubtitleText = ({ name }: { name: string }) =>
 	name === 'sUSD' ? (
 		<Trans
 			i18nKey={'homepage.yield-farming-subtitle-text.sUSD'}
@@ -167,7 +167,7 @@ const YieldFarming: FC = () => {
 				<DoubleStatsBox
 					key="CRVSUSDRWRDS"
 					title={t('homepage.curve-susd.title')}
-					subtitle={subtitleText('sUSD')}
+					subtitle={<SubtitleText name="sUSD" />}
 					firstMetricTitle={t('homepage.curve-susd.firstMetricTitle')}
 					firstMetricStyle="number"
 					firstMetric={
@@ -214,7 +214,7 @@ const YieldFarming: FC = () => {
 				<DoubleStatsBox
 					key="iETHRWRDS"
 					title={t('homepage.iETH.title')}
-					subtitle={subtitleText('iETH')}
+					subtitle={<SubtitleText name="iETH" />}
 					firstMetricTitle={t('homepage.iETH.firstMetricTitle')}
 					firstMetricStyle="number"
 					firstMetric={distributions != null ? distributions[iEth4Rewards.address] : distributions}
