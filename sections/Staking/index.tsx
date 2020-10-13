@@ -1,5 +1,6 @@
 import { FC, useState, useEffect, useContext, useMemo } from 'react';
 import snxData from 'synthetix-data';
+import { useTranslation, Trans } from 'react-i18next';
 
 import SectionHeader from 'components/SectionHeader';
 import StatsRow from 'components/StatsRow';
@@ -14,6 +15,7 @@ import { NewParagraph, LinkText } from 'components/common';
 import { synthetixSubgraph } from 'constants/links';
 
 const Staking: FC = () => {
+	const { t } = useTranslation();
 	const [currentFeePeriod, setCurrentFeePeriod] = useState<FeePeriod | null>(null);
 	const [nextFeePeriod, setNextFeePeriod] = useState<FeePeriod | null>(null);
 	const [stakersChartPeriod, setStakersChartPeriod] = useState<ChartPeriod>('Y');
@@ -81,7 +83,7 @@ const Staking: FC = () => {
 			<StatsRow>
 				<StatsBox
 					key="SNXSTKAPY"
-					title="CURRENT SNX STAKING APY"
+					title={t('homepage.current-staking-apy.title')}
 					num={
 						sUSDPrice != null &&
 						SNXPrice != null &&
@@ -94,27 +96,22 @@ const Staking: FC = () => {
 							: null
 					}
 					percentChange={null}
-					subText="Current annual percentage yield from staking SNX"
+					subText={t('homepage.current-staking-apy.subtext')}
 					color={COLORS.green}
 					numberStyle="percent2"
 					numBoxes={3}
-					infoData={
-						<>
-							To calculate the total APY for staking SNX, we combine the SNX rewards APY and sUSD
-							rewards APY given in the previous fee period.{' '}
-						</>
-					}
+					infoData={t('homepage.current-staking-apy.infoData')}
 				/>
 				<StatsBox
 					key="SNXSTKAPYSUSD"
-					title="CURRENT SNX STAKING APY (sUSD REWARDS)"
+					title={t('homepage.current-staking-apy-susd.title')}
 					num={
 						sUSDPrice != null && currentFeePeriod != null && SNXValueStaked != null
 							? ((sUSDPrice ?? 0) * currentFeePeriod.feesToDistribute * 52) / SNXValueStaked
 							: null
 					}
 					percentChange={null}
-					subText="Current annual sUSD yield for SNX stakers from Synth trading fees"
+					subText={t('homepage.current-staking-apy-susd.subtext')}
 					color={COLORS.green}
 					numberStyle="percent2"
 					numBoxes={3}
@@ -122,7 +119,7 @@ const Staking: FC = () => {
 				/>
 				<StatsBox
 					key="SNXSTKAPYSNX"
-					title="CURRENT SNX STAKING APY (SNX REWARDS)"
+					title={t('homepage.current-staking-apy-snx.title')}
 					num={
 						SNXPrice != null && currentFeePeriod != null && SNXValueStaked != null
 							? (((SNXPrice ?? 0) * currentFeePeriod?.rewardsToDistribute ?? 0) * 52) /
@@ -130,7 +127,7 @@ const Staking: FC = () => {
 							: null
 					}
 					percentChange={null}
-					subText="Current annual SNX yield for SNX stakers. This SNX comes from the inflationary SNX supply"
+					subText={t('homepage.current-staking-apy-snx.subtext')}
 					color={COLORS.pink}
 					numberStyle="percent2"
 					numBoxes={3}
@@ -140,37 +137,36 @@ const Staking: FC = () => {
 			<StatsRow>
 				<StatsBox
 					key="CRRNTFEERWPOOLUSD"
-					title="CURRENT FEE POOL (sUSD)"
+					title={t('homepage.current-fee-pool.title')}
 					num={
 						sUSDPrice != null && currentFeePeriod != null && sUSDPrice != null
 							? (sUSDPrice ?? 0) * currentFeePeriod.feesToDistribute
 							: null
 					}
 					percentChange={null}
-					subText="The total value of all Synth trading fees both claimed and claimable in the current period"
+					subText={t('homepage.current-fee-pool.subtext')}
 					color={COLORS.pink}
 					numberStyle="currency0"
 					numBoxes={4}
 					infoData={
-						<>
-							SNX and sUSD rewards are paid weekly to stakers who maintain their collateral ratio of
-							SNX/debt.{' '}
-							<NewParagraph>
-								Each week, stakers can claim Synth trading fees generated from the prior week.
-							</NewParagraph>
-						</>
+						<Trans
+							i18nKey="homepage.current-fee-pool.infoData"
+							components={{
+								newParagraph: <NewParagraph />,
+							}}
+						/>
 					}
 				/>
 				<StatsBox
 					key="CRRNTFEERWPOOLSNX"
-					title="CURRENT REWARDS POOL (SNX)"
+					title={t('homepage.current-fee-pool-snx.title')}
 					num={
 						currentFeePeriod != null && SNXPrice != null
 							? (SNXPrice ?? 0) * currentFeePeriod.rewardsToDistribute
 							: null
 					}
 					percentChange={null}
-					subText="The total value of all SNX staking rewards both claimed and claimable in the current period"
+					subText={t('homepage.current-fee-pool-snx.subtext')}
 					color={COLORS.green}
 					numberStyle="currency0"
 					numBoxes={4}
@@ -178,7 +174,7 @@ const Staking: FC = () => {
 				/>
 				<StatsBox
 					key="UNCLMFEESUSD"
-					title="UNCLAIMED FEES AND REWARDS (USD)"
+					title={t('homepage.unclaimed-fees-and-rewards.title')}
 					num={
 						currentFeePeriod != null && sUSDPrice != null && SNXPrice != null
 							? (sUSDPrice ?? 0) *
@@ -188,7 +184,7 @@ const Staking: FC = () => {
 							: null
 					}
 					percentChange={null}
-					subText="The total value of all unclaimed Synth trading fees and SNX staking rewards in the current period"
+					subText={t('homepage.unclaimed-fees-and-rewards.subtext')}
 					color={COLORS.green}
 					numberStyle="currency0"
 					numBoxes={4}
@@ -196,14 +192,14 @@ const Staking: FC = () => {
 				/>
 				<StatsBox
 					key="UPCOMINGFEESUSD"
-					title="FEES IN NEXT PERIOD (USD)"
+					title={t('homepage.fees-in-next-period.title')}
 					num={
 						nextFeePeriod != null && sUSDPrice != null
 							? (sUSDPrice ?? 0) * nextFeePeriod.feesToDistribute
 							: null
 					}
 					percentChange={null}
-					subText="The total value of Synth trading fees already accumulated in this fee period that are claimable in the next fee period"
+					subText={t('homepage.fees-in-next-period.subtext')}
 					color={COLORS.pink}
 					numberStyle="currency0"
 					numBoxes={4}
@@ -219,7 +215,7 @@ const Staking: FC = () => {
 					fetchNewChartData(period);
 				}}
 				data={stakersChartData}
-				title="TOTAL ACTIVE STAKERS"
+				title={t('homepage.total-active-stakers.title')}
 				num={totalActiveStakers}
 				numFormat="number"
 				percentChange={
@@ -229,11 +225,12 @@ const Staking: FC = () => {
 				}
 				timeSeries="1d"
 				infoData={
-					<>
-						The number of total active stakers is obtained from the "TotalActiveStaker" entity from
-						the <LinkText href={synthetixSubgraph}>Synthetix subgraph.</LinkText> The chart data
-						shows the "TotalDailyActiveStaker" entity over time.{' '}
-					</>
+					<Trans
+						i18nKey="homepage.total-active-stakers.infoData"
+						components={{
+							linkText: <LinkText href={synthetixSubgraph} />,
+						}}
+					/>
 				}
 			/>
 		</>
