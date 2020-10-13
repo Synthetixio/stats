@@ -1,6 +1,7 @@
 import { ethers } from 'ethers';
 import { FC, useEffect, useState, useContext } from 'react';
 import axios from 'axios';
+import { useTranslation, Trans } from 'react-i18next';
 
 import SectionHeader from 'components/SectionHeader';
 import SingleStatRow from 'components/SingleStatRow';
@@ -21,12 +22,22 @@ import { getAaveDepositRate, getCurveTokenPrice } from 'utils/customGraphQueries
 import { formatPercentage } from 'utils/formatter';
 import { FullLineText } from '../../components/common';
 
-const subtitleText = (name: string) => {
-	if (name === 'sUSD') {
-		return `Rewards for providing liquidity to the ${name} stablecoin liquidity pool on Curve`;
-	}
-	return `Rewards for holding ${name} and staking it in the rewards contract`;
-};
+const subtitleText = (name: string) =>
+	name === 'sUSD' ? (
+		<Trans
+			i18nKey={'homepage.yield-farming-subtitle-text.sUSD'}
+			values={{
+				name,
+			}}
+		/>
+	) : (
+		<Trans
+			i18nKey={'homepage.yield-farming-subtitle-text.default'}
+			values={{
+				name,
+			}}
+		/>
+	);
 
 type APYFields = {
 	price: number;
@@ -34,6 +45,7 @@ type APYFields = {
 };
 
 const YieldFarming: FC = () => {
+	const { t } = useTranslation();
 	const [distributions, setDistributions] = useState<{ [address: string]: number } | null>(null);
 	const [aaveDepositRate, setAaveDepositRate] = useState<number | null>(null);
 	const [iEthAPYFields, setiEthAPYFields] = useState<APYFields | null>(null);
@@ -143,10 +155,10 @@ const YieldFarming: FC = () => {
 
 	return (
 		<>
-			<SectionHeader title="YIELD FARMING" />
+			<SectionHeader title={t('homepage.section-header.yieldFarming')} />
 			<SingleStatRow
-				text="LENDING APY"
-				subtext="The current APY for lending SNX on AAVE"
+				text={t('homepage.lending-apy.title')}
+				subtext={t('homepage.lending-apy.subtext')}
 				num={aaveDepositRate}
 				color={COLORS.green}
 				numberStyle="percent2"
@@ -154,15 +166,15 @@ const YieldFarming: FC = () => {
 			<StatsRowEmptySpace>
 				<DoubleStatsBox
 					key="CRVSUSDRWRDS"
-					title="Curvepool sUSD"
+					title={t('homepage.curve-susd.title')}
 					subtitle={subtitleText('sUSD')}
-					firstMetricTitle="WEEKLY REWARDS (SNX)"
+					firstMetricTitle={t('homepage.curve-susd.firstMetricTitle')}
 					firstMetricStyle="number"
 					firstMetric={
 						distributions != null ? distributions[curvepoolRewards.address] : distributions
 					}
 					firstColor={COLORS.pink}
-					secondMetricTitle="Total Annual Percentage Yield"
+					secondMetricTitle={t('homepage.curve-susd.secondMetricTitle')}
 					secondMetric={
 						SNXPrice != null &&
 						distributions != null &&
@@ -179,35 +191,35 @@ const YieldFarming: FC = () => {
 					secondColor={COLORS.green}
 					secondMetricStyle="percent2"
 					infoData={
-						<>
-							The APY for the sUSD Curve Pool consists of 3 different rewards:
-							<FullLineText>{`1. Swap fees at ${
-								curveSwapAPY != null ? formatPercentage(curveSwapAPY) : '...'
-							}`}</FullLineText>
-							<FullLineText>{`2. SNX rewards at ${
-								distributions != null && curveAPYFields != null && SNXPrice != null
-									? formatPercentage(
-											((distributions[curvepoolRewards.address] * (SNXPrice ?? 0)) /
-												(curveAPYFields.balanceOf * curveAPYFields.price)) *
-												52
-									  )
-									: '...'
-							}`}</FullLineText>
-							<FullLineText>{`3. CRV rewards ${
-								curveTokenAPY != null ? formatPercentage(curveTokenAPY) : '...'
-							}`}</FullLineText>
-						</>
+						<Trans
+							i18nKey={'homepage.curve-susd.infoData'}
+							values={{
+								rewards: curveTokenAPY != null ? formatPercentage(curveTokenAPY) : '...',
+								snxRewards:
+									distributions != null && curveAPYFields != null && SNXPrice != null
+										? formatPercentage(
+												((distributions[curvepoolRewards.address] * (SNXPrice ?? 0)) /
+													(curveAPYFields.balanceOf * curveAPYFields.price)) *
+													52
+										  )
+										: '...',
+								swapFees: curveSwapAPY != null ? formatPercentage(curveSwapAPY) : '...',
+							}}
+							components={{
+								fullLineText: <FullLineText />,
+							}}
+						/>
 					}
 				/>
 				<DoubleStatsBox
 					key="iETHRWRDS"
-					title="iETH"
+					title={t('homepage.iETH.title')}
 					subtitle={subtitleText('iETH')}
-					firstMetricTitle="WEEKLY REWARDS (SNX)"
+					firstMetricTitle={t('homepage.iETH.firstMetricTitle')}
 					firstMetricStyle="number"
 					firstMetric={distributions != null ? distributions[iEth4Rewards.address] : distributions}
 					firstColor={COLORS.green}
-					secondMetricTitle="Annual Percentage Yield"
+					secondMetricTitle={t('homepage.iETH.secondMetricTitle')}
 					secondMetric={
 						distributions != null && iEthAPYFields != null && SNXPrice != null
 							? ((distributions[iEth4Rewards.address] * (SNXPrice ?? 0)) /

@@ -1,5 +1,6 @@
 import { FC, useEffect, useState } from 'react';
 import snxData from 'synthetix-data';
+import { useTranslation, Trans } from 'react-i18next';
 
 import SectionHeader from 'components/SectionHeader';
 import StatsRow from 'components/StatsRow';
@@ -16,7 +17,6 @@ import {
 	frontRunningWiki,
 } from 'constants/links';
 import { getPostArchernarTotals } from 'utils/customGraphQueries';
-import { useTranslation, Trans } from 'react-i18next';
 
 const Trading: FC = () => {
 	const { t } = useTranslation();

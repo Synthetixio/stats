@@ -14,7 +14,8 @@
 			"network": "NETWORK",
 			"options": "OPTIONS",
 			"synths": "SYNTHS",
-			"trading": "TRADING"
+			"trading": "TRADING",
+			"yieldFarming":"YIELD FARMING"
 		},
 		"snx-price": {
 			"title": "SNX PRICE",
@@ -188,7 +189,27 @@
 		},
 		"number-of-trades": {
 			"title":"NUMBER OF TRADES",
-			"infoData":"The number of trades is the sum of all daily periods in each chart below. The weekly chart (default) has 7 unique periods, monthly has 30 and annual has 365. <newParagraph>The number of trades is captured daily in the synthetix exchanges subgraph using the \"DailyTotal\" entity <linkText href={synthetixExchangesSubgraph}>(view playground).</linkText></newParagraph><fullLineLink>See GitHub repo for this subgraph</fullLineLink>"		},
+			"infoData":"The number of trades is the sum of all daily periods in each chart below. The weekly chart (default) has 7 unique periods, monthly has 30 and annual has 365. <newParagraph>The number of trades is captured daily in the synthetix exchanges subgraph using the \"DailyTotal\" entity <linkText href={synthetixExchangesSubgraph}>(view playground).</linkText></newParagraph><fullLineLink>See GitHub repo for this subgraph</fullLineLink>"		
+		},
+		"yield-farming-subtitle-text": {
+			"sUSD":"Rewards for providing liquidity to the {{name}} stablecoin liquidity pool on Curve",
+			"default": "Rewards for holding {{name}} and staking it in the rewards contract"
+		},
+		"lending-apy": {
+			"title":"LENDING APY",
+			"subtext":"The current APY for lending SNX on AAVE"
+		},
+		"curve-susd": {
+			"title":"Curvepool sUSD",
+			"firstMetricTitle":"WEEKLY REWARDS (SNX)",
+			"secondMetricTitle":"Total Annual Percentage Yield",
+			"infoData":"The APY for the sUSD Curve Pool consists of 3 different rewards:<fullLineText>1. Swap fees at {{swapFees}}</fullLineText><fullLineText>2. SNX rewards at {{snxRewards}}</fullLineText><fullLineText>3. CRV rewards {{rewards}}</fullLineText>"
+		},
+		"iETH":{
+			"title":"iETH",
+			"firstMetricTitle": "WEEKLY REWARDS (SNX)",
+			"secondMetricTitle":"Annual Percentage Yield"
+		}
 	}
 }
 
