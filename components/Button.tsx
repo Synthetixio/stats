@@ -3,11 +3,16 @@ import styled from 'styled-components';
 
 type ButtonProps = {
 	text: string;
-	isActive: boolean;
+	isActive?: boolean;
+	onClick: Function;
 };
 
-const Button: FC<ButtonProps> = ({ text, isActive }) => {
-	return <ButtonContainer isActive={isActive}>{text}</ButtonContainer>;
+const Button: FC<ButtonProps> = ({ text, isActive = false, onClick }) => {
+	return (
+		<ButtonContainer isActive={isActive} onClick={(e) => onClick(e)}>
+			{text}
+		</ButtonContainer>
+	);
 };
 
 export default Button;
