@@ -1,4 +1,4 @@
-import { FC, ReactNode } from 'react';
+import React, { FC, ReactNode } from 'react';
 import { Skeleton } from '@material-ui/lab';
 import styled, { css } from 'styled-components';
 
@@ -6,6 +6,7 @@ import { getFormattedNumber } from 'utils/formatter';
 import { COLORS, NumberColor, NumberStyle } from 'constants/styles';
 import { PercentChangeBox } from './common';
 import InfoPopover from './InfoPopover';
+import Retry from 'components/Retry';
 
 interface StatsBoxProps {
 	title: string;
@@ -16,6 +17,8 @@ interface StatsBoxProps {
 	numberStyle: NumberStyle;
 	numBoxes: number;
 	infoData: ReactNode | null;
+	onRefetch?: Function;
+	isError?: boolean;
 }
 
 // TODO what if num is 0 and is supposed to be zero!!
@@ -28,31 +31,35 @@ const StatsBox: FC<StatsBoxProps> = ({
 	numberStyle,
 	numBoxes,
 	infoData,
+	isError = false,
+	onRefetch = () => {},
 }) => {
 	const formattedNumber = getFormattedNumber(num, numberStyle);
 	return (
 		<StatsBoxContainer num={num} numBoxes={numBoxes}>
-			{num == null ? (
-				<Skeleton
-					className="stats-box-skeleton"
-					variant="rect"
-					animation="wave"
-					width="100%"
-					height="100%"
-				/>
-			) : (
-				<>
-					<TitleWrapper>
-						<StatsBoxTitle>{title}</StatsBoxTitle>
-						{infoData != null ? <InfoPopover infoData={infoData} /> : null}
-					</TitleWrapper>
-					<StatsBoxNumber color={color}>{formattedNumber}</StatsBoxNumber>
-					{percentChange != null ? (
-						<PercentChangeBox color={color}>{percentChange}</PercentChangeBox>
-					) : null}
-					<StatsBoxSubText>{subText}</StatsBoxSubText>
-				</>
-			)}
+			<Retry isError={isError} onRefetch={onRefetch}>
+				{num == null ? (
+					<Skeleton
+						className="stats-box-skeleton"
+						variant="rect"
+						animation="wave"
+						width="100%"
+						height="100%"
+					/>
+				) : (
+					<>
+						<TitleWrapper>
+							<StatsBoxTitle>{title}</StatsBoxTitle>
+							{infoData != null ? <InfoPopover infoData={infoData} /> : null}
+						</TitleWrapper>
+						<StatsBoxNumber color={color}>{formattedNumber}</StatsBoxNumber>
+						{percentChange != null ? (
+							<PercentChangeBox color={color}>{percentChange}</PercentChangeBox>
+						) : null}
+						<StatsBoxSubText>{subText}</StatsBoxSubText>
+					</>
+				)}
+			</Retry>
 		</StatsBoxContainer>
 	);
 };

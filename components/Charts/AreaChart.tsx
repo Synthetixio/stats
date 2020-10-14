@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import React, { FC } from 'react';
 import styled from 'styled-components';
 
 import BasicAreaChart from './BasicAreaChart';
@@ -7,6 +7,7 @@ import ChartTitle from './ChartTitle';
 import { MAX_PAGE_WIDTH, NumberStyle } from '../../constants/styles';
 import { ChartPeriod, AreaChartData } from '../../types/data';
 import { TimeSeriesType } from '../../utils/formatter';
+import Retry from 'components/Retry';
 
 interface AreaChartProps {
 	data: Array<AreaChartData>;
@@ -19,6 +20,8 @@ interface AreaChartProps {
 	timeSeries: TimeSeriesType;
 	activePeriod: ChartPeriod;
 	infoData: React.ReactNode;
+	isError?: boolean;
+	onRefetch?: Function;
 }
 
 const AreaChart: FC<AreaChartProps> = ({
@@ -32,24 +35,32 @@ const AreaChart: FC<AreaChartProps> = ({
 	percentChange,
 	timeSeries,
 	infoData,
+	isError = false,
+	onRefetch = () => {},
 }) => (
 	<ChartContainer>
-		<ChartHeader>
-			<ChartTitle
-				infoData={infoData}
-				title={title}
-				num={num}
-				numFormat={numFormat}
+		<Retry isError={isError} onRefetch={onRefetch}>
+			<ChartHeader>
+				<ChartTitle
+					infoData={infoData}
+					title={title}
+					num={num}
+					numFormat={numFormat}
+					percentChange={percentChange}
+				/>
+				<ChartTimeSelectors
+					activePeriod={activePeriod}
+					periods={periods}
+					onClick={onPeriodSelect}
+				/>
+			</ChartHeader>
+			<BasicAreaChart
+				valueType={numFormat}
+				data={data}
+				timeSeries={timeSeries}
 				percentChange={percentChange}
 			/>
-			<ChartTimeSelectors activePeriod={activePeriod} periods={periods} onClick={onPeriodSelect} />
-		</ChartHeader>
-		<BasicAreaChart
-			percentChange={percentChange}
-			valueType={numFormat}
-			data={data}
-			timeSeries={timeSeries}
-		/>
+		</Retry>
 	</ChartContainer>
 );
 

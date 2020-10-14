@@ -135,10 +135,10 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
 						<SNXJSContext.Provider value={snxjs}>
 							<ProviderContext.Provider value={provider}>
 								{/*
-	              // @ts-ignore */}
+				// @ts-ignore */}
 								<SUSDContext.Provider value={{ sUSDPrice, setsUSDPrice }}>
 									{/*
-									// @ts-ignore */}
+								// @ts-ignore */}
 									<SNXContext.Provider value={{ SNXPrice, setSNXPrice, SNXStaked, setSNXStaked }}>
 										<Layout>
 											<Component {...pageProps} />

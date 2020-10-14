@@ -1,10 +1,7 @@
-import { FC, useEffect, useState, useContext } from 'react';
-import axios from 'axios';
-import snxData from 'synthetix-data';
-import { ethers } from 'ethers';
+import React, { FC, useState, useContext } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
-import { AreaChartData, ChartPeriod, SNXPriceData, TimeSeries, TreeMapData } from 'types/data';
+import { ChartPeriod, TreeMapData } from 'types/data';
 import StatsBox from 'components/StatsBox';
 import StatsRow from 'components/StatsRow';
 import AreaChart from 'components/Charts/AreaChart';
@@ -18,201 +15,99 @@ import {
 	synthetixDataGithub,
 } from 'constants/links';
 import SUSDDistribution from '../Network/SUSDDistribution';
-import { SNXJSContext, SUSDContext, SNXContext, ProviderContext } from 'pages/_app';
-import { formatIdToIsoString } from 'utils/formatter';
-import { getSUSDHoldersName } from 'utils/dataMapping';
+import { SNXJSContext } from 'pages/_app';
 import { LinkText, NewParagraph } from 'components/common';
-import { curveSusdPool } from 'contracts';
-
-const CMC_API = 'https://coinmarketcap-api.synthetix.io/public/prices?symbols=SNX';
+import {
+	useMarketCap,
+	useNetworkCRatio,
+	useSNXPriceChart,
+	useSynthSUSDTotalSupply,
+	useTotalIssuedSynths,
+	useTotalSNXLocked,
+} from 'queries/snxjs';
+import { useCMCVolume } from 'queries/cmc';
+import { useSNXNetworkMeta, useSNXTotal, useSynthHolders } from 'queries/snxData';
+import { useEtherLocked } from 'queries/wallet';
+import { useSUSDPrice } from 'queries/curve';
+import { getSUSDHoldersName } from 'utils/dataMapping';
 
 const NetworkSection: FC = () => {
 	const { t } = useTranslation();
-	const [etherLocked, setEtherLocked] = useState<number | null>(null);
-	const [sUSDFromEther, setsUSDFromEther] = useState<number | null>(null);
-	const [priorSNXPrice, setPriorSNXPrice] = useState<number | null>(null);
 	const [priceChartPeriod, setPriceChartPeriod] = useState<ChartPeriod>('D');
-	const [SNXChartPriceData, setSNXChartPriceData] = useState<AreaChartData[]>([]);
-	const [SNXTotalSupply, setSNXTotalSupply] = useState<number | null>(null);
-	const [totalSupplySUSD, setTotalSupplySUSD] = useState<number | null>(null);
-	const [SNX24HVolume, setSNX24HVolume] = useState<number | null>(null);
-	const [activeCRatio, setActiveCRatio] = useState<number | null>(null);
-	const [networkCRatio, setNetworkCRatio] = useState<number | null>(null);
-	const [SNXPercentLocked, setSNXPercentLocked] = useState<number | null>(null);
-	const [SNXHolders, setSNXHolders] = useState<number | null>(null);
-	const [SUSDHolders, setSUSDHolders] = useState<TreeMapData[]>([]);
 	const snxjs = useContext(SNXJSContext);
-	const { sUSDPrice, setsUSDPrice } = useContext(SUSDContext);
-	const { SNXPrice, setSNXPrice, setSNXStaked } = useContext(SNXContext);
-	const provider = useContext(ProviderContext);
 
-	// NOTE: use interval? or save data calls?
-	useEffect(() => {
-		const fetchData = async () => {
-			const { formatEther, formatUnits, parseUnits } = snxjs.utils;
+	const { data: snxMarketCap, isError: isMarketCapError, refetch: refetchMarketCap } = useMarketCap(
+		'SNX'
+	);
+	const { sUSDPrice, isError: isSUSDPriceError, refetch: refetchSUSDPrice } = useSUSDPrice();
+	const { data: SNX24HVolume, isError: isSNXVolumeError, refetch: refetchSNXVolume } = useCMCVolume(
+		'SNX'
+	);
+	const {
+		data: totalSNXLocked,
+		isError: isTotalSNXLockedError,
+		refetch: refetchTotalSNXLocked,
+	} = useTotalSNXLocked();
+	const {
+		data: networkCRatio,
+		isError: isNetworkCRatioError,
+		refetch: refetchNetworkCRatio,
+	} = useNetworkCRatio();
 
-			const curveContract = new ethers.Contract(
-				curveSusdPool.address,
-				// @ts-ignore
-				curveSusdPool.abi,
-				provider
-			);
+	const {
+		data: networkMeta,
+		isError: isNetworkMetaError,
+		refetch: refetchNetworkMeta,
+	} = useSNXNetworkMeta();
 
-			const usdcContractNumber = 1;
-			const susdContractNumber = 3;
-			const susdAmount = 10000;
-			const susdAmountWei = parseUnits(susdAmount.toString(), 18);
+	const {
+		data: etherLocked,
+		isError: isEtherLockedError,
+		refetch: refetchEtherLocked,
+	} = useEtherLocked();
 
-			const [
-				unformattedSnxPrice,
-				unformattedSnxTotalSupply,
-				unformattedExchangeAmount,
-				cmcSNXData,
-				unformattedLastDebtLedgerEntry,
-				unformattedTotalIssuedSynths,
-				unformattedIssuanceRatio,
-				holders,
-				snxTotals,
-				unformattedSUSDTotalSupply,
-				topSUSDHolders,
-				sUSDFromEth,
-				ethSusdCollateralBalance,
-				ethCollateralBalance,
-			] = await Promise.all([
-				snxjs.contracts.ExchangeRates.rateForCurrency(snxjs.toBytes32('SNX')),
-				snxjs.contracts.Synthetix.totalSupply(),
-				curveContract.get_dy_underlying(susdContractNumber, usdcContractNumber, susdAmountWei),
-				axios.get(CMC_API),
-				snxjs.contracts.SynthetixState.lastDebtLedgerEntry(),
-				snxjs.contracts.Synthetix.totalIssuedSynthsExcludeEtherCollateral(snxjs.toBytes32('sUSD')),
-				snxjs.contracts.SynthetixState.issuanceRatio(),
-				snxData.snx.holders({ max: 1000 }),
-				snxData.snx.total(),
-				snxjs.contracts.SynthsUSD.totalSupply(),
-				snxData.synths.holders({ max: 5, synth: 'sUSD' }),
-				snxjs.contracts.EtherCollateralsUSD.totalIssuedSynths(),
-				provider.getBalance(snxjs.contracts.EtherCollateralsUSD.address),
-				provider.getBalance(snxjs.contracts.EtherCollateral.address),
-			]);
+	const {
+		data: unformattedSUSDFromEther,
+		isError: isSUSDFromEtherError,
+		refetch: refetchSUSDFromEther,
+	} = useTotalIssuedSynths();
 
-			setEtherLocked(
-				Number(snxjs.utils.formatEther(ethCollateralBalance)) +
-					Number(snxjs.utils.formatEther(ethSusdCollateralBalance))
-			);
-			setSNXHolders(snxTotals.snxHolders);
-			const formattedSNXPrice = Number(formatEther(unformattedSnxPrice));
-			setSNXPrice(formattedSNXPrice);
-			const totalSupply = Number(formatEther(unformattedSnxTotalSupply));
-			setSNXTotalSupply(totalSupply);
-			const exchangeAmount = Number(formatUnits(unformattedExchangeAmount, 6));
-			setsUSDPrice(exchangeAmount / susdAmount);
-			setsUSDFromEther(Number(snxjs.utils.formatEther(sUSDFromEth)));
+	const {
+		data: chartData,
+		isError: isChartDataError,
+		refetch: refetchChartData,
+	} = useSNXPriceChart(priceChartPeriod);
 
-			const dailyVolume = cmcSNXData?.data?.data?.SNX?.quote?.USD?.volume_24h;
-			if (dailyVolume) {
-				setSNX24HVolume(dailyVolume);
-			}
+	const topSUSDHoldersQuery = useSynthHolders('sUSD');
+	const synthSUSDTotalSupplyQuery = useSynthSUSDTotalSupply();
 
-			const lastDebtLedgerEntry = Number(formatUnits(unformattedLastDebtLedgerEntry, 27));
+	const { data: snxTotals, isError: isSNXTotalError, refetch: refetchSNXTotal } = useSNXTotal();
 
-			const [totalIssuedSynths, issuanceRatio, usdToSnxPrice, sUSDTotalSupply] = [
-				unformattedTotalIssuedSynths,
-				unformattedIssuanceRatio,
-				unformattedSnxPrice,
-				unformattedSUSDTotalSupply,
-			].map((val) => Number(formatEther(val)));
+	let activeCRatio = null;
+	if (networkMeta) {
+		activeCRatio = 1 / (networkMeta.stakersTotalDebt / networkMeta.stakersTotalCollateral);
+	}
+	let snxHolders = null;
+	if (snxTotals) {
+		snxHolders = snxTotals.snxHolders;
+	}
+	let sUSDFromEther = null;
+	if (unformattedSUSDFromEther) {
+		sUSDFromEther = Number(snxjs.utils.formatEther(unformattedSUSDFromEther));
+	}
 
-			let snxTotal = 0;
-			let snxLocked = 0;
-			let stakersTotalDebt = 0;
-			let stakersTotalCollateral = 0;
-
-			for (const { collateral, debtEntryAtIndex, initialDebtOwnership } of holders) {
-				let debtBalance =
-					((totalIssuedSynths * lastDebtLedgerEntry) / debtEntryAtIndex) * initialDebtOwnership;
-				let collateralRatio = debtBalance / collateral / usdToSnxPrice;
-
-				if (isNaN(debtBalance)) {
-					debtBalance = 0;
-					collateralRatio = 0;
-				}
-				const lockedSnx = collateral * Math.min(1, collateralRatio / issuanceRatio);
-
-				if (Number(debtBalance) > 0) {
-					stakersTotalDebt += Number(debtBalance);
-					stakersTotalCollateral += Number(collateral * usdToSnxPrice);
-				}
-				snxTotal += Number(collateral);
-				snxLocked += Number(lockedSnx);
-			}
-
-			const topHolders = topSUSDHolders.map(
-				({ balanceOf, address }: { balanceOf: number; address: string }) => ({
-					name: getSUSDHoldersName(address),
-					value: balanceOf,
-				})
-			);
-			setSUSDHolders(topHolders);
-			const percentLocked = snxLocked / snxTotal;
-			setSNXPercentLocked(percentLocked);
-			setSNXStaked(totalSupply * percentLocked);
-			setTotalSupplySUSD(sUSDTotalSupply);
-			setActiveCRatio(1 / (stakersTotalDebt / stakersTotalCollateral));
-			setNetworkCRatio((totalSupply * formattedSNXPrice) / totalIssuedSynths);
-		};
-		fetchData();
-	}, []);
-
-	const formatChartData = (data: SNXPriceData[], timeSeries: TimeSeries): AreaChartData[] =>
-		(data as SNXPriceData[]).map(({ id, averagePrice }) => {
-			return {
-				created: formatIdToIsoString(id, timeSeries as TimeSeries),
-				value: averagePrice,
-			};
-		});
-
-	const fetchNewChartData = async (fetchPeriod: ChartPeriod) => {
-		let newSNXPriceData = [];
-		let timeSeries = '1d';
-		if (fetchPeriod === 'D') {
-			timeSeries = '15m';
-			newSNXPriceData = await snxData.rate.snxAggregate({ timeSeries, max: 24 * 4 });
-		} else if (fetchPeriod === 'W') {
-			timeSeries = '15m';
-			newSNXPriceData = await snxData.rate.snxAggregate({ timeSeries, max: 24 * 4 * 7 });
-		} else if (fetchPeriod === 'M') {
-			newSNXPriceData = await snxData.rate.snxAggregate({ timeSeries, max: 30 });
-		} else if (fetchPeriod === 'Y') {
-			newSNXPriceData = await snxData.rate.snxAggregate({ timeSeries, max: 365 });
-		}
-		newSNXPriceData = newSNXPriceData.reverse();
-		setPriorSNXPrice(newSNXPriceData[0].averagePrice);
-		setSNXChartPriceData(formatChartData(newSNXPriceData, timeSeries as TimeSeries));
-	};
-
-	useEffect(() => {
-		fetchNewChartData(priceChartPeriod);
-	}, [priceChartPeriod]);
-
-	const pricePeriods: ChartPeriod[] = ['D', 'W', 'M', 'Y'];
 	return (
 		<>
 			<SectionHeader title={t('homepage.section-header.network')} first={true} />
 			<AreaChart
-				periods={pricePeriods}
+				periods={['D', 'W', 'M', 'Y'] as ChartPeriod[]}
 				activePeriod={priceChartPeriod}
-				onPeriodSelect={(period: ChartPeriod) => {
-					setSNXChartPriceData([]); // will force loading state
-					setPriceChartPeriod(period);
-					fetchNewChartData(period);
-				}}
-				data={SNXChartPriceData}
+				onPeriodSelect={(period: ChartPeriod) => setPriceChartPeriod(period)}
+				data={chartData.chartData}
 				title={t('homepage.snx-price.title')}
-				num={SNXPrice}
+				num={chartData.snxPrice}
 				numFormat="currency2"
-				percentChange={
-					SNXPrice != null && priorSNXPrice != null ? (SNXPrice ?? 0) / priorSNXPrice - 1 : null
-				}
+				percentChange={chartData.percentChange}
 				timeSeries={priceChartPeriod === 'D' ? '15m' : '1d'}
 				infoData={
 					<Trans
@@ -228,12 +123,14 @@ const NetworkSection: FC = () => {
 						}}
 					/>
 				}
+				isError={isChartDataError}
+				onRefetch={refetchChartData}
 			/>
 			<StatsRow>
 				<StatsBox
 					key="SNXMKTCAP"
 					title={t('homepage.snx-market-cap.title')}
-					num={SNXPrice != null && SNXTotalSupply != null ? SNXTotalSupply * (SNXPrice ?? 0) : null}
+					num={snxMarketCap}
 					percentChange={null}
 					subText={t('homepage.snx-market-cap.subtext')}
 					color={COLORS.pink}
@@ -250,6 +147,8 @@ const NetworkSection: FC = () => {
 							}}
 						/>
 					}
+					isError={isMarketCapError}
+					onRefetch={refetchMarketCap}
 				/>
 				<StatsBox
 					key="SUSDPRICE"
@@ -271,6 +170,8 @@ const NetworkSection: FC = () => {
 							}}
 						/>
 					}
+					isError={isSUSDPriceError}
+					onRefetch={refetchSUSDPrice}
 				/>
 				<StatsBox
 					key="SNXVOLUME"
@@ -282,17 +183,15 @@ const NetworkSection: FC = () => {
 					numberStyle="currency0"
 					numBoxes={3}
 					infoData={null}
+					isError={isSNXVolumeError}
+					onRefetch={refetchSNXVolume}
 				/>
 			</StatsRow>
 			<StatsRow>
 				<StatsBox
 					key="TOTALSNXLOCKED"
 					title={t('homepage.total-snx-locked.title')}
-					num={
-						SNXPercentLocked != null && SNXTotalSupply != null && SNXPrice != null
-							? SNXPercentLocked * SNXTotalSupply * (SNXPrice ?? 0)
-							: null
-					}
+					num={totalSNXLocked}
 					percentChange={null}
 					subText={t('homepage.total-snx-locked.subtext')}
 					color={COLORS.pink}
@@ -312,6 +211,8 @@ const NetworkSection: FC = () => {
 							}}
 						/>
 					}
+					isError={isTotalSNXLockedError}
+					onRefetch={refetchTotalSNXLocked}
 				/>
 				<StatsBox
 					key="NETWORKCRATIO"
@@ -333,6 +234,8 @@ const NetworkSection: FC = () => {
 							}}
 						/>
 					}
+					isError={isNetworkCRatioError}
+					onRefetch={refetchNetworkCRatio}
 				/>
 				<StatsBox
 					key="ACTIVECRATIO"
@@ -355,11 +258,13 @@ const NetworkSection: FC = () => {
 							}}
 						/>
 					}
+					isError={isNetworkMetaError}
+					onRefetch={refetchNetworkMeta}
 				/>
 				<StatsBox
 					key="SNXHOLDRS"
 					title={t('homepage.snx-holders.title')}
-					num={SNXHolders}
+					num={snxHolders}
 					percentChange={null}
 					subText={t('homepage.snx-holders.subtext')}
 					color={COLORS.green}
@@ -376,9 +281,23 @@ const NetworkSection: FC = () => {
 							}}
 						/>
 					}
+					isError={isSNXTotalError}
+					onRefetch={refetchSNXTotal}
 				/>
 			</StatsRow>
-			<SUSDDistribution data={SUSDHolders} totalSupplySUSD={totalSupplySUSD} />
+			<SUSDDistribution
+				data={
+					topSUSDHoldersQuery.data
+						? topSUSDHoldersQuery.data.map(
+								({ balanceOf, address }: { balanceOf: number; address: string }) => ({
+									name: getSUSDHoldersName(address),
+									value: balanceOf,
+								})
+						  )
+						: []
+				}
+				totalSupplySUSD={Number(snxjs.utils.formatEther(synthSUSDTotalSupplyQuery.data || 0))}
+			/>
 			<StatsRow>
 				<StatsBox
 					key="ETHLOCKED"
@@ -390,6 +309,8 @@ const NetworkSection: FC = () => {
 					numberStyle="number4"
 					numBoxes={2}
 					infoData={null}
+					isError={isEtherLockedError}
+					onRefetch={refetchEtherLocked}
 				/>
 				<StatsBox
 					key="SUSDMINTEDETH"
@@ -401,6 +322,8 @@ const NetworkSection: FC = () => {
 					numberStyle="currency0"
 					numBoxes={2}
 					infoData={null}
+					isError={isSUSDFromEtherError}
+					onRefetch={refetchSUSDFromEther}
 				/>
 			</StatsRow>
 		</>
