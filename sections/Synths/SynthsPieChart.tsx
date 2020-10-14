@@ -1,5 +1,6 @@
 import { FC } from 'react';
 import styled from 'styled-components';
+import { useTranslation } from 'react-i18next';
 
 import PieChart from 'components/Charts/PieChart';
 import { ChartTitle, ChartSubtitle } from 'components/common';
@@ -9,13 +10,16 @@ type SynthsPieChartProps = {
 	data: SynthTotalSupply[];
 };
 
-const SynthsPieChart: FC<SynthsPieChartProps> = ({ data }) => (
-	<SynthsPieChartContainer>
-		<ChartTitle>SYNTH DOMINANCE</ChartTitle>
-		<ChartSubtitle>Distribution of Synths within the Synthetix protocol</ChartSubtitle>
-		<PieChart data={data} />
-	</SynthsPieChartContainer>
-);
+const SynthsPieChart: FC<SynthsPieChartProps> = ({ data }) => {
+	const { t } = useTranslation();
+	return (
+		<SynthsPieChartContainer>
+			<ChartTitle>{t('homepage.synth-pie-chart.title')}</ChartTitle>
+			<ChartSubtitle>{t('homepage.synth-pie-chart.subtext')}</ChartSubtitle>
+			<PieChart data={data} />
+		</SynthsPieChartContainer>
+	);
+};
 
 const SynthsPieChartContainer = styled.div`
 	background: ${(props) => props.theme.colors.mediumBlue};

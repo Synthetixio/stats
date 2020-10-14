@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import ethers from 'ethers';
 import orderBy from 'lodash/orderBy';
 import findIndex from 'lodash/findIndex';
+import { useTranslation } from 'react-i18next';
 
 import SectionHeader from 'components/SectionHeader';
 import { MAX_PAGE_WIDTH, COLORS } from 'constants/styles';
@@ -21,6 +22,7 @@ const NUMBER_OF_TOP_SYNTHS = 3;
 const subtitleText = (name: string) => `Price and market cap for ${name}`;
 
 const SynthsSection: FC<{}> = () => {
+	const { t } = useTranslation();
 	const [pieChartData, setPieChartData] = useState<SynthTotalSupply[]>([]);
 	const [barChartData, setBarChartData] = useState<OpenInterest>({});
 	const snxjs = useContext(SNXJSContext);
@@ -96,10 +98,10 @@ const SynthsSection: FC<{}> = () => {
 	const totalValue = pieChartData.reduce((acc, { value }) => acc + value, 0);
 	return (
 		<>
-			<SectionHeader title="SYNTHS" />
+			<SectionHeader title={t('homepage.section-header.synths')} />
 			<SingleStatRow
-				text="TOTAL SYNTHS"
-				subtext="The total value of all Synths in USD"
+				text={t('homepage.total-synths.title')}
+				subtext={t('homepage.total-synths.subtext')}
 				num={totalValue}
 				color={COLORS.green}
 				numberStyle="currency0"
@@ -108,7 +110,7 @@ const SynthsSection: FC<{}> = () => {
 				<SynthsBarChart data={barChartData} />
 				<SynthsPieChart data={pieChartData} />
 			</SynthsCharts>
-			<SubsectionHeader>CURRENT TOP 3 SYNTHS:</SubsectionHeader>
+			<SubsectionHeader>{t('homepage.top-synths.title')}</SubsectionHeader>
 			<StatsRow>
 				{pieChartData.map(({ name, totalSupply, value }: SynthTotalSupply, index: number) => {
 					if (index < NUMBER_OF_TOP_SYNTHS) {
@@ -117,11 +119,11 @@ const SynthsSection: FC<{}> = () => {
 								key={name}
 								title={name}
 								subtitle={subtitleText(name)}
-								firstMetricTitle="PRICE"
+								firstMetricTitle={t('homepage.top-synths.price')}
 								firstMetricStyle="currency2"
 								firstMetric={name === 'sUSD' ? sUSDPrice : value / (totalSupply ?? 0)}
 								firstColor={index === 0 ? COLORS.pink : COLORS.green}
-								secondMetricTitle="MARKET CAP"
+								secondMetricTitle={t('homepage.top-synths.marketCap')}
 								secondMetric={value}
 								secondColor={index === 2 ? COLORS.pink : COLORS.green}
 								secondMetricStyle="currency0"

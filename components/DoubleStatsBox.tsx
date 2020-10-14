@@ -7,7 +7,7 @@ import InfoPopover from './InfoPopover';
 
 type DoubleStatsBoxProps = {
 	title: string;
-	subtitle: string;
+	subtitle: ReactNode;
 	firstMetricTitle: string;
 	firstMetric: number | null;
 	firstColor: NumberColor;
