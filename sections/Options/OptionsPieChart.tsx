@@ -1,5 +1,6 @@
 import { FC } from 'react';
 import styled from 'styled-components';
+import { useTranslation } from 'react-i18next';
 
 import PieChart from 'components/Charts/PieChart';
 import { ChartTitle, ChartSubtitle } from 'components/common';
@@ -11,10 +12,11 @@ type OptionsPieChartProps = {
 };
 
 const OptionsPieChart: FC<OptionsPieChartProps> = ({ data }) => {
+	const { t } = useTranslation();
 	return (
 		<OptionsPieChartContainer>
-			<ChartTitle>BINARY MARKETS DOMINANCE</ChartTitle>
-			<ChartSubtitle>Distribution of Synths within the Synthetix protocol</ChartSubtitle>
+			<ChartTitle>{t('homepage.options-pie-chart.title')}</ChartTitle>
+			<ChartSubtitle>{t('homepage.options-pie-chart.subtext')}</ChartSubtitle>
 			<PieChart data={data} />
 		</OptionsPieChartContainer>
 	);

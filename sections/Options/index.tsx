@@ -2,6 +2,7 @@ import { FC, useEffect, useState } from 'react';
 import snxData from 'synthetix-data';
 import findIndex from 'lodash/findIndex';
 import { format } from 'date-fns';
+import { useTranslation, Trans } from 'react-i18next';
 
 import SectionHeader from 'components/SectionHeader';
 import StatsBox from 'components/StatsBox';
@@ -16,6 +17,7 @@ import { synthetixOptionsSubgraph } from 'constants/links';
 const MIN_PERCENT_FOR_PIE_CHART = 0.03;
 
 const Options: FC = () => {
+	const { t } = useTranslation();
 	const [num24HRTx, setNum24HRTx] = useState<number | null>(null);
 	const [largestMarket, setLargestMarket] = useState<OptionsMarket | null>(null);
 	const [largestActiveMarket, setLargestActiveMarket] = useState<OptionsMarket | null>(null);
@@ -100,113 +102,110 @@ const Options: FC = () => {
 
 	return (
 		<>
-			<SectionHeader title="OPTIONS" />
+			<SectionHeader title={t('homepage.section-header.options')} />
 			<StatsRow>
 				<StatsBox
 					key="LGSTACTVBINMKT"
-					title="LARGEST ACTIVE BINARY MARKET (USD)"
+					title={t('homepage.largest-active-binary-market.title')}
 					num={Number(largestActiveMarket?.poolSize ?? 0)}
 					percentChange={null}
-					subText={`The largest active binary options market is ${
-						largestActiveMarket?.currencyKey ?? '...'
-					} > ${formatCurrency(largestActiveMarket?.strikePrice ?? 0)} expiring at ${
-						largestActiveMarket?.maturityDate
+					subText={t('homepage.largest-active-binary-market.subtext', {
+						synth: largestActiveMarket?.currencyKey ?? '...',
+						price: formatCurrency(largestActiveMarket?.strikePrice ?? 0),
+						date: largestActiveMarket?.maturityDate
 							? format(new Date(largestActiveMarket?.maturityDate), 'MM/dd/yyyy')
-							: '...'
-					}`}
+							: '...',
+					})}
 					color={COLORS.green}
 					numberStyle="currency0"
 					numBoxes={2}
 					infoData={
-						<>
-							To get the largest active binary options market, we pull all the "Market" entities
-							from the{' '}
-							<LinkText href={synthetixOptionsSubgraph}>Synthetix options subgraph,</LinkText>{' '}
-							filter out any markets past their "expiryDate" and then sort them by "poolSize" to get
-							the largest.
-						</>
+						<Trans
+							i18nKey="homepage.largest-active-binary-market.infoData"
+							components={{
+								linkText: <LinkText href={synthetixOptionsSubgraph} />,
+							}}
+						/>
 					}
 				/>
 				<StatsBox
 					key="LGSTBINMKTTODATE"
-					title="LARGEST BINARY MARKET TO DATE (USD)"
+					title={t('homepage.largest-binary-market-to-date.title')}
 					num={Number(largestMarket?.poolSize ?? 0)}
 					percentChange={null}
-					subText={`The largest binary options market to date is ${
-						largestMarket?.currencyKey ?? '...'
-					} > ${formatCurrency(largestMarket?.strikePrice ?? 0)} expiring at ${
-						largestMarket?.maturityDate
+					subText={t('homepage.largest-binary-market-to-date.subtext', {
+						synth: largestMarket?.currencyKey ?? '...',
+						price: formatCurrency(largestMarket?.strikePrice ?? 0),
+						date: largestMarket?.maturityDate
 							? format(new Date(largestMarket?.maturityDate), 'MM/dd/yyyy')
-							: '...'
-					}`}
+							: '...',
+					})}
 					color={COLORS.pink}
 					numberStyle="currency0"
 					numBoxes={2}
 					infoData={
-						<>
-							To get the largest binary options market to date, we pull all the "Market" entities
-							from the{' '}
-							<LinkText href={synthetixOptionsSubgraph}>Synthetix options subgraph</LinkText> and
-							sort them by "poolSize" to get the largest.
-						</>
+						<Trans
+							i18nKey="homepage.largest-binary-market-to-date.infoData"
+							components={{
+								linkText: <LinkText href={synthetixOptionsSubgraph} />,
+							}}
+						/>
 					}
 				/>
 			</StatsRow>
 			<StatsRow>
 				<StatsBox
 					key="NUMBNRYMRKTS"
-					title="NUMBER OF ACTIVE BINARY OPTIONS MARKETS"
+					title={t('homepage.number-of-active-binary-options-markets.title')}
 					num={numMarkets}
 					percentChange={null}
-					subText="The current number of active binary options markets"
+					subText={t('homepage.number-of-active-binary-options-markets.subtext')}
 					color={COLORS.green}
 					numberStyle="number"
 					numBoxes={3}
 					infoData={
-						<>
-							To get the number of active binary options market, we pull all the "Market" entities
-							from the{' '}
-							<LinkText href={synthetixOptionsSubgraph}>Synthetix options subgraph,</LinkText>{' '}
-							filter out any markets past their "expiryDate" and then count the number of markets
-							remaining.
-						</>
+						<Trans
+							i18nKey="homepage.number-of-active-binary-options-markets.infoData"
+							components={{
+								linkText: <LinkText href={synthetixOptionsSubgraph} />,
+							}}
+						/>
 					}
 				/>
 				<StatsBox
 					key="TTLAMOUNTPOOLEDBINOPT"
-					title="TOTAL POOLED IN BINARY OPTIONS (USD)"
+					title={t('homepage.total-pooled-in-binary-options.title')}
 					num={totalPoolSizes}
 					percentChange={null}
-					subText="The total amount of capital pooled in active binary options markets"
+					subText={t('homepage.total-pooled-in-binary-options.subtext')}
 					color={COLORS.pink}
 					numberStyle="currency0"
 					numBoxes={3}
 					infoData={
-						<>
-							To get the total amount pooled in active binary options market, we pull all the
-							"Market" entities from the{' '}
-							<LinkText href={synthetixOptionsSubgraph}>Synthetix options subgraph,</LinkText>{' '}
-							filter out any markets past their "expiryDate" and then sum the "poolSize" of the
-							remaining active markets.
-						</>
+						<Trans
+							i18nKey="homepage.total-pooled-in-binary-options.infoData"
+							components={{
+								linkText: <LinkText href={synthetixOptionsSubgraph} />,
+							}}
+						/>
 					}
 				/>
 				<StatsBox
 					key="TRADESBINOPTION"
-					title="TRADES OVER 24 HOURS IN BINARY OPTIONS"
+					title={t('homepage.trades-in-binary-options-24-hrs.title')}
 					num={num24HRTx}
 					percentChange={null}
-					subText="The total number of trades over the past 24 hours in binary options markets"
+					subText={t('homepage.trades-in-binary-options-24-hrs.subtext')}
 					color={COLORS.pink}
 					numberStyle="number"
 					numBoxes={3}
 					infoData={
-						<>
-							To get the total number of trades over the past 24 hours in binary options markets, we
-							pull all the "OptionTransaction" entities from the{' '}
-							<LinkText href={synthetixOptionsSubgraph}>Synthetix options subgraph</LinkText> within
-							the past 24 hours and then count all the items.
-						</>
+						<Trans
+							i18nKey="homepage.trades-in-binary-options-24-hrs.infoData"
+							components={{
+								linkText: <LinkText href={synthetixOptionsSubgraph} />,
+							}}
+						/>
 					}
 				/>
 			</StatsRow>
