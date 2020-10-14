@@ -248,7 +248,7 @@ const Trading: FC = () => {
 				timeSeries="1d"
 				infoData={
 					<Trans
-						i18nKey="homepage.trading-volume.infoData"
+						i18nKey="homepage.number-of-trades.infoData"
 						components={{
 							linkText: <LinkText href={synthetixExchangesSubgraph} />,
 							fullLineLink: <FullLineLink href={githubSubgraph} />,
