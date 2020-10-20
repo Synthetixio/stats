@@ -1,6 +1,8 @@
 import { FC, useState, useEffect, useContext, useMemo } from 'react';
 import snxData from 'synthetix-data';
 import { useTranslation, Trans } from 'react-i18next';
+import { BigNumber } from 'ethers';
+import { format } from 'date-fns';
 
 import SectionHeader from 'components/SectionHeader';
 import StatsRow from 'components/StatsRow';
@@ -30,6 +32,7 @@ const Staking: FC = () => {
 			const { formatEther } = snxjs.utils;
 			const feePeriod = await snxjs.contracts.FeePool.recentFeePeriods(period);
 			return {
+				startTime: BigNumber.from(feePeriod.startTime).toNumber() * 1000 || 0,
 				feesToDistribute: Number(formatEther(feePeriod.feesToDistribute)) || 0,
 				feesClaimed: Number(formatEther(feePeriod.feesClaimed)) || 0,
 				rewardsToDistribute: Number(formatEther(feePeriod.rewardsToDistribute)) || 0,
@@ -77,6 +80,7 @@ const Staking: FC = () => {
 
 	const stakingPeriods: ChartPeriod[] = ['W', 'M', 'Y'];
 	const SNXValueStaked = useMemo(() => (SNXPrice ?? 0) * (SNXStaked ?? 0), [SNXPrice, SNXStaked]);
+
 	return (
 		<>
 			<SectionHeader title="STAKING" />
@@ -144,7 +148,12 @@ const Staking: FC = () => {
 							: null
 					}
 					percentChange={null}
-					subText={t('homepage.current-fee-pool.subtext')}
+					subText={t('homepage.current-fee-pool.subtext', {
+						startDate:
+							currentFeePeriod != null
+								? format(new Date(currentFeePeriod.startTime), 'MMMM dd')
+								: '-',
+					})}
 					color={COLORS.pink}
 					numberStyle="currency0"
 					numBoxes={4}
@@ -166,7 +175,12 @@ const Staking: FC = () => {
 							: null
 					}
 					percentChange={null}
-					subText={t('homepage.current-fee-pool-snx.subtext')}
+					subText={t('homepage.current-fee-pool-snx.subtext', {
+						startDate:
+							currentFeePeriod != null
+								? format(new Date(currentFeePeriod.startTime), 'MMMM dd')
+								: '-',
+					})}
 					color={COLORS.green}
 					numberStyle="currency0"
 					numBoxes={4}
@@ -184,7 +198,10 @@ const Staking: FC = () => {
 							: null
 					}
 					percentChange={null}
-					subText={t('homepage.unclaimed-fees-and-rewards.subtext')}
+					subText={t('homepage.unclaimed-fees-and-rewards.subtext', {
+						startDate:
+							nextFeePeriod != null ? format(new Date(nextFeePeriod.startTime), 'MMMM dd') : '-',
+					})}
 					color={COLORS.green}
 					numberStyle="currency0"
 					numBoxes={4}
