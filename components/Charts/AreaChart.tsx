@@ -55,10 +55,10 @@ const AreaChart: FC<AreaChartProps> = ({
 				/>
 			</ChartHeader>
 			<BasicAreaChart
+				percentChange={percentChange}
 				valueType={numFormat}
 				data={data}
 				timeSeries={timeSeries}
-				percentChange={percentChange}
 			/>
 		</Retry>
 	</ChartContainer>
