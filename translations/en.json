@@ -120,16 +120,16 @@
 		},
 		"current-fee-pool": {
 			"title": "CURRENT FEE POOL (sUSD)",
-			"subtext": "The total value of all Synth trading fees both claimed and claimable in the current weekly period starting on {{startDate}}",
+			"subtext": "The total value of all Synth trading fees both claimed and claimable in the current weekly period which started on {{startDate}}",
 			"infoData": "SNX and sUSD rewards are paid weekly to stakers who maintain their collateral ratio of SNX/debt. <newParagraph>Each week, stakers can claim Synth trading fees generated from the prior week.</newParagraph>"
 		},
 		"current-fee-pool-snx": {
 			"title": "CURRENT REWARDS POOL (SNX)",
-			"subtext": "The total value of all SNX staking rewards both claimed and claimable in the current weekly period starting on {{startDate}}"
+			"subtext": "The total value of all SNX staking rewards both claimed and claimable in the current weekly period which started on {{startDate}}"
 		},
 		"unclaimed-fees-and-rewards": {
 			"title": "FEES IN NEXT PERIOD (USD)",
-			"subtext": "The total value of all unclaimed Synth trading fees and SNX staking rewards in the next weekly period starting on {{startDate}}"
+			"subtext": "The total value of all unclaimed Synth trading fees and SNX staking rewards in the next weekly period which started on {{startDate}}"
 		},
 		"fees-in-next-period": {
 			"title": "UNCLAIMED FEES AND REWARDS (USD)",
