@@ -49,6 +49,7 @@ export type FeePeriod = {
 	feesClaimed: number;
 	rewardsToDistribute: number;
 	rewardsClaimed: number;
+	startTime: number;
 };
 
 export type OptionsMarket = {

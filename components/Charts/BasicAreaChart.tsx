@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import { AreaChart, Area, XAxis, Tooltip, ResponsiveContainer } from 'recharts';
+import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import { Skeleton } from '@material-ui/lab';
 
 import colors from '../../styles/colors';
@@ -17,9 +17,15 @@ interface BasicAreaChartProps {
 	data: Array<AreaChartData>;
 	timeSeries: TimeSeriesType;
 	valueType: NumberStyle;
+	percentChange: number | null;
 }
 
-const BasicAreaChart: FC<BasicAreaChartProps> = ({ data, timeSeries, valueType }) => {
+const BasicAreaChart: FC<BasicAreaChartProps> = ({
+	data,
+	timeSeries,
+	valueType,
+	percentChange,
+}) => {
 	if (data.length === 0) {
 		return (
 			<Skeleton
@@ -63,6 +69,15 @@ const BasicAreaChart: FC<BasicAreaChartProps> = ({ data, timeSeries, valueType }
 					tickLine={false}
 					dataKey="created"
 					tickFormatter={(created) => formatTime(created as string, timeSeries)}
+				/>
+				<YAxis
+					hide={true}
+					type="number"
+					domain={
+						Math.abs(percentChange || 0) < 0.5
+							? [(dataMin) => 2.5 - Math.abs(dataMin), (dataMax) => dataMax * 1]
+							: [(dataMin) => 0 - Math.abs(dataMin), (dataMax) => dataMax * 1]
+					}
 				/>
 				<Tooltip
 					labelFormatter={(created) => {
