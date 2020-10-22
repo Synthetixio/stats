@@ -129,7 +129,7 @@
 		},
 		"unclaimed-fees-and-rewards": {
 			"title": "FEES IN NEXT PERIOD (USD)",
-			"subtext": "The total value of all unclaimed Synth trading fees and SNX staking rewards in the following weekly period which started on {{startDate}}"
+			"subtext": "The total value of all unclaimed Synth trading fees and SNX staking rewards to be added in the following weekly period which started on {{startDate}}"
 		},
 		"fees-in-next-period": {
 			"title": "UNCLAIMED FEES AND REWARDS (USD)",
