@@ -1,12 +1,13 @@
 import React, { FC, useState, useContext } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
-import { ChartPeriod, TreeMapData } from 'types/data';
+import { ChartPeriod } from 'types/data';
 import StatsBox from 'components/StatsBox';
 import StatsRow from 'components/StatsRow';
 import AreaChart from 'components/Charts/AreaChart';
 import SectionHeader from 'components/SectionHeader';
 import { COLORS } from 'constants/styles';
+import { Currency } from 'constants/currency';
 import {
 	synthetixSubgraph,
 	synthetixRatesSubgraph,
@@ -20,13 +21,13 @@ import { LinkText, NewParagraph } from 'components/common';
 import {
 	useMarketCap,
 	useNetworkCRatio,
-	useSNXPriceChart,
 	useSynthSUSDTotalSupply,
 	useTotalIssuedSynths,
 	useTotalSNXLocked,
+	useRateForCurrency,
 } from 'queries/snxjs';
-import { useCMCVolume } from 'queries/cmc';
-import { useSNXNetworkMeta, useSNXTotal, useSynthHolders } from 'queries/snxData';
+import { useCMCPrice } from 'queries/cmc';
+import { useSNXNetworkMeta, useSNXTotal, useSynthHolders, useSNXPriceChart } from 'queries/snxData';
 import { useEtherLocked } from 'queries/wallet';
 import { useSUSDPrice } from 'queries/curve';
 import { getSUSDHoldersName } from 'utils/dataMapping';
@@ -36,18 +37,25 @@ const NetworkSection: FC = () => {
 	const [priceChartPeriod, setPriceChartPeriod] = useState<ChartPeriod>('D');
 	const snxjs = useContext(SNXJSContext);
 
+	// TODO use variable for SNX
 	const { data: snxMarketCap, isError: isMarketCapError, refetch: refetchMarketCap } = useMarketCap(
-		'SNX'
+		Currency.SNX
 	);
 	const { sUSDPrice, isError: isSUSDPriceError, refetch: refetchSUSDPrice } = useSUSDPrice();
-	const { data: SNX24HVolume, isError: isSNXVolumeError, refetch: refetchSNXVolume } = useCMCVolume(
-		'SNX'
-	);
+
+	const {
+		data: snx24HVolumeData,
+		isError: isSNXVolumeError,
+		refetch: refetchSNXVolume,
+	} = useCMCPrice(Currency.SNX);
+	const snx24HVolume = snx24HVolumeData?.data[Currency.SNX]?.quote?.USD?.volume_24h ?? null;
+
 	const {
 		data: totalSNXLocked,
 		isError: isTotalSNXLockedError,
 		refetch: refetchTotalSNXLocked,
 	} = useTotalSNXLocked();
+
 	const {
 		data: networkCRatio,
 		isError: isNetworkCRatioError,
@@ -67,7 +75,7 @@ const NetworkSection: FC = () => {
 	} = useEtherLocked();
 
 	const {
-		data: unformattedSUSDFromEther,
+		data: sUSDFromEther,
 		isError: isSUSDFromEtherError,
 		refetch: refetchSUSDFromEther,
 	} = useTotalIssuedSynths();
@@ -78,22 +86,28 @@ const NetworkSection: FC = () => {
 		refetch: refetchChartData,
 	} = useSNXPriceChart(priceChartPeriod);
 
-	const topSUSDHoldersQuery = useSynthHolders('sUSD');
+	const { data: snxPrice, isError: snxPriceError, refetch: refetchSnxPrice } = useRateForCurrency(
+		Currency.SNX
+	);
+
+	const priorSNXPrice = chartData != null && chartData.length > 0 ? chartData[0].value : 0;
+	const percentChange = snxPrice != null ? snxPrice / priorSNXPrice - 1 : 0;
+
+	const topSUSDHoldersQuery = useSynthHolders(Currency.sUSD);
 	const synthSUSDTotalSupplyQuery = useSynthSUSDTotalSupply();
 
 	const { data: snxTotals, isError: isSNXTotalError, refetch: refetchSNXTotal } = useSNXTotal();
 
 	let activeCRatio = null;
+	console.log('networkMeta', networkMeta);
 	if (networkMeta) {
+		console.log('defined the meta and...');
 		activeCRatio = 1 / (networkMeta.stakersTotalDebt / networkMeta.stakersTotalCollateral);
+		console.log('activeCRatio', activeCRatio);
 	}
 	let snxHolders = null;
 	if (snxTotals) {
 		snxHolders = snxTotals.snxHolders;
-	}
-	let sUSDFromEther = null;
-	if (unformattedSUSDFromEther) {
-		sUSDFromEther = Number(snxjs.utils.formatEther(unformattedSUSDFromEther));
 	}
 
 	return (
@@ -103,11 +117,11 @@ const NetworkSection: FC = () => {
 				periods={['D', 'W', 'M', 'Y'] as ChartPeriod[]}
 				activePeriod={priceChartPeriod}
 				onPeriodSelect={(period: ChartPeriod) => setPriceChartPeriod(period)}
-				data={chartData.chartData}
+				data={chartData ?? []}
 				title={t('homepage.snx-price.title')}
-				num={chartData.snxPrice}
+				num={snxPrice}
 				numFormat="currency2"
-				percentChange={chartData.percentChange}
+				percentChange={percentChange}
 				timeSeries={priceChartPeriod === 'D' ? '15m' : '1d'}
 				infoData={
 					<Trans
@@ -123,8 +137,10 @@ const NetworkSection: FC = () => {
 						}}
 					/>
 				}
-				isError={isChartDataError}
-				onRefetch={refetchChartData}
+				isFailedChartLoad={isChartDataError}
+				isFailedHeaderLoad={snxPriceError}
+				onRefetchChart={refetchChartData}
+				onRefetchHeader={refetchSnxPrice}
 			/>
 			<StatsRow>
 				<StatsBox
@@ -147,7 +163,7 @@ const NetworkSection: FC = () => {
 							}}
 						/>
 					}
-					isError={isMarketCapError}
+					isFailedLoad={isMarketCapError}
 					onRefetch={refetchMarketCap}
 				/>
 				<StatsBox
@@ -170,20 +186,20 @@ const NetworkSection: FC = () => {
 							}}
 						/>
 					}
-					isError={isSUSDPriceError}
+					isFailedLoad={isSUSDPriceError}
 					onRefetch={refetchSUSDPrice}
 				/>
 				<StatsBox
 					key="SNXVOLUME"
 					title={t('homepage.snx-volume.title')}
-					num={SNX24HVolume}
+					num={snx24HVolume}
 					percentChange={null}
 					subText={t('homepage.snx-volume.subtext')}
 					color={COLORS.green}
 					numberStyle="currency0"
 					numBoxes={3}
 					infoData={null}
-					isError={isSNXVolumeError}
+					isFailedLoad={isSNXVolumeError}
 					onRefetch={refetchSNXVolume}
 				/>
 			</StatsRow>
@@ -211,7 +227,7 @@ const NetworkSection: FC = () => {
 							}}
 						/>
 					}
-					isError={isTotalSNXLockedError}
+					isFailedLoad={isTotalSNXLockedError}
 					onRefetch={refetchTotalSNXLocked}
 				/>
 				<StatsBox
@@ -234,7 +250,7 @@ const NetworkSection: FC = () => {
 							}}
 						/>
 					}
-					isError={isNetworkCRatioError}
+					isFailedLoad={isNetworkCRatioError}
 					onRefetch={refetchNetworkCRatio}
 				/>
 				<StatsBox
@@ -258,7 +274,7 @@ const NetworkSection: FC = () => {
 							}}
 						/>
 					}
-					isError={isNetworkMetaError}
+					isFailedLoad={isNetworkMetaError}
 					onRefetch={refetchNetworkMeta}
 				/>
 				<StatsBox
@@ -281,7 +297,7 @@ const NetworkSection: FC = () => {
 							}}
 						/>
 					}
-					isError={isSNXTotalError}
+					isFailedLoad={isSNXTotalError}
 					onRefetch={refetchSNXTotal}
 				/>
 			</StatsRow>
@@ -296,7 +312,7 @@ const NetworkSection: FC = () => {
 						  )
 						: []
 				}
-				totalSupplySUSD={Number(snxjs.utils.formatEther(synthSUSDTotalSupplyQuery.data || 0))}
+				totalSupplySUSD={synthSUSDTotalSupply?.data ?? 0}
 			/>
 			<StatsRow>
 				<StatsBox
@@ -309,7 +325,7 @@ const NetworkSection: FC = () => {
 					numberStyle="number4"
 					numBoxes={2}
 					infoData={null}
-					isError={isEtherLockedError}
+					isFailedLoad={isEtherLockedError}
 					onRefetch={refetchEtherLocked}
 				/>
 				<StatsBox
@@ -322,7 +338,7 @@ const NetworkSection: FC = () => {
 					numberStyle="currency0"
 					numBoxes={2}
 					infoData={null}
-					isError={isSUSDFromEtherError}
+					isFailedLoad={isSUSDFromEtherError}
 					onRefetch={refetchSUSDFromEther}
 				/>
 			</StatsRow>

@@ -17,8 +17,8 @@ interface StatsBoxProps {
 	numberStyle: NumberStyle;
 	numBoxes: number;
 	infoData: ReactNode | null;
-	onRefetch?: Function;
-	isError?: boolean;
+	onRefetch?: () => Promise<any>;
+	isFailedLoad?: boolean;
 }
 
 // TODO what if num is 0 and is supposed to be zero!!
@@ -31,13 +31,13 @@ const StatsBox: FC<StatsBoxProps> = ({
 	numberStyle,
 	numBoxes,
 	infoData,
-	isError = false,
-	onRefetch = () => {},
+	isFailedLoad = false,
+	onRefetch = async () => null,
 }) => {
 	const formattedNumber = getFormattedNumber(num, numberStyle);
 	return (
 		<StatsBoxContainer num={num} numBoxes={numBoxes}>
-			<Retry isError={isError} onRefetch={onRefetch}>
+			<Retry isFailedLoad={isFailedLoad} onRefetch={onRefetch}>
 				{num == null ? (
 					<Skeleton
 						className="stats-box-skeleton"

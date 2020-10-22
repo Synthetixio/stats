@@ -4,9 +4,9 @@ import styled from 'styled-components';
 import BasicAreaChart from './BasicAreaChart';
 import ChartTimeSelectors from './ChartTimeSelectors';
 import ChartTitle from './ChartTitle';
-import { MAX_PAGE_WIDTH, NumberStyle } from '../../constants/styles';
-import { ChartPeriod, AreaChartData } from '../../types/data';
-import { TimeSeriesType } from '../../utils/formatter';
+import { MAX_PAGE_WIDTH, NumberStyle } from 'constants/styles';
+import { ChartPeriod, AreaChartData } from 'types/data';
+import { TimeSeriesType } from 'utils/formatter';
 import Retry from 'components/Retry';
 
 interface AreaChartProps {
@@ -20,8 +20,10 @@ interface AreaChartProps {
 	timeSeries: TimeSeriesType;
 	activePeriod: ChartPeriod;
 	infoData: React.ReactNode;
-	isError?: boolean;
-	onRefetch?: Function;
+	isFailedChartLoad?: boolean;
+	isFailedHeaderLoad?: boolean;
+	onRefetchChart?: () => Promise<any>;
+	onRefetchHeader?: () => Promise<any>;
 }
 
 const AreaChart: FC<AreaChartProps> = ({
@@ -35,12 +37,14 @@ const AreaChart: FC<AreaChartProps> = ({
 	percentChange,
 	timeSeries,
 	infoData,
-	isError = false,
-	onRefetch = () => {},
+	isFailedChartLoad = false,
+	isFailedHeaderLoad = false,
+	onRefetchChart = async () => null,
+	onRefetchHeader = async () => null,
 }) => (
 	<ChartContainer>
-		<Retry isError={isError} onRefetch={onRefetch}>
-			<ChartHeader>
+		<ChartHeader>
+			<Retry isFailedLoad={isFailedHeaderLoad} onRefetch={onRefetchHeader}>
 				<ChartTitle
 					infoData={infoData}
 					title={title}
@@ -48,12 +52,10 @@ const AreaChart: FC<AreaChartProps> = ({
 					numFormat={numFormat}
 					percentChange={percentChange}
 				/>
-				<ChartTimeSelectors
-					activePeriod={activePeriod}
-					periods={periods}
-					onClick={onPeriodSelect}
-				/>
-			</ChartHeader>
+			</Retry>
+			<ChartTimeSelectors activePeriod={activePeriod} periods={periods} onClick={onPeriodSelect} />
+		</ChartHeader>
+		<Retry isFailedLoad={isFailedChartLoad} onRefetch={onRefetchChart}>
 			<BasicAreaChart
 				percentChange={percentChange}
 				valueType={numFormat}

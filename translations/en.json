@@ -17,6 +17,9 @@
 			"trading": "TRADING",
 			"yieldFarming": "YIELD FARMING"
 		},
+		"retry": {
+			"error": "Error fetching data"
+		},
 		"snx-price": {
 			"title": "SNX PRICE",
 			"infoData": "The price of SNX is obtained from Chainlink oracles, which are retrieved using the <sjslink>{{sjsLinkText}}</sjslink>. <newParagraph>For the chart, the data is collected from the \"DailySNXPrice\" and \"FifteenMinuteSNXPrice\" entities in the Synthetix rates subgraph <viewPlaygroundLink>{{viewPlaygroundLinkText}}</viewPlaygroundLink>.</newParagraph>",

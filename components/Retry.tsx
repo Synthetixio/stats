@@ -1,28 +1,23 @@
-import { useState } from 'react';
-import { FC, FunctionComponent } from 'react';
+import { FC } from 'react';
+import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
+
 import Button from './Button';
 
 type RetryProps = {
-	isError: boolean;
-	onRefetch: Function;
+	isFailedLoad: boolean;
+	onRefetch: () => Promise<any>;
 	children: React.ReactNode;
 };
 
-const Retry = ({ isError, onRefetch, children }: RetryProps) => {
-	const [error, setError] = useState(true);
+const Retry: FC<RetryProps> = ({ isFailedLoad, onRefetch, children }) => {
+	const { t } = useTranslation();
 	return (
 		<RetryContainer>
-			{isError ? (
+			{isFailedLoad ? (
 				<>
-					<div>Error fetching data</div>
-					<Button
-						onClick={(e: any) => {
-							onRefetch();
-							setError(false);
-						}}
-						text="Refetch"
-					/>
+					<div>{t('homepage.retry.error')}</div>
+					<Button onClick={() => onRefetch()} text="Refetch" />
 				</>
 			) : (
 				children
