@@ -2,12 +2,12 @@ import QUERY_KEYS from 'constants/queryKeys';
 import { BigNumber } from 'ethers';
 import { ProviderContext, SNXJSContext } from 'pages/_app';
 import { useContext } from 'react';
-import { BaseQueryOptions, QueryKey, useQuery } from 'react-query';
+import { BaseQueryOptions, AnyQueryKey, useQuery } from 'react-query';
 import useQueryGroup from './useQueryGroup';
 
 export const useWalletBalance = (address: string, options?: BaseQueryOptions) => {
 	const provider = useContext(ProviderContext);
-	return useQuery<BigNumber, QueryKey<any>>(
+	return useQuery<BigNumber, AnyQueryKey>(
 		QUERY_KEYS.Wallet.Balance(address),
 		() => provider.getBalance(address),
 		{ ...options }

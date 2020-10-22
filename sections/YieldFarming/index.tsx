@@ -5,8 +5,9 @@ import { useTranslation, Trans } from 'react-i18next';
 
 import SectionHeader from 'components/SectionHeader';
 import SingleStatRow from 'components/SingleStatRow';
-import StatsRow, { StatsRowEmptySpace } from 'components/StatsRow';
+import { StatsRowEmptySpace } from 'components/StatsRow';
 import DoubleStatsBox from 'components/DoubleStatsBox';
+import { Currency } from 'constants/currency';
 import {
 	curvepoolRewards,
 	iEth4Rewards,
@@ -23,7 +24,7 @@ import { formatPercentage } from 'utils/formatter';
 import { FullLineText } from '../../components/common';
 
 const SubtitleText = ({ name }: { name: string }) =>
-	name === 'sUSD' ? (
+	name === Currency.sUSD ? (
 		<Trans
 			i18nKey={'homepage.yield-farming-subtitle-text.sUSD'}
 			values={{

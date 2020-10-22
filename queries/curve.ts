@@ -1,4 +1,4 @@
-import { useQuery, BaseQueryOptions, useQueryCache } from 'react-query';
+import { useQuery, BaseQueryOptions, useQueryCache, AnyQueryKey } from 'react-query';
 import QUERY_KEYS from 'constants/queryKeys';
 import { BigNumber, Contract, ethers } from 'ethers';
 import { curveSusdPool } from 'contracts';
@@ -12,7 +12,7 @@ export const useDYUnderlying = (
 	susdAmountWei: BigNumber,
 	options?: BaseQueryOptions
 ) =>
-	useQuery<BigNumber, any>(
+	useQuery<BigNumber, AnyQueryKey>(
 		QUERY_KEYS.Contracts.Curve.GetDYUnderlying(
 			susdContractNumber,
 			usdcContractNumber,

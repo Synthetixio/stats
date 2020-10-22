@@ -13,6 +13,7 @@ import SingleStatRow from 'components/SingleStatRow';
 import DoubleStatsBox from 'components/DoubleStatsBox';
 import StatsRow from 'components/StatsRow';
 import { synthSummaryUtil } from 'contracts';
+import { Currency } from 'constants/currency';
 
 import SynthsBarChart from './SynthsBarChart';
 import SynthsPieChart from './SynthsPieChart';
@@ -121,7 +122,7 @@ const SynthsSection: FC<{}> = () => {
 								subtitle={subtitleText(name)}
 								firstMetricTitle={t('homepage.top-synths.price')}
 								firstMetricStyle="currency2"
-								firstMetric={name === 'sUSD' ? sUSDPrice : value / (totalSupply ?? 0)}
+								firstMetric={name === Currency.sUSD ? sUSDPrice : value / (totalSupply ?? 0)}
 								firstColor={index === 0 ? COLORS.pink : COLORS.green}
 								secondMetricTitle={t('homepage.top-synths.marketCap')}
 								secondMetric={value}
