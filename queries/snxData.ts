@@ -7,7 +7,6 @@ import {
 	useSynthSUSDTotalSupply,
 	useTotalIssuedSynthsExcludeEtherCollateral,
 } from './snxjs';
-import useQueryGroup from './useQueryGroup';
 import { AreaChartData, ChartPeriod, SNXPriceData, TimeSeries } from 'types/data';
 import { formatIdToIsoString } from 'utils/formatter';
 import { Currency } from 'constants/currency';
@@ -25,45 +24,62 @@ export type SNXHolder = {
 	mints: number;
 };
 
-export const useSNXNetworkMeta = () =>
-	useQueryGroup(
-		[
-			useSNXHolders(),
-			useTotalIssuedSynthsExcludeEtherCollateral(Currency.sUSD),
-			useLastDebtLedgerEntry(),
-			useIssuanceRatio(),
-			useSynthSUSDTotalSupply(),
-		],
-		(holders, totalIssuedSynths, lastDebtLedgerEntry, issuanceRatio, usdToSnxPrice) => {
-			console.log('holders', holders);
-			console.log('totalIssuedSynths', totalIssuedSynths);
-			let snxTotal = 0;
-			let snxLocked = 0;
-			let stakersTotalDebt = 0;
-			let stakersTotalCollateral = 0;
+export type NetworkMeta = {
+	snxTotal: number;
+	snxLocked: number;
+	stakersTotalDebt: number;
+	stakersTotalCollateral: number;
+};
 
-			for (const { collateral, debtEntryAtIndex, initialDebtOwnership } of holders) {
-				let debtBalance =
-					((totalIssuedSynths * lastDebtLedgerEntry) / debtEntryAtIndex) * initialDebtOwnership;
-				let collateralRatio = debtBalance / collateral / usdToSnxPrice;
+export const useSNXNetworkMeta = (): NetworkMeta | null => {
+	const holdersQuery = useSNXHolders();
+	const totalIssuedSynthsQuery = useTotalIssuedSynthsExcludeEtherCollateral(Currency.sUSD);
+	const lastDebtLedgerEntryQuery = useLastDebtLedgerEntry();
+	const issuanceRatioQuery = useIssuanceRatio();
+	const usdToSnxPriceQuery = useSynthSUSDTotalSupply();
 
-				if (isNaN(debtBalance)) {
-					debtBalance = 0;
-					collateralRatio = 0;
-				}
-				const lockedSnx = collateral * Math.min(1, collateralRatio / issuanceRatio);
+	const holders = holdersQuery?.data;
+	const totalIssuedSynths = totalIssuedSynthsQuery?.data;
+	const lastDebtLedgerEntry = lastDebtLedgerEntryQuery?.data;
+	const issuanceRatio = issuanceRatioQuery?.data;
+	const usdToSnxPrice = usdToSnxPriceQuery?.data;
 
-				if (Number(debtBalance) > 0) {
-					stakersTotalDebt += Number(debtBalance);
-					stakersTotalCollateral += Number(collateral * usdToSnxPrice);
-				}
-				snxTotal += Number(collateral);
-				snxLocked += Number(lockedSnx);
-			}
+	if (
+		holders == null ||
+		totalIssuedSynths == null ||
+		lastDebtLedgerEntry == null ||
+		issuanceRatio == null ||
+		usdToSnxPrice == null
+	) {
+		return null;
+	}
 
-			return { snxTotal, snxLocked, stakersTotalDebt, stakersTotalCollateral };
+	let snxTotal = 0;
+	let snxLocked = 0;
+	let stakersTotalDebt = 0;
+	let stakersTotalCollateral = 0;
+
+	for (const { collateral, debtEntryAtIndex, initialDebtOwnership } of holders) {
+		let debtBalance =
+			((totalIssuedSynths * lastDebtLedgerEntry) / debtEntryAtIndex) * initialDebtOwnership;
+		let collateralRatio = debtBalance / collateral / usdToSnxPrice;
+
+		if (isNaN(debtBalance)) {
+			debtBalance = 0;
+			collateralRatio = 0;
 		}
-	);
+		const lockedSnx = collateral * Math.min(1, collateralRatio / issuanceRatio);
+
+		if (Number(debtBalance) > 0) {
+			stakersTotalDebt += Number(debtBalance);
+			stakersTotalCollateral += Number(collateral * usdToSnxPrice);
+		}
+		snxTotal += Number(collateral);
+		snxLocked += Number(lockedSnx);
+	}
+
+	return { snxTotal, snxLocked, stakersTotalDebt, stakersTotalCollateral };
+};
 
 export const useSNXHolders = (max: number = 1000, options?: BaseQueryOptions) =>
 	useQuery<Array<SNXHolder>, AnyQueryKey>(

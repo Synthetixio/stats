@@ -94,7 +94,13 @@ const NetworkSection: FC = () => {
 	const percentChange = snxPrice != null ? snxPrice / priorSNXPrice - 1 : 0;
 
 	const topSUSDHoldersQuery = useSynthHolders(Currency.sUSD);
-	const synthSUSDTotalSupplyQuery = useSynthSUSDTotalSupply();
+
+	// TODO cover this other component
+	const {
+		data: synthSUSDTotalSupplyData,
+		isError: synthSUSDTotalSupplyError,
+		refetch: refetchSynthSUSDTotalSupplyData,
+	} = useSynthSUSDTotalSupply();
 
 	const { data: snxTotals, isError: isSNXTotalError, refetch: refetchSNXTotal } = useSNXTotal();
 
@@ -119,7 +125,7 @@ const NetworkSection: FC = () => {
 				onPeriodSelect={(period: ChartPeriod) => setPriceChartPeriod(period)}
 				data={chartData ?? []}
 				title={t('homepage.snx-price.title')}
-				num={snxPrice}
+				num={snxPrice ?? 0}
 				numFormat="currency2"
 				percentChange={percentChange}
 				timeSeries={priceChartPeriod === 'D' ? '15m' : '1d'}
@@ -312,7 +318,7 @@ const NetworkSection: FC = () => {
 						  )
 						: []
 				}
-				totalSupplySUSD={synthSUSDTotalSupply?.data ?? 0}
+				totalSupplySUSD={synthSUSDTotalSupplyData ?? 0}
 			/>
 			<StatsRow>
 				<StatsBox

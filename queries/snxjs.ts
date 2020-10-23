@@ -4,7 +4,6 @@ import QUERY_KEYS from 'constants/queryKeys';
 
 import { SNXJSContext } from 'pages/_app';
 import { useSNXNetworkMeta } from './snxData';
-import { useQueryGroup } from './useQueryGroup';
 import { Currency } from 'constants/currency';
 
 export const useRateForCurrency = (name: string, options?: BaseQueryOptions) => {
@@ -99,30 +98,28 @@ export const useTotalIssuedSynths = (options?: BaseQueryOptions) => {
 };
 
 export const useMarketCap = (synth: string) => {
-	const snxjs = useContext(SNXJSContext);
-	const { formatEther } = snxjs.utils;
-
-	return useQueryGroup([useRateForCurrency(synth), useTotalSupply()], (price, totalSupply) => {
-		const marketCap = totalSupply * price;
-		return marketCap;
-	});
+	const priceQuery = useRateForCurrency(synth);
+	const totalSupplyQuery = useTotalSupply();
+	const price = priceQuery?.data ?? 0;
+	const totalSupply = totalSupplyQuery?.data ?? 0;
+	return price * totalSupply;
 };
 
 export const useTotalSNXLocked = () => {
-	const snxjs = useContext(SNXJSContext);
-	const { formatEther } = snxjs.utils;
-	const networkMetaQuery = useSNXNetworkMeta();
-	return useQueryGroup(
-		[useRateForCurrency(Currency.SNX), useTotalSupply()],
-		(price, totalSupply) => {
-			const { snxLocked, snxTotal } = networkMetaQuery.data;
-			const percentLocked = snxLocked / snxTotal;
-
-			const totalSNXLocked = percentLocked * totalSupply * price;
-			return totalSNXLocked;
-		},
-		{ enabled: networkMetaQuery.data }
-	);
+	// TODO working on me next
+	// const networkMetaQueries = useSNXNetworkMeta();
+	// if (networkMetaQueries == null) {
+	// 	return null
+	// }
+	// 	[useRateForCurrency(Currency.SNX), useTotalSupply()],
+	// 	(price, totalSupply) => {
+	// 		const { snxLocked, snxTotal } = networkMetaQuery.data;
+	// 		const percentLocked = snxLocked / snxTotal;
+	// 		const totalSNXLocked = percentLocked * totalSupply * price;
+	// 		return totalSNXLocked;
+	// 	},
+	// 	{ enabled: Boolean(networkMetaQuery?.data) ?? false }
+	// );
 };
 
 export const useNetworkCRatio = () => {
