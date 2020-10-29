@@ -30,6 +30,11 @@ const provider = new ethers.providers.InfuraProvider(
 );
 export const ProviderContext = createContext(provider);
 
+export const TickerContext = createContext({
+	ticker: null,
+	setTicker: (newTicker: string) => null,
+});
+
 export const HeadersContext = createContext(headersAndScrollRef);
 
 export const SUSDContext = createContext({
@@ -53,6 +58,7 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
 	const [sUSDPrice, setsUSDPrice] = useState<number | null>(null);
 	const [SNXPrice, setSNXPrice] = useState<number | null>(null);
 	const [SNXStaked, setSNXStaked] = useState<number | null>(null);
+	const [ticker, setTicker] = useState<string | null>(null);
 
 	return (
 		<>
@@ -140,9 +146,13 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
 									{/*
 									// @ts-ignore */}
 									<SNXContext.Provider value={{ SNXPrice, setSNXPrice, SNXStaked, setSNXStaked }}>
-										<Layout>
-											<Component {...pageProps} />
-										</Layout>
+										{/*
+									  // @ts-ignore */}
+										<TickerContext.Provider value={{ ticker, setTicker }}>
+											<Layout>
+												<Component {...pageProps} />
+											</Layout>
+										</TickerContext.Provider>
 									</SNXContext.Provider>
 								</SUSDContext.Provider>
 							</ProviderContext.Provider>

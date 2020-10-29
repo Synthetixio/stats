@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 import SectionHeader from 'components/SectionHeader';
 import { MAX_PAGE_WIDTH, COLORS } from 'constants/styles';
 import { SNXJSContext, SUSDContext, ProviderContext } from 'pages/_app';
-import { OpenInterest, SynthTotalSupply } from 'types/data';
+import { OpenInterest, SynthTotalSupply, SynthStatusData } from 'types/data';
 import SingleStatRow from 'components/SingleStatRow';
 import DoubleStatsBox from 'components/DoubleStatsBox';
 import StatsRow from 'components/StatsRow';
@@ -16,6 +16,7 @@ import { synthSummaryUtil } from 'contracts';
 
 import SynthsBarChart from './SynthsBarChart';
 import SynthsPieChart from './SynthsPieChart';
+import SynthsStatus from './SynthsStatus';
 
 const MIN_PERCENT_FOR_PIE_CHART = 0.03;
 const NUMBER_OF_TOP_SYNTHS = 3;
@@ -25,6 +26,7 @@ const SynthsSection: FC<{}> = () => {
 	const { t } = useTranslation();
 	const [pieChartData, setPieChartData] = useState<SynthTotalSupply[]>([]);
 	const [barChartData, setBarChartData] = useState<OpenInterest>({});
+	const [synthStatusData, setSynthStatusData] = useState<SynthStatusData[]>([]);
 	const snxjs = useContext(SNXJSContext);
 	const { sUSDPrice } = useContext(SUSDContext);
 	const provider = useContext(ProviderContext);
@@ -38,6 +40,14 @@ const SynthsSection: FC<{}> = () => {
 			);
 
 			const synthTotalSupplies = await SynthSummaryUtil.synthsTotalSupplies();
+			const suspendedSynths = await snxjs.contracts.SystemStatus.getSynthSuspensions(
+				synthTotalSupplies[0]
+			);
+			const synthStatuses = synthTotalSupplies[0].map((currencyKey: string, index: number) => ({
+				synth: snxjs.utils.parseBytes32String(currencyKey),
+				isSuspended: suspendedSynths[0][index],
+				reason: parseInt(snxjs.utils.formatUnits(suspendedSynths[1][index], 0)),
+			}));
 
 			let totalValue = 0;
 			const unsortedOpenInterest: SynthTotalSupply[] = [];
@@ -90,6 +100,7 @@ const SynthsSection: FC<{}> = () => {
 				}
 				return acc;
 			}, []);
+			setSynthStatusData(synthStatuses);
 			setBarChartData(openInterest);
 			setPieChartData(orderBy(formattedPieChartData, 'value', 'desc'));
 		};
@@ -133,6 +144,8 @@ const SynthsSection: FC<{}> = () => {
 					return null;
 				})}
 			</StatsRow>
+			<SubsectionHeader>{t('homepage.synths-status.title')}</SubsectionHeader>
+			<SynthsStatus data={synthStatusData} />
 		</>
 	);
 };

@@ -5,11 +5,12 @@ import { useTranslation, Trans } from 'react-i18next';
 
 import SectionHeader from 'components/SectionHeader';
 import SingleStatRow from 'components/SingleStatRow';
-import StatsRow, { StatsRowEmptySpace } from 'components/StatsRow';
+import StatsRow from 'components/StatsRow';
 import DoubleStatsBox from 'components/DoubleStatsBox';
 import {
 	curvepoolRewards,
 	iEth4Rewards,
+	iBtcRewards,
 	curveSusdPool,
 	curveSusdPoolToken,
 	curveSusdGauge,
@@ -49,6 +50,7 @@ const YieldFarming: FC = () => {
 	const [distributions, setDistributions] = useState<{ [address: string]: number } | null>(null);
 	const [aaveDepositRate, setAaveDepositRate] = useState<number | null>(null);
 	const [iEthAPYFields, setiEthAPYFields] = useState<APYFields | null>(null);
+	const [iBtcAPYFields, setiBtcAPYFields] = useState<APYFields | null>(null);
 	const [curveAPYFields, setCurveAPYFields] = useState<APYFields | null>(null);
 	const [curveSwapAPY, setCurveSwapAPY] = useState<number | null>(null);
 	const [curveTokenAPY, setCurveTokenAPY] = useState<number | null>(null);
@@ -67,6 +69,7 @@ const YieldFarming: FC = () => {
 			iEth4Rewards.abi,
 			provider
 		);
+		const iBtcRewardsContract = new ethers.Contract(iBtcRewards.address, iBtcRewards.abi, provider);
 		const curveSusdPoolContract = new ethers.Contract(
 			curveSusdPool.address,
 			// @ts-ignore
@@ -93,7 +96,7 @@ const YieldFarming: FC = () => {
 
 		const fetchData = async () => {
 			try {
-				const contracts = [curvepoolContract, iEth4RewardsContract];
+				const contracts = [curvepoolContract, iEth4RewardsContract, iBtcRewardsContract];
 				const rewardsData = await Promise.all(
 					contracts.map((contract) => {
 						const getDuration = contract.DURATION || contract.rewardsDuration;
@@ -113,7 +116,9 @@ const YieldFarming: FC = () => {
 
 				const fetchedData = await Promise.all([
 					snxjs.contracts.ProxyiETH.balanceOf(iEth4Rewards.address),
+					snxjs.contracts.ProxyiBTC.balanceOf(iBtcRewards.address),
 					snxjs.contracts.ExchangeRates.rateForCurrency(snxjs.toBytes32('iETH')),
+					snxjs.contracts.ExchangeRates.rateForCurrency(snxjs.toBytes32('iBTC')),
 					curveSusdPoolTokenContract.balanceOf(curvepoolRewards.address),
 					curveSusdPoolContract.get_virtual_price(),
 					curveSusdGaugeContract.inflation_rate(),
@@ -126,25 +131,28 @@ const YieldFarming: FC = () => {
 
 				const [
 					iEthBalance,
+					iBtcBalance,
 					iEthPrice,
+					iBtcPrice,
 					curveSusdBalance,
 					curveSusdTokenPrice,
 					curveInflationRate,
 					curveWorkingSupply,
 					gaugeRelativeWeight,
-				] = fetchedData.slice(0, 7).map((data) => Number(snxjs.utils.formatEther(data)));
+				] = fetchedData.slice(0, 9).map((data) => Number(snxjs.utils.formatEther(data)));
 
 				const rate =
 					(((curveInflationRate * gaugeRelativeWeight * 31536000) / curveWorkingSupply) * 0.4) /
 					curveSusdTokenPrice;
-				const curvePrice = fetchedData[8];
+				const curvePrice = fetchedData[10];
 				setCurveTokenAPY(rate * curvePrice);
 
 				setiEthAPYFields({ balanceOf: iEthBalance, price: iEthPrice });
+				setiBtcAPYFields({ balanceOf: iBtcBalance, price: iBtcPrice });
 				setCurveAPYFields({ balanceOf: curveSusdBalance, price: curveSusdTokenPrice });
-				setAaveDepositRate(fetchedData[7]);
+				setAaveDepositRate(fetchedData[9]);
 
-				const swapAPY = fetchedData[9]?.data?.apy?.day?.susd ?? 0;
+				const swapAPY = fetchedData[11]?.data?.apy?.day?.susd ?? 0;
 				setCurveSwapAPY(swapAPY);
 			} catch (e) {
 				setDistributions(null);
@@ -163,7 +171,7 @@ const YieldFarming: FC = () => {
 				color={COLORS.green}
 				numberStyle="percent2"
 			/>
-			<StatsRowEmptySpace>
+			<StatsRow>
 				<DoubleStatsBox
 					key="CRVSUSDRWRDS"
 					title={t('homepage.curve-susd.title')}
@@ -230,7 +238,26 @@ const YieldFarming: FC = () => {
 					secondColor={COLORS.green}
 					secondMetricStyle="percent2"
 				/>
-			</StatsRowEmptySpace>
+				<DoubleStatsBox
+					key="iBTCRWRDS"
+					title={t('homepage.iBTC.title')}
+					subtitle={<SubtitleText name="iBTC" />}
+					firstMetricTitle={t('homepage.iBTC.firstMetricTitle')}
+					firstMetricStyle="number"
+					firstMetric={distributions != null ? distributions[iBtcRewards.address] : distributions}
+					firstColor={COLORS.green}
+					secondMetricTitle={t('homepage.iBTC.secondMetricTitle')}
+					secondMetric={
+						distributions != null && iBtcAPYFields != null && SNXPrice != null
+							? ((distributions[iBtcRewards.address] * (SNXPrice ?? 0)) /
+									(iBtcAPYFields.balanceOf * iBtcAPYFields.price)) *
+							  52
+							: null
+					}
+					secondColor={COLORS.green}
+					secondMetricStyle="percent2"
+				/>
+			</StatsRow>
 		</>
 	);
 };

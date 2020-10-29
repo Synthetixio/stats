@@ -148,6 +148,11 @@
 			"price": "PRICE",
 			"marketCap": "MARKET CAP"
 		},
+		"synths-status": {
+			"title": "SYNTH STATUSES",
+			"suspension": "{{synth}} is suspended",
+			"suspension-with-reason": "{{synth}} is suspended due to {{reason}}"
+		},
 		"synth-bar-chart": {
 			"title": "TOTAL SYNTHS",
 			"subtext": "The total value of all Synths in USD"
@@ -207,6 +212,11 @@
 		},
 		"iETH": {
 			"title": "iETH",
+			"firstMetricTitle": "WEEKLY REWARDS (SNX)",
+			"secondMetricTitle": "Annual Percentage Yield"
+		},
+		"iBTC": {
+			"title": "iBTC",
 			"firstMetricTitle": "WEEKLY REWARDS (SNX)",
 			"secondMetricTitle": "Annual Percentage Yield"
 		}

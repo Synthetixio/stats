@@ -60,3 +60,5 @@ export type OptionsMarket = {
 	expiryDate?: string;
 	value?: number;
 };
+
+export type SynthStatusData = { synth: string; isSuspended: boolean; reason: number };

@@ -78,3 +78,6 @@ export const formatTime = (created: string, type: TimeSeriesType) =>
 	type === '15m' ? format(new Date(created), 'HH:00') : format(new Date(created), 'MM/dd');
 
 export const formatDate = (created: string) => format(new Date(created), 'PPpp');
+
+export const formatTickerField = (key: string, value: string | number) =>
+	`${key}: ${value}` + '\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0';

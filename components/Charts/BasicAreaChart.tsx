@@ -2,16 +2,16 @@ import { FC } from 'react';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import { Skeleton } from '@material-ui/lab';
 
-import colors from '../../styles/colors';
-import { AreaChartData } from '../../types/data';
+import colors from 'styles/colors';
+import { AreaChartData } from 'types/data';
 import {
 	TimeSeriesType,
 	formatTime,
 	formatDate,
 	formatCurrency,
 	formatNumber,
-} from '../../utils/formatter';
-import { NumberStyle } from '../../constants/styles';
+} from 'utils/formatter';
+import { NumberStyle } from 'constants/styles';
 
 interface BasicAreaChartProps {
 	data: Array<AreaChartData>;

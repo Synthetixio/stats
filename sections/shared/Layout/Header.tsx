@@ -1,17 +1,18 @@
 import { FC, useContext, useState, useEffect } from 'react';
-import styled from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 
 import StatsLogo from 'assets/svg/stats-logo.svg';
 import MenuHamburgerIcon from 'assets/svg/menu-hamburger.svg';
 import MenuCloseIcon from 'assets/svg/menu-close.svg';
 import { MAX_PAGE_WIDTH, Z_INDEX } from 'constants/styles';
-import { HeadersContext } from 'pages/_app';
+import { HeadersContext, TickerContext } from 'pages/_app';
 
 // TODO use translation
 const Header: FC = () => {
 	const [menuOpen, setMenuOpen] = useState(false);
 	const toggleMenu = () => setMenuOpen(!menuOpen);
 	const headersContext = useContext(HeadersContext);
+	const { ticker } = useContext(TickerContext);
 
 	useEffect(() => {
 		const routeApp = async () => {
@@ -41,6 +42,9 @@ const Header: FC = () => {
 							<StatsLogo />
 						</StatsLogoWrap>
 					</HeaderSectionLeft>
+					<HeaderSectionMiddle>
+						<AnimatedText>{ticker}</AnimatedText>
+					</HeaderSectionMiddle>
 					<HeaderSectionRight>
 						{Object.entries(headersContext).map(([key, value]) => (
 							<HeaderLink key={key} onClick={() => scrollToRef(value, key.toLowerCase())}>
@@ -109,6 +113,33 @@ const StatsLogoWrap = styled.div`
 const HeaderSectionLeft = styled.div`
 	display: flex;
 	justify-content; space-between;
+`;
+
+const tickerAnimation = keyframes`
+	from {
+		margin-left: -200%;
+		width: 300%; 
+	}
+
+	to {
+		margin-left: 100%;
+		width: 100%;
+	}
+`;
+
+const HeaderSectionMiddle = styled.div`
+	font-family: ${(props) => `${props.theme.fonts.condensedBold}, ${props.theme.fonts.regular}`};
+	font-size: 12px;
+	color: ${(props) => props.theme.colors.white};
+	width: 30%;
+	overflow: hidden;
+`;
+const AnimatedText = styled.div`
+	animation-name: ${tickerAnimation};
+	animation-duration: 12s;
+	animation-iteration-count: infinite;
+	animation-delay: 2s;
+	animation-timing-function: linear;
 `;
 
 const HeaderSectionRight = styled.div`

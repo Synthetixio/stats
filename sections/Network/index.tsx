@@ -18,8 +18,13 @@ import {
 	synthetixDataGithub,
 } from 'constants/links';
 import SUSDDistribution from '../Network/SUSDDistribution';
-import { SNXJSContext, SUSDContext, SNXContext, ProviderContext } from 'pages/_app';
-import { formatIdToIsoString } from 'utils/formatter';
+import { SNXJSContext, SUSDContext, SNXContext, ProviderContext, TickerContext } from 'pages/_app';
+import {
+	formatIdToIsoString,
+	formatTickerField,
+	formatCurrency,
+	formatPercentage,
+} from 'utils/formatter';
 import { getSUSDHoldersName } from 'utils/dataMapping';
 import { LinkText, NewParagraph } from 'components/common';
 import { curveSusdPool } from 'contracts';
@@ -45,6 +50,7 @@ const NetworkSection: FC = () => {
 	const { sUSDPrice, setsUSDPrice } = useContext(SUSDContext);
 	const { SNXPrice, setSNXPrice, setSNXStaked } = useContext(SNXContext);
 	const provider = useContext(ProviderContext);
+	const { ticker, setTicker } = useContext(TickerContext);
 
 	// NOTE: use interval? or save data calls?
 	useEffect(() => {
@@ -105,7 +111,8 @@ const NetworkSection: FC = () => {
 			const totalSupply = Number(formatEther(unformattedSnxTotalSupply));
 			setSNXTotalSupply(totalSupply);
 			const exchangeAmount = Number(formatUnits(unformattedExchangeAmount, 6));
-			setsUSDPrice(exchangeAmount / susdAmount);
+			const sUSDPeg = exchangeAmount / susdAmount;
+			setsUSDPrice(sUSDPeg);
 			setsUSDFromEther(Number(snxjs.utils.formatEther(sUSDFromEth)));
 
 			const dailyVolume = cmcSNXData?.data?.data?.SNX?.quote?.USD?.volume_24h;
@@ -157,8 +164,19 @@ const NetworkSection: FC = () => {
 			setSNXPercentLocked(percentLocked);
 			setSNXStaked(totalSupply * percentLocked);
 			setTotalSupplySUSD(sUSDTotalSupply);
-			setActiveCRatio(1 / (stakersTotalDebt / stakersTotalCollateral));
+			const formattedActiveCRatio = 1 / (stakersTotalDebt / stakersTotalCollateral);
+			setActiveCRatio(formattedActiveCRatio);
 			setNetworkCRatio((totalSupply * formattedSNXPrice) / totalIssuedSynths);
+			if (sUSDPeg && formattedSNXPrice && formattedActiveCRatio) {
+				// TODO add translations
+				setTicker(
+					ticker ??
+						'' +
+							formatTickerField('SNX Price', formatCurrency(formattedSNXPrice)) +
+							formatTickerField('sUSD Price', formatCurrency(sUSDPeg)) +
+							formatTickerField('Active C-Ratio', formatPercentage(formattedActiveCRatio))
+				);
+			}
 		};
 		fetchData();
 	}, []);
