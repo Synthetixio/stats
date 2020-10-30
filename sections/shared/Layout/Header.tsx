@@ -137,6 +137,10 @@ const HeaderSectionMiddle = styled.div`
 	color: ${(props) => props.theme.colors.white};
 	width: 30%;
 	overflow: hidden;
+	white-space: no-wrap;
+	@media only screen and (max-width: 799px) {
+		width: 35%;
+	}
 `;
 const AnimatedText = styled.div`
 	animation-name: ${tickerAnimation};
