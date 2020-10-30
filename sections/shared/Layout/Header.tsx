@@ -1,4 +1,4 @@
-import { FC, useContext, useState, useEffect } from 'react';
+import { FC, useContext, useState, useEffect, useMemo } from 'react';
 import styled, { keyframes } from 'styled-components';
 
 import StatsLogo from 'assets/svg/stats-logo.svg';
@@ -9,14 +9,28 @@ import { HeadersContext, TickerContext } from 'pages/_app';
 
 // TODO use translation
 const Header: FC = () => {
-	const [menuOpen, setMenuOpen] = useState(false);
+	const [menuOpen, setMenuOpen] = useState<boolean>(false);
+	const [showTicker, setShowTicker] = useState<boolean>(true);
 	const toggleMenu = () => setMenuOpen(!menuOpen);
 	const headersContext = useContext(HeadersContext);
 	const { tickers } = useContext(TickerContext);
 	const ticker = Object.entries(tickers).reduce((acc, [key, value]) => {
 		// \xa0 represents a space so there is spacing between items in the ticker
-		return (acc += `${key}: ${value}` + '\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0');
+		return (acc +=
+			`${key}: ${value}` +
+			'\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0');
 	}, '');
+
+	useEffect(() => {
+		function onScroll() {
+			if (window.scrollY === 0) {
+				return setShowTicker(true);
+			}
+			return setShowTicker(false);
+		}
+
+		window.addEventListener('scroll', onScroll);
+	}, []);
 
 	useEffect(() => {
 		const routeApp = async () => {
@@ -46,9 +60,11 @@ const Header: FC = () => {
 							<StatsLogo />
 						</StatsLogoWrap>
 					</HeaderSectionLeft>
-					<HeaderSectionMiddle>
-						<AnimatedText>{ticker}</AnimatedText>
-					</HeaderSectionMiddle>
+					{showTicker ? (
+						<HeaderSectionMiddle>
+							<AnimatedText>{ticker}</AnimatedText>
+						</HeaderSectionMiddle>
+					) : null}
 					<HeaderSectionRight>
 						{Object.entries(headersContext).map(([key, value]) => (
 							<HeaderLink key={key} onClick={() => scrollToRef(value, key.toLowerCase())}>
@@ -137,7 +153,7 @@ const HeaderSectionMiddle = styled.div`
 	color: ${(props) => props.theme.colors.white};
 	width: 30%;
 	overflow: hidden;
-	white-space: no-wrap;
+	white-space: nowrap;
 	@media only screen and (max-width: 799px) {
 		width: 35%;
 	}
