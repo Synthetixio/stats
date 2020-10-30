@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from 'react';
+import { FC, useEffect, useState, useContext } from 'react';
 import snxData from 'synthetix-data';
 import { useTranslation, Trans } from 'react-i18next';
 
@@ -8,7 +8,7 @@ import StatsBox from 'components/StatsBox';
 import AreaChart from 'components/Charts/AreaChart';
 import { COLORS } from 'constants/styles';
 import { ChartPeriod, AreaChartData, TradesRequestData } from 'types/data';
-import { formatIdToIsoString } from 'utils/formatter';
+import { formatIdToIsoString, formatCurrency } from 'utils/formatter';
 import { LinkText, FullLineLink, NewParagraph } from 'components/common';
 import {
 	synthetixExchangesSubgraph,
@@ -17,6 +17,7 @@ import {
 	frontRunningWiki,
 } from 'constants/links';
 import { getPostArchernarTotals } from 'utils/customGraphQueries';
+import { TickerContext, ADD_TICKER } from 'pages/_app';
 
 const Trading: FC = () => {
 	const { t } = useTranslation();
@@ -32,6 +33,7 @@ const Trading: FC = () => {
 	const [volumeChartData, setVolumeChartData] = useState<AreaChartData[]>([]);
 	const [totalTradesOverPeriod, setTotalTradesOverPeriod] = useState<number | null>(null);
 	const [totalVolumeOverPeriod, setTotalVolumeOverPeriod] = useState<number | null>(null);
+	const { dispatchTickers } = useContext(TickerContext);
 
 	useEffect(() => {
 		const fetchData = async () => {
@@ -51,6 +53,14 @@ const Trading: FC = () => {
 			setTotalTradingFees(exchangeVolumeData.totalFeesGeneratedInUSD);
 			setTotalTrades(exchangeVolumeData.trades);
 			setTotalUsers(allTimeData.exchangers);
+			if (last24Hours > 0) {
+				dispatchTickers({
+					type: ADD_TICKER,
+					newTickers: {
+						[t('homepage.tickers.24-hour-volume')]: formatCurrency(last24Hours, 0),
+					},
+				});
+			}
 		};
 		fetchData();
 	}, []);

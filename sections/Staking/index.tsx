@@ -10,9 +10,9 @@ import StatsBox from 'components/StatsBox';
 import AreaChart from 'components/Charts/AreaChart';
 
 import { COLORS } from 'constants/styles';
-import { SNXJSContext, SNXContext, SUSDContext } from 'pages/_app';
+import { SNXJSContext, SNXContext, SUSDContext, TickerContext, ADD_TICKER } from 'pages/_app';
 import { FeePeriod, AreaChartData, ChartPeriod, ActiveStakersData } from 'types/data';
-import { formatIdToIsoString } from 'utils/formatter';
+import { formatIdToIsoString, formatPercentage } from 'utils/formatter';
 import { NewParagraph, LinkText } from 'components/common';
 import { synthetixSubgraph } from 'constants/links';
 
@@ -26,6 +26,7 @@ const Staking: FC = () => {
 	const snxjs = useContext(SNXJSContext);
 	const { SNXPrice, SNXStaked } = useContext(SNXContext);
 	const { sUSDPrice } = useContext(SUSDContext);
+	const { dispatchTickers } = useContext(TickerContext);
 
 	useEffect(() => {
 		const fetchFeePeriod = async (period: number): Promise<FeePeriod> => {
@@ -78,8 +79,37 @@ const Staking: FC = () => {
 		fetchNewChartData(stakersChartPeriod);
 	}, [stakersChartPeriod]);
 
-	const stakingPeriods: ChartPeriod[] = ['W', 'M', 'Y'];
 	const SNXValueStaked = useMemo(() => (SNXPrice ?? 0) * (SNXStaked ?? 0), [SNXPrice, SNXStaked]);
+
+	useEffect(() => {
+		if (
+			sUSDPrice != null &&
+			SNXPrice != null &&
+			currentFeePeriod != null &&
+			SNXValueStaked != null
+		) {
+			const stakingAPY =
+				(((sUSDPrice ?? 0) * currentFeePeriod.feesToDistribute +
+					(SNXPrice ?? 0) * currentFeePeriod.rewardsToDistribute) *
+					52) /
+				SNXValueStaked;
+
+			dispatchTickers({
+				type: ADD_TICKER,
+				newTickers: {
+					[t('homepage.tickers.staking-apy')]: formatPercentage(stakingAPY),
+				},
+			});
+		}
+	}, [
+		sUSDPrice,
+		SNXPrice,
+		currentFeePeriod?.feesToDistribute,
+		currentFeePeriod?.rewardsToDistribute,
+		SNXValueStaked,
+	]);
+
+	const stakingPeriods: ChartPeriod[] = ['W', 'M', 'Y'];
 
 	return (
 		<>

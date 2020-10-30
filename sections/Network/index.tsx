@@ -18,13 +18,15 @@ import {
 	synthetixDataGithub,
 } from 'constants/links';
 import SUSDDistribution from '../Network/SUSDDistribution';
-import { SNXJSContext, SUSDContext, SNXContext, ProviderContext, TickerContext } from 'pages/_app';
 import {
-	formatIdToIsoString,
-	formatTickerField,
-	formatCurrency,
-	formatPercentage,
-} from 'utils/formatter';
+	SNXJSContext,
+	SUSDContext,
+	SNXContext,
+	ProviderContext,
+	TickerContext,
+	ADD_TICKER,
+} from 'pages/_app';
+import { formatIdToIsoString, formatCurrency, formatPercentage } from 'utils/formatter';
 import { getSUSDHoldersName } from 'utils/dataMapping';
 import { LinkText, NewParagraph } from 'components/common';
 import { curveSusdPool } from 'contracts';
@@ -50,7 +52,7 @@ const NetworkSection: FC = () => {
 	const { sUSDPrice, setsUSDPrice } = useContext(SUSDContext);
 	const { SNXPrice, setSNXPrice, setSNXStaked } = useContext(SNXContext);
 	const provider = useContext(ProviderContext);
-	const { ticker, setTicker } = useContext(TickerContext);
+	const { dispatchTickers } = useContext(TickerContext);
 
 	// NOTE: use interval? or save data calls?
 	useEffect(() => {
@@ -168,14 +170,14 @@ const NetworkSection: FC = () => {
 			setActiveCRatio(formattedActiveCRatio);
 			setNetworkCRatio((totalSupply * formattedSNXPrice) / totalIssuedSynths);
 			if (sUSDPeg && formattedSNXPrice && formattedActiveCRatio) {
-				// TODO add translations
-				setTicker(
-					ticker ??
-						'' +
-							formatTickerField('SNX Price', formatCurrency(formattedSNXPrice)) +
-							formatTickerField('sUSD Price', formatCurrency(sUSDPeg)) +
-							formatTickerField('Active C-Ratio', formatPercentage(formattedActiveCRatio))
-				);
+				dispatchTickers({
+					type: ADD_TICKER,
+					newTickers: {
+						[t('homepage.tickers.snx-price')]: formatCurrency(formattedSNXPrice),
+						[t('homepage.tickers.susd-price')]: formatCurrency(sUSDPeg),
+						[t('homepage.tickers.active-c-ratio')]: formatPercentage(formattedActiveCRatio, 0),
+					},
+				});
 			}
 		};
 		fetchData();

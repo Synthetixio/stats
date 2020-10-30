@@ -90,7 +90,6 @@ const Circle = styled.div`
 	width: 14px;
 	height: 14px;
 	border-radius: 50%;
-	cursor: pointer;
 `;
 
 const GreenCircle = styled(Circle)`
@@ -101,7 +100,7 @@ const GreenCircle = styled(Circle)`
 const PinkCircle = styled(Circle)`
 	background: ${(props) => props.theme.colors.brightPink};
 	box-shadow: 0 0 14px 1px ${(props) => props.theme.colors.brightPink};
-	pointer: cursor;
+	cursor: pointer;
 `;
 
 export default SynthsStatus;

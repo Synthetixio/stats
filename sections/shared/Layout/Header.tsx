@@ -12,7 +12,11 @@ const Header: FC = () => {
 	const [menuOpen, setMenuOpen] = useState(false);
 	const toggleMenu = () => setMenuOpen(!menuOpen);
 	const headersContext = useContext(HeadersContext);
-	const { ticker } = useContext(TickerContext);
+	const { tickers } = useContext(TickerContext);
+	const ticker = Object.entries(tickers).reduce((acc, [key, value]) => {
+		// \xa0 represents a space so there is spacing between items in the ticker
+		return (acc += `${key}: ${value}` + '\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0');
+	}, '');
 
 	useEffect(() => {
 		const routeApp = async () => {
@@ -118,12 +122,12 @@ const HeaderSectionLeft = styled.div`
 const tickerAnimation = keyframes`
 	from {
 		margin-left: -200%;
-		width: 300%; 
+		width: 400%; 
 	}
 
 	to {
-		margin-left: 100%;
-		width: 100%;
+		margin-left: 200%;
+		width: 150%;
 	}
 `;
 
@@ -136,9 +140,8 @@ const HeaderSectionMiddle = styled.div`
 `;
 const AnimatedText = styled.div`
 	animation-name: ${tickerAnimation};
-	animation-duration: 12s;
+	animation-duration: 20s;
 	animation-iteration-count: infinite;
-	animation-delay: 2s;
 	animation-timing-function: linear;
 `;
 

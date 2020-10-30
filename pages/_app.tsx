@@ -1,4 +1,4 @@
-import { createContext, FC, createRef, useState, RefObject } from 'react';
+import { createContext, FC, createRef, useState, useReducer, RefObject } from 'react';
 import { AppProps } from 'next/app';
 import Head from 'next/head';
 import { ethers } from 'ethers';
@@ -30,10 +30,29 @@ const provider = new ethers.providers.InfuraProvider(
 );
 export const ProviderContext = createContext(provider);
 
+type TickerFields = { [key: string]: string | number };
+type TickerAction = { type: string; newTickers: TickerFields };
+
+const tickerInitialState = {};
+
 export const TickerContext = createContext({
-	ticker: null,
-	setTicker: (newTicker: string) => null,
+	tickers: tickerInitialState,
+	dispatchTickers: (tickerAction: TickerAction) => null,
 });
+
+export const ADD_TICKER = 'ADD_TICKER';
+
+function tickerReducer(tickers: TickerFields, action: TickerAction) {
+	switch (action.type) {
+		case ADD_TICKER:
+			return {
+				...tickers,
+				...action.newTickers,
+			};
+		default:
+			throw new Error();
+	}
+}
 
 export const HeadersContext = createContext(headersAndScrollRef);
 
@@ -58,7 +77,7 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
 	const [sUSDPrice, setsUSDPrice] = useState<number | null>(null);
 	const [SNXPrice, setSNXPrice] = useState<number | null>(null);
 	const [SNXStaked, setSNXStaked] = useState<number | null>(null);
-	const [ticker, setTicker] = useState<string | null>(null);
+	const [tickers, dispatchTickers] = useReducer(tickerReducer, tickerInitialState);
 
 	return (
 		<>
@@ -148,7 +167,7 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
 									<SNXContext.Provider value={{ SNXPrice, setSNXPrice, SNXStaked, setSNXStaked }}>
 										{/*
 									  // @ts-ignore */}
-										<TickerContext.Provider value={{ ticker, setTicker }}>
+										<TickerContext.Provider value={{ tickers, dispatchTickers }}>
 											<Layout>
 												<Component {...pageProps} />
 											</Layout>
