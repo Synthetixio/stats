@@ -1,8 +1,8 @@
 import { FC } from 'react';
 import styled from 'styled-components';
 
-import colors from '../../styles/colors';
-import { formatCurrency, formatPercentage } from '../../utils/formatter';
+import colors from 'styles/colors';
+import { formatCurrency, formatPercentage } from 'utils/formatter';
 import { BRIGHT_COLORS } from './PieChart';
 
 interface CustomLegendProps {

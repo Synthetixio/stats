@@ -1,9 +1,9 @@
 import { FC } from 'react';
 import styled, { css, keyframes } from 'styled-components';
 
-import { formatCurrency, formatNumber } from '../../utils/formatter';
-import { OpenInterest } from '../../types/data';
-import colors from '../../styles/colors';
+import { formatCurrency, formatNumber } from 'utils/formatter';
+import { OpenInterest } from 'types/data';
+import colors from 'styles/colors';
 
 interface SidewaysBarChartProps {
 	data: OpenInterest;

@@ -1,8 +1,8 @@
 import { FC } from 'react';
 import { PieChart, Pie, Cell, Legend, ResponsiveContainer } from 'recharts';
 
-import colors from '../../styles/colors';
-import { SynthTotalSupply } from '../../types/data';
+import colors from 'styles/colors';
+import { SynthTotalSupply } from 'types/data';
 import CustomLegend from './CustomLegend';
 
 interface BasicPieChartProps {

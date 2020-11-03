@@ -11,6 +11,12 @@ export const synthetixJSGithub = 'https://github.com/Synthetixio/js';
 export const synthetixExchangesSubgraph =
 	'https://thegraph.com/explorer/subgraph/synthetixio-team/synthetix-exchanges';
 
+export const synthetixExchangerSubgraph =
+	'https://thegraph.com/explorer/subgraph/synthetixio-team/synthetix-exchanger';
+
+export const volumePartnerExchangeWithTrackingLink =
+	'https://docs.synthetix.io/integrations/volume-program/#code-snippets';
+
 export const curveDocumentation = 'https://www.curve.fi/devdocs';
 
 export const synthetixDataGithub = 'https://github.com/Synthetixio/synthetix-data';

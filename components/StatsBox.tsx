@@ -18,7 +18,6 @@ interface StatsBoxProps {
 	infoData: ReactNode | null;
 }
 
-// TODO what if num is 0 and is supposed to be zero!!
 const StatsBox: FC<StatsBoxProps> = ({
 	title,
 	num,

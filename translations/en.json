@@ -191,6 +191,10 @@
 			"title": "NUMBER OF TRADES",
 			"infoData": "The number of trades is the sum of all daily periods in each chart below. The weekly chart (default) has 7 unique periods, monthly has 30 and annual has 365. <newParagraph>The number of trades is captured daily in the synthetix exchanges subgraph using the \"DailyTotal\" entity <linkText href={synthetixExchangesSubgraph}>(view playground).</linkText></newParagraph><fullLineLink>See GitHub repo for this subgraph</fullLineLink>"
 		},
+		"volume-sources": {
+			"title": "VOLUME SOURCES",
+			"infoData": "The volume sources tracks all exchanges that call the <linkText href={volumePartnerExchangeWithTrackingLink}>exchangeWithTracking</linkText> method. The weekly chart has 7 unique periods, monthly (default) has 30 and annual has 365. <newParagraph>The volume sources is captured daily in the synthetix exchanger subgraph using the \"DailyExchangePartner\" entity <linkText2 href={synthetixExchangerSubgraph}>(view playground).</linkText2></newParagraph><fullLineLink>See GitHub repo for this subgraph</fullLineLink>"
+		},
 		"yield-farming-subtitle-text": {
 			"sUSD": "Rewards for providing liquidity to the {{name}} stablecoin liquidity pool on Curve",
 			"default": "Rewards for holding {{name}} and staking it in the rewards contract"

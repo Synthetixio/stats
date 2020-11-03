@@ -3,6 +3,8 @@ import { AppProps } from 'next/app';
 import Head from 'next/head';
 import { ethers } from 'ethers';
 import { useTranslation } from 'react-i18next';
+import { ReactQueryCacheProvider, QueryCache } from 'react-query';
+import { ReactQueryDevtools } from 'react-query-devtools';
 
 import { synthetix, Network } from '@synthetixio/js';
 import { ThemeProvider as SCThemeProvider } from 'styled-components';
@@ -42,6 +44,15 @@ export const SNXContext = createContext({
 	setSNXPrice: (num: number) => null,
 	SNXStaked: null,
 	setSNXStaked: (num: number) => null,
+});
+
+const queryCache = new QueryCache({
+	defaultConfig: {
+		queries: {
+			retry: 1,
+			cacheTime: Infinity,
+		},
+	},
 });
 
 const snxjs = synthetix({ network: Network.Mainnet, provider });
@@ -131,23 +142,26 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
 			</Head>
 			<SCThemeProvider theme={scTheme}>
 				<MuiThemeProvider theme={muiTheme}>
-					<HeadersContext.Provider value={headersAndScrollRef}>
-						<SNXJSContext.Provider value={snxjs}>
-							<ProviderContext.Provider value={provider}>
-								{/*
-	              // @ts-ignore */}
-								<SUSDContext.Provider value={{ sUSDPrice, setsUSDPrice }}>
+					<ReactQueryCacheProvider queryCache={queryCache}>
+						<HeadersContext.Provider value={headersAndScrollRef}>
+							<SNXJSContext.Provider value={snxjs}>
+								<ProviderContext.Provider value={provider}>
 									{/*
+	              // @ts-ignore */}
+									<SUSDContext.Provider value={{ sUSDPrice, setsUSDPrice }}>
+										{/*
 									// @ts-ignore */}
-									<SNXContext.Provider value={{ SNXPrice, setSNXPrice, SNXStaked, setSNXStaked }}>
-										<Layout>
-											<Component {...pageProps} />
-										</Layout>
-									</SNXContext.Provider>
-								</SUSDContext.Provider>
-							</ProviderContext.Provider>
-						</SNXJSContext.Provider>
-					</HeadersContext.Provider>
+										<SNXContext.Provider value={{ SNXPrice, setSNXPrice, SNXStaked, setSNXStaked }}>
+											<Layout>
+												<Component {...pageProps} />
+											</Layout>
+										</SNXContext.Provider>
+									</SUSDContext.Provider>
+								</ProviderContext.Provider>
+							</SNXJSContext.Provider>
+						</HeadersContext.Provider>
+						<ReactQueryDevtools />
+					</ReactQueryCacheProvider>
 				</MuiThemeProvider>
 			</SCThemeProvider>
 		</>

@@ -3,7 +3,7 @@ import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'rec
 import { Skeleton } from '@material-ui/lab';
 
 import colors from 'styles/colors';
-import { AreaChartData } from 'types/data';
+import { StackedAreaChartData } from 'types/data';
 import {
 	TimeSeriesType,
 	formatTime,
@@ -13,18 +13,38 @@ import {
 } from 'utils/formatter';
 import { NumberStyle } from 'constants/styles';
 
-interface BasicAreaChartProps {
-	data: Array<AreaChartData>;
+interface StackedAreaChartProps {
+	data: Array<StackedAreaChartData>;
 	timeSeries: TimeSeriesType;
 	valueType: NumberStyle;
 	percentChange: number | null;
+	multiChartKeys: string[];
 }
 
-const BasicAreaChart: FC<BasicAreaChartProps> = ({
+const colorMapping = [
+	colors.brightGreen,
+	colors.brightBlue,
+	colors.brightPink,
+	colors.brightYellow,
+	colors.brightOrange,
+	colors.brightPurple,
+];
+
+const colorGradientMapping = [
+	'url(#colorGreen)',
+	'url(#colorBlue)',
+	'url(#colorPink)',
+	'url(#colorYellow)',
+	'url(#colorOrange)',
+	'url(#colorPurple)',
+];
+
+const StackedAreaChart: FC<StackedAreaChartProps> = ({
 	data,
 	timeSeries,
 	valueType,
 	percentChange,
+	multiChartKeys,
 }) => {
 	if (data.length === 0) {
 		return (
@@ -61,6 +81,26 @@ const BasicAreaChart: FC<BasicAreaChartProps> = ({
 					<linearGradient id="colorGreen" x1="0" y1="0" x2="0" y2="1">
 						<stop offset="5%" stopColor={colors.brightGreen} stopOpacity={0.2} />
 						<stop offset="45%" stopColor={colors.brightGreen} stopOpacity={0} />
+					</linearGradient>
+					<linearGradient id="colorBlue" x1="0" y1="0" x2="0" y2="1">
+						<stop offset="5%" stopColor={colors.brightBlue} stopOpacity={0.2} />
+						<stop offset="45%" stopColor={colors.brightBlue} stopOpacity={0} />
+					</linearGradient>
+					<linearGradient id="colorPink" x1="0" y1="0" x2="0" y2="1">
+						<stop offset="5%" stopColor={colors.brightPink} stopOpacity={0.2} />
+						<stop offset="45%" stopColor={colors.brightPink} stopOpacity={0} />
+					</linearGradient>
+					<linearGradient id="colorYellow" x1="0" y1="0" x2="0" y2="1">
+						<stop offset="5%" stopColor={colors.brightYellow} stopOpacity={0.2} />
+						<stop offset="45%" stopColor={colors.brightYellow} stopOpacity={0} />
+					</linearGradient>
+					<linearGradient id="colorOrange" x1="0" y1="0" x2="0" y2="1">
+						<stop offset="5%" stopColor={colors.brightOrange} stopOpacity={0.2} />
+						<stop offset="45%" stopColor={colors.brightOrange} stopOpacity={0} />
+					</linearGradient>
+					<linearGradient id="colorPurple" x1="0" y1="0" x2="0" y2="1">
+						<stop offset="5%" stopColor={colors.brightPurple} stopOpacity={0.2} />
+						<stop offset="45%" stopColor={colors.brightPurple} stopOpacity={0} />
 					</linearGradient>
 				</defs>
 				<XAxis
@@ -119,17 +159,19 @@ const BasicAreaChart: FC<BasicAreaChartProps> = ({
 					}}
 					cursor={{ stroke: colors.brightPink, strokeWidth: 1 }}
 				/>
-				<Area
-					type="monotone"
-					dataKey="value"
-					stackId="1"
-					stroke={colors.brightGreen}
-					fillOpacity={1}
-					fill="url(#colorGreen)"
-				/>
+				{multiChartKeys.map((chartKey, index) => (
+					<Area
+						type="monotone"
+						dataKey={chartKey}
+						stackId="1"
+						stroke={colorMapping[index]}
+						fillOpacity={1}
+						fill={colorGradientMapping[index]}
+					/>
+				))}
 			</AreaChart>
 		</ResponsiveContainer>
 	);
 };
 
-export default BasicAreaChart;
+export default StackedAreaChart;

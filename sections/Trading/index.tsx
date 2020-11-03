@@ -7,11 +7,14 @@ import StatsRow from 'components/StatsRow';
 import StatsBox from 'components/StatsBox';
 import AreaChart from 'components/Charts/AreaChart';
 import { COLORS } from 'constants/styles';
-import { ChartPeriod, AreaChartData, TradesRequestData } from 'types/data';
+import { ChartPeriod, AreaChartData, StackedAreaChartData, TradesRequestData } from 'types/data';
 import { formatIdToIsoString } from 'utils/formatter';
 import { LinkText, FullLineLink, NewParagraph } from 'components/common';
+import { useVolumeSourcesTimeQuery, DailyVolumeSource } from 'queries/trading';
 import {
 	synthetixExchangesSubgraph,
+	synthetixExchangerSubgraph,
+	volumePartnerExchangeWithTrackingLink,
 	githubSubgraph,
 	etherscanArchernarBlock,
 	frontRunningWiki,
@@ -30,6 +33,7 @@ const Trading: FC = () => {
 	const [tradesChartData, setTradesChartData] = useState<AreaChartData[]>([]);
 	const [volumeChartPeriod, setVolumeChartPeriod] = useState<ChartPeriod>('M');
 	const [volumeChartData, setVolumeChartData] = useState<AreaChartData[]>([]);
+	const [volumeSourcesChartPeriod, setVolumeSourcesChartPeriod] = useState<ChartPeriod>('M');
 	const [totalTradesOverPeriod, setTotalTradesOverPeriod] = useState<number | null>(null);
 	const [totalVolumeOverPeriod, setTotalVolumeOverPeriod] = useState<number | null>(null);
 
@@ -55,6 +59,44 @@ const Trading: FC = () => {
 		fetchData();
 	}, []);
 
+	export const groupVolumeSourcesData = (data: DailyVolumeSource[]): StackedAreaChartData[] {
+		const partnersData = {}
+		const unsorted = data.reduce(({ dayID, partner, trades, usdFees, usdVolume }) => {
+
+		}, {})
+
+// 		0: {dayID: 18568, partner: "KWENTA", trades: 5, usdFees: 41.62, usdVolume: 5346.19}
+// 1: {dayID: 18568, partner: "DHEDGE", trades: 13, usdFees: 222.22, usdVolume: 36146.1}
+// 2: {dayID: 18568, partner: "1INCH", trades: 2, usdFees: 11.45, usdVolume: 3815.51}
+// 3: {dayID: 18567, partner: "KWENTA", trades: 4, usdFees: 17.27, usdVolume: 5757.24}
+// 	}
+
+
+
+	const { data: volumeSourcesData, status: volumeSourcesStatus } = useVolumeSourcesTimeQuery(
+		volumeSourcesChartPeriod
+	);
+
+	const {
+		volumeSourcesChartData,
+		totalVolumeSourcesTradesOverPeriod,
+	}: {
+		volumeSourcesChartData: AreaChartData[];
+		totalVolumeSourcesTradesOverPeriod: number | null;
+	} =
+		volumeSourcesStatus == 'success'
+			? (volumeSourcesData ?? []).reduce(
+					(acc, curr) => {
+						acc.volumeSourcesChartData.push({
+							created: formatIdToIsoString(curr.dayID, '1d'),
+							value: curr.usdVolume,
+						});
+						return acc;
+					},
+					{ volumeSourcesChartData: [], totalVolumeSourcesTradesOverPeriod: 0 }
+			  )
+			: { volumeSourcesChartData: [], totalVolumeSourcesTradesOverPeriod: null };
+
 	const formatChartData = (data: TradesRequestData[], type: 'trade' | 'volume'): AreaChartData[] =>
 		data.map(({ id, trades, exchangeUSDTally }) => ({
 			created: formatIdToIsoString(id, '1d'),
@@ -76,7 +118,10 @@ const Trading: FC = () => {
 		}
 	};
 
-	const fetchNewChartData = async (fetchPeriod: ChartPeriod, type: 'trade' | 'volume' | 'both') => {
+	const fetchNewTradeOrVolumeChartData = async (
+		fetchPeriod: ChartPeriod,
+		type: 'trade' | 'volume' | 'both'
+	) => {
 		const timeSeries = '1d';
 		let tradesOverPeriodData = [];
 		if (fetchPeriod === 'W') {
@@ -105,7 +150,7 @@ const Trading: FC = () => {
 	};
 
 	useEffect(() => {
-		fetchNewChartData(tradesChartPeriod, 'both');
+		fetchNewTradeOrVolumeChartData(tradesChartPeriod, 'both');
 	}, []);
 
 	const periods: ChartPeriod[] = ['W', 'M', 'Y'];
@@ -188,7 +233,7 @@ const Trading: FC = () => {
 				onPeriodSelect={(period: ChartPeriod) => {
 					setVolumeChartData([]); // will force loading state
 					setVolumeChartPeriod(period);
-					fetchNewChartData(period, 'volume');
+					fetchNewTradeOrVolumeChartData(period, 'volume');
 				}}
 				data={volumeChartData}
 				title={t('homepage.trading-volume.title')}
@@ -238,7 +283,7 @@ const Trading: FC = () => {
 				onPeriodSelect={(period: ChartPeriod) => {
 					setTradesChartData([]); // will force loading state
 					setTradesChartPeriod(period);
-					fetchNewChartData(period, 'trade');
+					fetchNewTradeOrVolumeChartData(period, 'trade');
 				}}
 				data={tradesChartData}
 				title={t('homepage.number-of-trades.title')}
@@ -251,6 +296,30 @@ const Trading: FC = () => {
 						i18nKey="homepage.number-of-trades.infoData"
 						components={{
 							linkText: <LinkText href={synthetixExchangesSubgraph} />,
+							fullLineLink: <FullLineLink href={githubSubgraph} />,
+							newParagraph: <NewParagraph />,
+						}}
+					/>
+				}
+			/>
+			<AreaChart
+				periods={periods}
+				activePeriod={volumeSourcesChartPeriod}
+				onPeriodSelect={(period: ChartPeriod) => {
+					setVolumeSourcesChartPeriod(period);
+				}}
+				data={volumeSourcesChartData}
+				title={t('homepage.volume-sources.title')}
+				num={totalVolumeSourcesTradesOverPeriod}
+				numFormat="number"
+				percentChange={null}
+				timeSeries="1d"
+				infoData={
+					<Trans
+						i18nKey="homepage.volume-sources.infoData"
+						components={{
+							linkText: <LinkText href={volumePartnerExchangeWithTrackingLink} />,
+							linkText2: <LinkText href={synthetixExchangerSubgraph} />,
 							fullLineLink: <FullLineLink href={githubSubgraph} />,
 							newParagraph: <NewParagraph />,
 						}}

@@ -1,8 +1,8 @@
 import { FC } from 'react';
 import styled from 'styled-components';
 
-import { Z_INDEX } from '../../constants/styles';
-import { ChartPeriod } from '../../types/data';
+import { Z_INDEX } from 'constants/styles';
+import { ChartPeriod } from 'types/data';
 
 interface ChartTimeSelectorsProps {
 	periods: Array<ChartPeriod>;

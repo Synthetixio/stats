@@ -2,10 +2,10 @@ import { FC } from 'react';
 import styled from 'styled-components';
 import { Treemap, ResponsiveContainer } from 'recharts';
 
-import colors from '../../styles/colors';
-import { formatPercentage } from '../../utils/formatter';
-import { TreeMapData } from '../../types/data';
-import { MAX_PAGE_WIDTH } from '../../constants/styles';
+import colors from 'styles/colors';
+import { formatPercentage } from 'utils/formatter';
+import { TreeMapData } from 'types/data';
+import { MAX_PAGE_WIDTH } from 'constants/styles';
 
 const MUTED_COLORS = [
 	colors.mutedBrightBlue,
