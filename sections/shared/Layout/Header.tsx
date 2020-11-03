@@ -7,10 +7,10 @@ import MenuCloseIcon from 'assets/svg/menu-close.svg';
 import { MAX_PAGE_WIDTH, Z_INDEX } from 'constants/styles';
 import { HeadersContext, TickerContext } from 'pages/_app';
 
-// TODO use translation
 const Header: FC = () => {
 	const [menuOpen, setMenuOpen] = useState<boolean>(false);
-	const [showTicker, setShowTicker] = useState<boolean>(true);
+	const [showTickerAtTop, setShowTickerAtTop] = useState<boolean>(true);
+	const [closeTicker, setCloseTicker] = useState<boolean>(false);
 	const toggleMenu = () => setMenuOpen(!menuOpen);
 	const headersContext = useContext(HeadersContext);
 	const { tickers } = useContext(TickerContext);
@@ -18,15 +18,15 @@ const Header: FC = () => {
 		// \xa0 represents a space so there is spacing between items in the ticker
 		return (acc +=
 			`${key}: ${value}` +
-			'\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0');
+			'\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0');
 	}, '');
 
 	useEffect(() => {
 		function onScroll() {
 			if (window.scrollY === 0) {
-				return setShowTicker(true);
+				return setShowTickerAtTop(true);
 			}
-			return setShowTicker(false);
+			return setShowTickerAtTop(false);
 		}
 
 		window.addEventListener('scroll', onScroll);
@@ -54,17 +54,20 @@ const Header: FC = () => {
 	return (
 		<>
 			<HeaderContainer>
+				{!closeTicker && showTickerAtTop ? (
+					<TickerWrapper>
+						<HeaderTicker>
+							<AnimatedText>{ticker}</AnimatedText>
+						</HeaderTicker>
+						<TickerClose onClick={() => setCloseTicker(true)}>&#10006;</TickerClose>
+					</TickerWrapper>
+				) : null}
 				<HeaderContainerInner>
 					<HeaderSectionLeft>
 						<StatsLogoWrap>
 							<StatsLogo />
 						</StatsLogoWrap>
 					</HeaderSectionLeft>
-					{showTicker ? (
-						<HeaderSectionMiddle>
-							<AnimatedText>{ticker}</AnimatedText>
-						</HeaderSectionMiddle>
-					) : null}
 					<HeaderSectionRight>
 						{Object.entries(headersContext).map(([key, value]) => (
 							<HeaderLink key={key} onClick={() => scrollToRef(value, key.toLowerCase())}>
@@ -102,7 +105,6 @@ export default Header;
 // TODO create a common flex container
 const HeaderContainer = styled.div`
 	height: 60px;
-	padding-top: 35px;
 	position: fixed;
 	font-style: normal;
 	font-weight: bold;
@@ -117,6 +119,7 @@ const HeaderContainer = styled.div`
 
 const HeaderContainerInner = styled.div`
 	max-width: ${MAX_PAGE_WIDTH}px;
+	padding-top: 35px;
 	margin: 0 auto;
 	display: flex;
 	justify-content: space-between;
@@ -137,30 +140,60 @@ const HeaderSectionLeft = styled.div`
 
 const tickerAnimation = keyframes`
 	from {
-		margin-left: -200%;
-		width: 400%; 
+		margin-left: -100%;
+		width: 300%; 
 	}
 
 	to {
-		margin-left: 200%;
-		width: 150%;
+		margin-left: 100%;
+		width: 100%;
 	}
 `;
 
-const HeaderSectionMiddle = styled.div`
+const TickerWrapper = styled.div`
+	display: flex;
+	width: 100%;
+	@media only screen and (max-width: 1266px) {
+		margin-left: -20px;
+	}
+`;
+
+const TickerClose = styled.div`
+	font-size: 20px;
+	cursor: pointer;
+	width: 3%;
+	color: ${(props) => props.theme.colors.white};
+	background-color: ${(props) => props.theme.colors.mutedBrightBlue};
+	text-align: center;
+	padding-top: 7px;
+	@media only screen and (max-width: 1000px) {
+		width: 5%;
+	}
+	@media only screen and (max-width: 500px) {
+		width: 7%;
+	}
+`;
+
+const HeaderTicker = styled.div`
 	font-family: ${(props) => `${props.theme.fonts.condensedBold}, ${props.theme.fonts.regular}`};
 	font-size: 12px;
 	color: ${(props) => props.theme.colors.white};
-	width: 30%;
+	width: 97%;
 	overflow: hidden;
 	white-space: nowrap;
-	@media only screen and (max-width: 799px) {
-		width: 35%;
+	height: 25px;
+	background-color: ${(props) => props.theme.colors.mutedBrightBlue};
+	padding-top: 7px;
+	@media only screen and (max-width: 1000px) {
+		width: 95%;
+	}
+	@media only screen and (max-width: 500px) {
+		width: 93%;
 	}
 `;
 const AnimatedText = styled.div`
 	animation-name: ${tickerAnimation};
-	animation-duration: 20s;
+	animation-duration: 30s;
 	animation-iteration-count: infinite;
 	animation-timing-function: linear;
 `;
