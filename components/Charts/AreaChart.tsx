@@ -5,11 +5,11 @@ import BasicAreaChart from './BasicAreaChart';
 import ChartTimeSelectors from './ChartTimeSelectors';
 import ChartTitle from './ChartTitle';
 import { MAX_PAGE_WIDTH, NumberStyle } from 'constants/styles';
-import { ChartPeriod, AreaChartData, StackedAreaChartData } from 'types/data';
+import { ChartPeriod, AreaChartData } from 'types/data';
 import { TimeSeriesType } from 'utils/formatter';
 
 interface AreaChartProps {
-	data: Array<AreaChartData | StackedAreaChartData>;
+	data: Array<AreaChartData>;
 	periods: Array<ChartPeriod>;
 	title: string;
 	num: number | null;
@@ -47,7 +47,7 @@ const AreaChart: FC<AreaChartProps> = ({
 		<BasicAreaChart
 			percentChange={percentChange}
 			valueType={numFormat}
-			data={data as AreaChartData[]}
+			data={data}
 			timeSeries={timeSeries}
 		/>
 	</ChartContainer>
