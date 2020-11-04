@@ -193,7 +193,17 @@
 		},
 		"volume-sources": {
 			"title": "VOLUME SOURCES",
-			"infoData": "The volume sources tracks all exchanges that call the <linkText href={volumePartnerExchangeWithTrackingLink}>exchangeWithTracking</linkText> method. The weekly chart has 7 unique periods, monthly (default) has 30 and annual has 365. <newParagraph>The volume sources is captured daily in the synthetix exchanger subgraph using the \"DailyExchangePartner\" entity <linkText2 href={synthetixExchangerSubgraph}>(view playground).</linkText2></newParagraph><fullLineLink>See GitHub repo for this subgraph</fullLineLink>"
+			"infoData": "The volume sources tracks all exchanges that call the <linkText href={volumePartnerExchangeWithTrackingLink}>exchangeWithTracking</linkText> method. The weekly chart has 7 unique periods, monthly (default) has 30 and annual has 365. <newParagraph>The volume sources is captured daily in the synthetix exchanger subgraph using the \"DailyExchangePartner\" entity <linkText2 href={synthetixExchangerSubgraph}>(view playground).</linkText2></newParagraph><fullLineLink>See GitHub repo for this subgraph</fullLineLink>",
+			"time-options": {
+				"week": "Week",
+				"month": "Month",
+				"year": "Year"
+			},
+			"categories": {
+				"trades": "Trades",
+				"volume": "Volume",
+				"fees": "Fees"
+			}
 		},
 		"yield-farming-subtitle-text": {
 			"sUSD": "Rewards for providing liquidity to the {{name}} stablecoin liquidity pool on Curve",

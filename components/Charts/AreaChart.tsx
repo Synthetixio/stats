@@ -2,7 +2,6 @@ import { FC } from 'react';
 import styled from 'styled-components';
 
 import BasicAreaChart from './BasicAreaChart';
-import StackedAreaChart from './StackedAreaChart';
 import ChartTimeSelectors from './ChartTimeSelectors';
 import ChartTitle from './ChartTitle';
 import { MAX_PAGE_WIDTH, NumberStyle } from 'constants/styles';
@@ -20,7 +19,6 @@ interface AreaChartProps {
 	timeSeries: TimeSeriesType;
 	activePeriod: ChartPeriod;
 	infoData: React.ReactNode;
-	multiChartKeys?: string[];
 }
 
 const AreaChart: FC<AreaChartProps> = ({
@@ -34,7 +32,6 @@ const AreaChart: FC<AreaChartProps> = ({
 	percentChange,
 	timeSeries,
 	infoData,
-	multiChartKeys,
 }) => (
 	<ChartContainer>
 		<ChartHeader>
@@ -47,22 +44,12 @@ const AreaChart: FC<AreaChartProps> = ({
 			/>
 			<ChartTimeSelectors activePeriod={activePeriod} periods={periods} onClick={onPeriodSelect} />
 		</ChartHeader>
-		{!multiChartKeys ? (
-			<BasicAreaChart
-				percentChange={percentChange}
-				valueType={numFormat}
-				data={data as AreaChartData[]}
-				timeSeries={timeSeries}
-			/>
-		) : (
-			<StackedAreaChart
-				multiChartKeys={multiChartKeys}
-				percentChange={percentChange}
-				valueType={numFormat}
-				data={data as StackedAreaChartData[]}
-				timeSeries={timeSeries}
-			/>
-		)}
+		<BasicAreaChart
+			percentChange={percentChange}
+			valueType={numFormat}
+			data={data as AreaChartData[]}
+			timeSeries={timeSeries}
+		/>
 	</ChartContainer>
 );
 

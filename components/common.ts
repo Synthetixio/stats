@@ -69,3 +69,11 @@ export const NewParagraph = styled.div`
 	display: block;
 	margin: 10px 0;
 `;
+
+export const CapitalizedText = styled.span`
+	text-transform: capitalize;
+`;
+
+export const FlexDiv = styled.div`
+	display: flex;
+`;

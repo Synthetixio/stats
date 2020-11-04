@@ -1,20 +1,21 @@
 import { FC, useEffect, useState } from 'react';
+import styled from 'styled-components';
 import snxData from 'synthetix-data';
 import { useTranslation, Trans } from 'react-i18next';
 
 import SectionHeader from 'components/SectionHeader';
 import StatsRow from 'components/StatsRow';
+import StatsColumn from 'components/StatsColumn';
 import StatsBox from 'components/StatsBox';
 import AreaChart from 'components/Charts/AreaChart';
-import { COLORS } from 'constants/styles';
-import { ChartPeriod, AreaChartData, StackedAreaChartData, TradesRequestData } from 'types/data';
+import VolumeSources from './VolumeSources';
+import { COLORS, MAX_PAGE_WIDTH } from 'constants/styles';
+import { ChartPeriod, AreaChartData, TradesRequestData } from 'types/data';
 import { formatIdToIsoString } from 'utils/formatter';
-import { LinkText, FullLineLink, NewParagraph } from 'components/common';
-import { useVolumeSourcesTimeQuery, DailyVolumeSource } from 'queries/trading';
+import { LinkText, FullLineLink, NewParagraph, FlexDiv } from 'components/common';
+
 import {
 	synthetixExchangesSubgraph,
-	synthetixExchangerSubgraph,
-	volumePartnerExchangeWithTrackingLink,
 	githubSubgraph,
 	etherscanArchernarBlock,
 	frontRunningWiki,
@@ -33,7 +34,6 @@ const Trading: FC = () => {
 	const [tradesChartData, setTradesChartData] = useState<AreaChartData[]>([]);
 	const [volumeChartPeriod, setVolumeChartPeriod] = useState<ChartPeriod>('M');
 	const [volumeChartData, setVolumeChartData] = useState<AreaChartData[]>([]);
-	const [volumeSourcesChartPeriod, setVolumeSourcesChartPeriod] = useState<ChartPeriod>('M');
 	const [totalTradesOverPeriod, setTotalTradesOverPeriod] = useState<number | null>(null);
 	const [totalVolumeOverPeriod, setTotalVolumeOverPeriod] = useState<number | null>(null);
 
@@ -58,44 +58,6 @@ const Trading: FC = () => {
 		};
 		fetchData();
 	}, []);
-
-	export const groupVolumeSourcesData = (data: DailyVolumeSource[]): StackedAreaChartData[] {
-		const partnersData = {}
-		const unsorted = data.reduce(({ dayID, partner, trades, usdFees, usdVolume }) => {
-
-		}, {})
-
-// 		0: {dayID: 18568, partner: "KWENTA", trades: 5, usdFees: 41.62, usdVolume: 5346.19}
-// 1: {dayID: 18568, partner: "DHEDGE", trades: 13, usdFees: 222.22, usdVolume: 36146.1}
-// 2: {dayID: 18568, partner: "1INCH", trades: 2, usdFees: 11.45, usdVolume: 3815.51}
-// 3: {dayID: 18567, partner: "KWENTA", trades: 4, usdFees: 17.27, usdVolume: 5757.24}
-// 	}
-
-
-
-	const { data: volumeSourcesData, status: volumeSourcesStatus } = useVolumeSourcesTimeQuery(
-		volumeSourcesChartPeriod
-	);
-
-	const {
-		volumeSourcesChartData,
-		totalVolumeSourcesTradesOverPeriod,
-	}: {
-		volumeSourcesChartData: AreaChartData[];
-		totalVolumeSourcesTradesOverPeriod: number | null;
-	} =
-		volumeSourcesStatus == 'success'
-			? (volumeSourcesData ?? []).reduce(
-					(acc, curr) => {
-						acc.volumeSourcesChartData.push({
-							created: formatIdToIsoString(curr.dayID, '1d'),
-							value: curr.usdVolume,
-						});
-						return acc;
-					},
-					{ volumeSourcesChartData: [], totalVolumeSourcesTradesOverPeriod: 0 }
-			  )
-			: { volumeSourcesChartData: [], totalVolumeSourcesTradesOverPeriod: null };
 
 	const formatChartData = (data: TradesRequestData[], type: 'trade' | 'volume'): AreaChartData[] =>
 		data.map(({ id, trades, exchangeUSDTally }) => ({
@@ -253,30 +215,33 @@ const Trading: FC = () => {
 					/>
 				}
 			/>
-			<StatsRow>
-				<StatsBox
-					key="TOTALNOUNQTRADERS"
-					title={t('homepage.total-number-unique-traders.title')}
-					num={totalUsers}
-					percentChange={null}
-					subText={t('homepage.total-number-unique-traders.subtext')}
-					color={COLORS.pink}
-					numberStyle="number"
-					numBoxes={2}
-					infoData={null}
-				/>
-				<StatsBox
-					key="AVGDAILYTRDRS"
-					title={t('homepage.average-daily-traders.title')}
-					num={averageDailyTraders}
-					percentChange={null}
-					subText={t('homepage.average-daily-traders.subtext')}
-					color={COLORS.green}
-					numberStyle="number"
-					numBoxes={2}
-					infoData={null}
-				/>
-			</StatsRow>
+			<VolumeSectionWrapper>
+				<VolumeSources />
+				<StatsColumn>
+					<StatsBox
+						key="TOTALNOUNQTRADERS"
+						title={t('homepage.total-number-unique-traders.title')}
+						num={totalUsers}
+						percentChange={null}
+						subText={t('homepage.total-number-unique-traders.subtext')}
+						color={COLORS.pink}
+						numberStyle="number"
+						numBoxes={1}
+						infoData={null}
+					/>
+					<StatsBox
+						key="AVGDAILYTRDRS"
+						title={t('homepage.average-daily-traders.title')}
+						num={averageDailyTraders}
+						percentChange={null}
+						subText={t('homepage.average-daily-traders.subtext')}
+						color={COLORS.green}
+						numberStyle="number"
+						numBoxes={1}
+						infoData={null}
+					/>
+				</StatsColumn>
+			</VolumeSectionWrapper>
 			<AreaChart
 				periods={periods}
 				activePeriod={tradesChartPeriod}
@@ -302,32 +267,17 @@ const Trading: FC = () => {
 					/>
 				}
 			/>
-			<AreaChart
-				periods={periods}
-				activePeriod={volumeSourcesChartPeriod}
-				onPeriodSelect={(period: ChartPeriod) => {
-					setVolumeSourcesChartPeriod(period);
-				}}
-				data={volumeSourcesChartData}
-				title={t('homepage.volume-sources.title')}
-				num={totalVolumeSourcesTradesOverPeriod}
-				numFormat="number"
-				percentChange={null}
-				timeSeries="1d"
-				infoData={
-					<Trans
-						i18nKey="homepage.volume-sources.infoData"
-						components={{
-							linkText: <LinkText href={volumePartnerExchangeWithTrackingLink} />,
-							linkText2: <LinkText href={synthetixExchangerSubgraph} />,
-							fullLineLink: <FullLineLink href={githubSubgraph} />,
-							newParagraph: <NewParagraph />,
-						}}
-					/>
-				}
-			/>
 		</>
 	);
 };
+
+const VolumeSectionWrapper = styled(FlexDiv)`
+	max-width: ${MAX_PAGE_WIDTH}px;
+	margin: 0 auto 20px auto;
+	justify-content: space-between;
+	@media only screen and (max-width: 1015px) {
+		flex-direction: column;
+	}
+`;
 
 export default Trading;

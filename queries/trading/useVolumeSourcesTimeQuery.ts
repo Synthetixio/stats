@@ -2,7 +2,6 @@ import { useQuery } from 'react-query';
 
 import QUERY_KEYS from 'constants/queryKeys';
 import { exchangeSourceData } from 'utils/customGraphQueries';
-import { ChartPeriod } from 'types/data';
 
 export type DailyVolumeSource = {
 	dayID: number;
@@ -18,7 +17,7 @@ const chartPeriodToTimeSeries: { [key: string]: string } = {
 	Y: '1y',
 };
 
-export const useVolumeSourcesTimeQuery = (period: ChartPeriod) => {
+export const useVolumeSourcesTimeQuery = (period: string) => {
 	return useQuery<DailyVolumeSource[], string>(
 		QUERY_KEYS.Trading.VolumeSources(period).join(','),
 		async () => exchangeSourceData({ timeSeries: chartPeriodToTimeSeries[period] })

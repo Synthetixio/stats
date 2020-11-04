@@ -35,19 +35,6 @@ export type AreaChartData = {
 	value: number;
 };
 
-export type StackedPartnersChart = {
-	created: string;
-	partner1: number;
-	partner2: number;
-	partner3: number;
-	partner4: number;
-	partner5: number;
-	others: number;
-};
-
-// Create a separate entity for future extensibility
-export type StackedAreaChartData = StackedPartnersChart;
-
 export type TreeMapData = {
 	value: number;
 	name: string;

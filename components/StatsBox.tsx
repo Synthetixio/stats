@@ -62,6 +62,13 @@ const StatsBoxContainer = styled.div<{ num: number | null; numBoxes: number }>`
 	margin-top: 20px;
 	padding: ${(props) => (props.num == null ? '0' : '20px')};
 	${(props) => {
+		if (props.num == null && props.numBoxes === 1) {
+			return css`
+				margin-top: 10px;
+				width: 100%;
+				height: 160px;
+			`;
+		}
 		if (props.num == null && props.numBoxes === 2) {
 			return css`
 				width: calc(46% + 40px);
@@ -78,6 +85,13 @@ const StatsBoxContainer = styled.div<{ num: number | null; numBoxes: number }>`
 			return css`
 				width: calc(21% + 40px);
 				height: 205px;
+			`;
+		}
+		if (props.numBoxes === 1) {
+			return css`
+				margin-top: 10px;
+				width: calc(100% - 40px);
+				height: 120px;
 			`;
 		}
 		if (props.numBoxes === 2) {
@@ -104,9 +118,23 @@ const StatsBoxContainer = styled.div<{ num: number | null; numBoxes: number }>`
 
 	@media only screen and (max-width: 1015px) {
 		width: 45%;
+		${(props) => {
+			if (props.numBoxes === 1) {
+				return css`
+					width: calc(100% - 40px);
+				`;
+			}
+		}};
 	}
 	@media only screen and (max-width: 854px) {
 		width: 100%;
+		${(props) => {
+			if (props.numBoxes === 1) {
+				return css`
+					width: calc(100% - 40px);
+				`;
+			}
+		}};
 	}
 `;
 
