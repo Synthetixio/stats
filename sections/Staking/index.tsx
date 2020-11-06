@@ -8,13 +8,16 @@ import SectionHeader from 'components/SectionHeader';
 import StatsRow from 'components/StatsRow';
 import StatsBox from 'components/StatsBox';
 import AreaChart from 'components/Charts/AreaChart';
+import { NewParagraph, LinkText } from 'components/common';
 
+import { useLiquidationsQuery } from 'queries/staking';
 import { COLORS } from 'constants/styles';
 import { SNXJSContext, SNXContext, SUSDContext } from 'pages/_app';
 import { FeePeriod, AreaChartData, ChartPeriod, ActiveStakersData } from 'types/data';
 import { formatIdToIsoString } from 'utils/formatter';
-import { NewParagraph, LinkText } from 'components/common';
 import { synthetixSubgraph } from 'constants/links';
+
+import Liquidations from './Liquidations';
 
 const Staking: FC = () => {
 	const { t } = useTranslation();
@@ -24,8 +27,9 @@ const Staking: FC = () => {
 	const [totalActiveStakers, setTotalActiveStakers] = useState<number | null>(null);
 	const [stakersChartData, setStakersChartData] = useState<AreaChartData[]>([]);
 	const snxjs = useContext(SNXJSContext);
-	const { SNXPrice, SNXStaked } = useContext(SNXContext);
+	const { SNXPrice, SNXStaked, issuanceRatio } = useContext(SNXContext);
 	const { sUSDPrice } = useContext(SUSDContext);
+	const { data: lidquidationsData, isLoading: isLiquidationsLoading } = useLiquidationsQuery();
 
 	useEffect(() => {
 		const fetchFeePeriod = async (period: number): Promise<FeePeriod> => {
@@ -249,6 +253,12 @@ const Staking: FC = () => {
 						}}
 					/>
 				}
+			/>
+			<Liquidations
+				liquidationsData={lidquidationsData ?? []}
+				isLoading={isLiquidationsLoading}
+				issuanceRatio={issuanceRatio}
+				snxPrice={SNXPrice}
 			/>
 		</>
 	);

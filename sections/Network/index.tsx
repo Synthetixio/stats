@@ -43,7 +43,7 @@ const NetworkSection: FC = () => {
 	const [SUSDHolders, setSUSDHolders] = useState<TreeMapData[]>([]);
 	const snxjs = useContext(SNXJSContext);
 	const { sUSDPrice, setsUSDPrice } = useContext(SUSDContext);
-	const { SNXPrice, setSNXPrice, setSNXStaked } = useContext(SNXContext);
+	const { SNXPrice, setSNXPrice, setSNXStaked, setIssuanceRatio } = useContext(SNXContext);
 	const provider = useContext(ProviderContext);
 
 	// NOTE: use interval? or save data calls?
@@ -156,6 +156,7 @@ const NetworkSection: FC = () => {
 			const percentLocked = snxLocked / snxTotal;
 			setSNXPercentLocked(percentLocked);
 			setSNXStaked(totalSupply * percentLocked);
+			setIssuanceRatio(issuanceRatio);
 			setTotalSupplySUSD(sUSDTotalSupply);
 			setActiveCRatio(1 / (stakersTotalDebt / stakersTotalCollateral));
 			setNetworkCRatio((totalSupply * formattedSNXPrice) / totalIssuedSynths);

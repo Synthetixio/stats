@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 import Link from '@material-ui/core/Link';
 
 import { COLORS, NumberColor } from 'constants/styles';
@@ -68,4 +68,60 @@ export const FullLineText = styled.div`
 export const NewParagraph = styled.div`
 	display: block;
 	margin: 10px 0;
+`;
+
+export const FlexDiv = styled.div`
+	display: flex;
+`;
+
+export const FlexDivCentered = styled(FlexDiv)`
+	align-items: center;
+`;
+
+export const FlexDivCol = styled(FlexDiv)`
+	flex-direction: column;
+`;
+
+export const FlexDivColCentered = styled(FlexDivCol)`
+	align-items: center;
+`;
+
+export const FlexDivRow = styled(FlexDiv)`
+	justify-content: space-between;
+`;
+
+export const FlexDivRowCentered = styled(FlexDivRow)`
+	align-items: center;
+`;
+
+export const GridDiv = styled.div`
+	display: grid;
+`;
+
+export const GridDivCentered = styled(GridDiv)`
+	align-items: center;
+`;
+
+export const GridDivRow = styled(GridDiv)`
+	grid-auto-flow: row;
+`;
+
+export const GridDivCenteredRow = styled(GridDivCentered)`
+	grid-auto-flow: row;
+`;
+
+export const GridDivCol = styled(GridDiv)`
+	grid-auto-flow: column;
+`;
+
+export const GridDivCenteredCol = styled(GridDivCentered)`
+	grid-auto-flow: column;
+`;
+
+export const resetButtonCSS = css`
+	border: none;
+	background: none;
+	outline: none;
+	cursor: pointer;
+	padding: 0;
 `;

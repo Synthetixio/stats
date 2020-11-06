@@ -209,6 +209,19 @@
 			"title": "iETH",
 			"firstMetricTitle": "WEEKLY REWARDS (SNX)",
 			"secondMetricTitle": "Annual Percentage Yield"
+		},
+		"liquidations": {
+			"columns": {
+				"account": "WALLET ADDRESS",
+				"deadline": "TIME TIL LIQUIDATION",
+				"c-ratio": "CURRENT C-RATIO",
+				"liquidatable-amount": "LIQUIDATABLE AMOUNT",
+				"amount-to-cover": "AMOUNT TO OVER DEBT"
+			},
+			"pagination": {
+				"page": "Page",
+				"page-of-total-pages": "{{page}} of {{totalPages}}"
+			}
 		}
 	}
 }

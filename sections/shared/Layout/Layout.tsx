@@ -31,7 +31,7 @@ const GlobalStyle = createGlobalStyle`
 		background-color: ${(props) => props.theme.colors.darkBlue};
 		color: ${(props) => props.theme.colors.lightFont};
 
-		.stats-box-skeleton, .chart-skeleton {
+		.stats-box-skeleton, .chart-skeleton, .liquidations-skeleton {
 			background-color: ${(props) => props.theme.colors.mediumBlue};
 		}
 
@@ -39,7 +39,7 @@ const GlobalStyle = createGlobalStyle`
 			margin-top: -100px;
 		}
 
-		.stats-box-skeleton::after, .chart-skeleton::after {
+		.stats-box-skeleton::after, .chart-skeleton::after, .liquidations-skeleton::after {
 			background: linear-gradient(90deg, #08021E 0%, #120446 146.21%);
 		}
 
