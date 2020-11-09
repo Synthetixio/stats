@@ -1,4 +1,4 @@
-import React, { FC, useMemo } from 'react';
+import React, { FC, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 import { CellProps } from 'react-table';
@@ -21,6 +21,8 @@ type LiquidationsProps = {
 	snxPrice: number | null;
 };
 
+type SortOption = { id: string; desc: boolean };
+
 const Liquidations: FC<LiquidationsProps> = ({
 	liquidationsData,
 	isLoading,
@@ -28,6 +30,8 @@ const Liquidations: FC<LiquidationsProps> = ({
 	snxPrice,
 }) => {
 	const { t } = useTranslation();
+	const [sortOptions, setSortOptions] = useState<SortOption[]>([{ id: 'deadline', desc: true }]);
+
 	const columnsDeps = useMemo(() => [issuanceRatio, snxPrice], [issuanceRatio, snxPrice]);
 
 	return (
@@ -42,7 +46,7 @@ const Liquidations: FC<LiquidationsProps> = ({
 					Cell: (cellProps: CellProps<LiquidationsData>) => (
 						<InterSpan>{cellProps.row.original.account}</InterSpan>
 					),
-					width: 300,
+					width: 200,
 					sortable: false,
 				},
 				{
@@ -52,7 +56,7 @@ const Liquidations: FC<LiquidationsProps> = ({
 					accessor: 'deadline',
 					sortType: 'basic',
 					Cell: (cellProps: CellProps<LiquidationsData>) => (
-						<InterSpan>{formatTime(cellProps.row.original.deadline, '15m')}</InterSpan>
+						<InterSpan>{formatTime(cellProps.row.original.deadline, 'dd:hh:mm:ss')}</InterSpan>
 					),
 					width: 100,
 					sortable: true,
@@ -112,6 +116,8 @@ const Liquidations: FC<LiquidationsProps> = ({
 					sortable: true,
 				},
 			]}
+			sorted={sortOptions}
+			onSortedChange={(val: SortOption[]) => setSortOptions(val)}
 			columnsDeps={columnsDeps}
 			data={liquidationsData}
 			isLoading={isLoading}

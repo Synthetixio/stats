@@ -169,7 +169,7 @@ const TableContainer = styled.div`
 
 export const TableRow = styled.div`
 	background-color: ${(props) => props.theme.colors.mediumBlue};
-	margin-bottom: 2px;
+	height: 40px;
 `;
 
 const TableBody = styled.div`
@@ -181,6 +181,7 @@ const TableBody = styled.div`
 const TableBodyRow = styled(TableRow)`
 	cursor: ${(props) => (props.onClick ? 'pointer' : 'default')};
 	background-color: ${(props) => props.theme.colors.mediumBlue};
+	border-bottom: 1px solid ${(props) => props.theme.colors.linedBlue};
 `;
 
 const TableCell = styled(FlexDivCentered)`
@@ -188,9 +189,10 @@ const TableCell = styled(FlexDivCentered)`
 	color: ${(props) => props.theme.colors.white};
 	font-size: 12px;
 	height: ${CARD_HEIGHT};
-
+	border-right: 1px solid ${(props) => props.theme.colors.linedBlue};
+	padding-left: 30px;
 	&:first-child {
-		padding-left: 18px;
+		border-left: 1px solid ${(props) => props.theme.colors.linedBlue};
 	}
 	&:last-child {
 		padding-right: 18px;
@@ -200,7 +202,7 @@ const TableCell = styled(FlexDivCentered)`
 const TableCellHead = styled(TableCell)`
 	user-select: none;
 	color: ${(props) => props.theme.colors.white};
-	background-color: ${(props) => props.theme.colors.mediumBlue};
+	background-color: ${(props) => props.theme.colors.linedBlue};
 `;
 
 const SortIconContainer = styled.span`

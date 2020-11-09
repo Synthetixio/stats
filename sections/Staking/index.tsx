@@ -10,7 +10,7 @@ import StatsBox from 'components/StatsBox';
 import AreaChart from 'components/Charts/AreaChart';
 import { NewParagraph, LinkText } from 'components/common';
 
-import { useLiquidationsQuery } from 'queries/staking';
+import { useLiquidationsQuery, LiquidationsData } from 'queries/staking';
 import { COLORS } from 'constants/styles';
 import { SNXJSContext, SNXContext, SUSDContext } from 'pages/_app';
 import { FeePeriod, AreaChartData, ChartPeriod, ActiveStakersData } from 'types/data';
@@ -30,6 +30,9 @@ const Staking: FC = () => {
 	const { SNXPrice, SNXStaked, issuanceRatio } = useContext(SNXContext);
 	const { sUSDPrice } = useContext(SUSDContext);
 	const { data: lidquidationsData, isLoading: isLiquidationsLoading } = useLiquidationsQuery();
+	const formattedLiquidationsData = (lidquidationsData ?? []).sort(
+		(a: LiquidationsData, b: LiquidationsData) => a.deadline - b.deadline
+	);
 
 	useEffect(() => {
 		const fetchFeePeriod = async (period: number): Promise<FeePeriod> => {
@@ -255,7 +258,7 @@ const Staking: FC = () => {
 				}
 			/>
 			<Liquidations
-				liquidationsData={lidquidationsData ?? []}
+				liquidationsData={formattedLiquidationsData}
 				isLoading={isLiquidationsLoading}
 				issuanceRatio={issuanceRatio}
 				snxPrice={SNXPrice}

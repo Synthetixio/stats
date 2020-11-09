@@ -216,7 +216,7 @@
 				"deadline": "TIME TIL LIQUIDATION",
 				"c-ratio": "CURRENT C-RATIO",
 				"liquidatable-amount": "LIQUIDATABLE AMOUNT",
-				"amount-to-cover": "AMOUNT TO OVER DEBT"
+				"amount-to-cover": "AMOUNT TO COVER DEBT"
 			},
 			"pagination": {
 				"page": "Page",
