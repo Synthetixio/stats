@@ -72,9 +72,11 @@ export const formatIdToIsoString = (id: string, timeSeries: TimeSeries) => {
 	return created.toISOString();
 };
 
-export type TimeSeriesType = '15m' | '1d' | 'dd:hh:mm:ss';
+export type TimeSeriesType = '15m' | '1d';
 
-export const formatTime = (created: string | number, type: TimeSeriesType) => {
+type FormattedTime = 'dd:hh:mm:ss';
+
+export const formatTime = (created: string | number, type: TimeSeriesType | FormattedTime) => {
 	if (type === '15m') {
 		return format(new Date(created), 'HH:00');
 	} else if (type === '1d') {
