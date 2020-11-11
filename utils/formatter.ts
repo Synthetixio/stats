@@ -1,6 +1,6 @@
 import BigNumber from 'bignumber.js';
 import numbro from 'numbro';
-import { format, intervalToDuration } from 'date-fns';
+import { format } from 'date-fns';
 
 import { NumberStyle } from '../constants/styles';
 import { TimeSeries } from '../types/data';
