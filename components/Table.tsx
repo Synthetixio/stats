@@ -1,5 +1,5 @@
 import React, { FC, useMemo, DependencyList } from 'react';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 import { useTable, useFlexLayout, useSortBy, Column, Row, usePagination, Cell } from 'react-table';
 import { Skeleton } from '@material-ui/lab';
 
@@ -85,7 +85,11 @@ export const Table: FC<TableProps> = ({
 			<TableContainer>
 				<ReactTable {...getTableProps()}>
 					{headerGroups.map((headerGroup) => (
-						<TableRow className="table-row" {...headerGroup.getHeaderGroupProps()}>
+						<TableRow
+							dataLength={data.length}
+							className="table-row"
+							{...headerGroup.getHeaderGroupProps()}
+						>
 							{headerGroup.headers.map((column: any) => (
 								<TableCellHead
 									{...column.getHeaderProps(
@@ -167,9 +171,16 @@ const TableContainer = styled.div`
 	margin: 0px auto;
 `;
 
-export const TableRow = styled.div`
+export const TableRow = styled.div<{ dataLength: number }>`
 	background-color: ${(props) => props.theme.colors.mediumBlue};
 	height: 40px;
+	${(props) =>
+		props.dataLength === 0 &&
+		css`
+			@media only screen and (max-width: 700px) {
+				display: none !important;
+			}
+		`}
 `;
 
 const TableBody = styled.div`
@@ -178,7 +189,8 @@ const TableBody = styled.div`
 	max-height: calc(100% - ${CARD_HEIGHT});
 `;
 
-const TableBodyRow = styled(TableRow)`
+const TableBodyRow = styled.div`
+	height: 40px;
 	cursor: ${(props) => (props.onClick ? 'pointer' : 'default')};
 	background-color: ${(props) => props.theme.colors.mediumBlue};
 	border-bottom: 1px solid ${(props) => props.theme.colors.linedBlue};
@@ -216,6 +228,7 @@ const ReactTable = styled.div`
 	height: 100%;
 	overflow-x: auto;
 	position: relative;
+	min-width: 1050px !important;
 `;
 
 export default Table;

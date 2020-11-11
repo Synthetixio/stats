@@ -125,3 +125,24 @@ export const resetButtonCSS = css`
 	cursor: pointer;
 	padding: 0;
 `;
+
+export const SectionTitle = styled.div`
+	font-style: normal;
+	font-weight: 900;
+	font-size: 20px;
+	line-height: 24px;
+	color: ${(props) => props.theme.colors.white};
+	margin: 10px 0;
+	font-family: ${(props) => `${props.theme.fonts.expanded}, ${props.theme.fonts.regular}`};
+`;
+
+export const SectionSubtitle = styled.div`
+	margin: 10px 0 20px 0;
+	font-style: normal;
+	font-weight: normal;
+	font-size: 14px;
+	line-height: 18px;
+	color: ${(props) => props.theme.colors.white};
+	opacity: 0.5;
+	font-family: 'Inter', sans-serif;
+`;

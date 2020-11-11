@@ -9,10 +9,11 @@ import { LiquidationsData } from 'queries/staking';
 
 import Table from 'components/Table';
 import Timer from 'components/Timer';
-import { FlexDiv } from 'components/common';
+import { SectionTitle, SectionSubtitle, FlexDiv } from 'components/common';
 
 import NoNotificationIcon from 'assets/svg/no-notifications.svg';
 import { formatPercentage, formatNumber } from 'utils/formatter';
+import { MAX_PAGE_WIDTH } from 'constants/styles';
 
 interface LiquidationsProps {
 	liquidationsData: LiquidationsData[];
@@ -31,98 +32,109 @@ const Liquidations: FC<LiquidationsProps> = ({
 	const columnsDeps = useMemo(() => [issuanceRatio, snxPrice], [issuanceRatio, snxPrice]);
 
 	return (
-		<StyledTable
-			columns={[
-				{
-					Header: <StyledTableHeader>{t('liquidations.columns.account')}</StyledTableHeader>,
-					accessor: 'account',
-					sortType: 'basic',
-					Cell: (cellProps: CellProps<LiquidationsData>) => (
-						<InterSpan>{cellProps.row.original.account}</InterSpan>
-					),
-					width: 200,
-					sortable: false,
-				},
-				{
-					Header: <StyledTableHeader>{t('liquidations.columns.deadline')}</StyledTableHeader>,
-					accessor: 'deadline',
-					sortType: 'basic',
-					Cell: (cellProps: CellProps<LiquidationsData>) => (
-						<InterSpan>
-							<Timer expiryTimestamp={cellProps.row.original.deadline} />
-						</InterSpan>
-					),
-					width: 100,
-					sortable: true,
-				},
-				{
-					Header: <StyledTableHeader>{t('liquidations.columns.c-ratio')}</StyledTableHeader>,
-					accessor: 'cyrrentRatio',
-					sortType: 'basic',
-					Cell: (cellProps: CellProps<LiquidationsData>) => (
-						<InterSpan>{formatPercentage(1 / cellProps.row.original.currentRatio, 0)}</InterSpan>
-					),
-					width: 100,
-					sortable: false,
-				},
-				{
-					Header: (
-						<StyledTableHeader>{t('liquidations.columns.liquidatable-amount')}</StyledTableHeader>
-					),
-					accessor: 'liquidatableNonEscrowSNX',
-					sortType: 'basic',
-					Cell: (cellProps: CellProps<LiquidationsData>) => (
-						<InterSpan>{`${formatNumber(cellProps.row.original.currentBalanceOf)} ${
-							CryptoCurrency.SNX
-						}`}</InterSpan>
-					),
-					width: 100,
-					sortable: true,
-				},
-				{
-					Header: (
-						<StyledTableHeader>{t('liquidations.columns.amount-to-cover')}</StyledTableHeader>
-					),
-					accessor: 'collateral',
-					sortType: 'basic',
-					Cell: (cellProps: CellProps<LiquidationsData>) => {
-						if (
-							snxPrice != null &&
-							issuanceRatio != null &&
-							cellProps.row.original.currentCollateral
-						) {
-							const stakerTargetDebt =
-								(issuanceRatio / snxPrice) * cellProps.row.original.currentCollateral;
-							const stakerCurrentDebt =
-								(cellProps.row.original.currentRatio / snxPrice) *
-								cellProps.row.original.currentCollateral;
-							return (
-								<InterSpan>{`${formatNumber(stakerCurrentDebt - stakerTargetDebt)} ${
-									CryptoCurrency.sUSD
-								}`}</InterSpan>
-							);
-						}
-						return <InterSpan>{NO_VALUE}</InterSpan>;
+		<LiquidationsContainer>
+			<SectionTitle>{t('liquidations.title')}</SectionTitle>
+			<SectionSubtitle>{t('liquidations.subtitle')}</SectionSubtitle>
+			<StyledTable
+				columns={[
+					{
+						Header: <StyledTableHeader>{t('liquidations.columns.account')}</StyledTableHeader>,
+						accessor: 'account',
+						sortType: 'basic',
+						Cell: (cellProps: CellProps<LiquidationsData>) => (
+							<InterSpan>{cellProps.row.original.account}</InterSpan>
+						),
+						width: 200,
+						sortable: false,
 					},
-					width: 100,
-					sortable: true,
-				},
-			]}
-			columnsDeps={columnsDeps}
-			data={[] || liquidationsData}
-			isLoading={isLoading}
-			noResultsMessage={
-				!isLoading && [].length === 0 ? (
-					<TableNoResults>
-						<NoNotificationIcon />
-						<NoResults>{t('liquidations.no-results')}</NoResults>
-					</TableNoResults>
-				) : undefined
-			}
-			showPagination={true}
-		/>
+					{
+						Header: <StyledTableHeader>{t('liquidations.columns.deadline')}</StyledTableHeader>,
+						accessor: 'deadline',
+						sortType: 'basic',
+						Cell: (cellProps: CellProps<LiquidationsData>) => (
+							<InterSpan>
+								<Timer expiryTimestamp={cellProps.row.original.deadline} />
+							</InterSpan>
+						),
+						width: 100,
+						sortable: true,
+					},
+					{
+						Header: <StyledTableHeader>{t('liquidations.columns.c-ratio')}</StyledTableHeader>,
+						accessor: 'cyrrentRatio',
+						sortType: 'basic',
+						Cell: (cellProps: CellProps<LiquidationsData>) => (
+							<InterSpan>{formatPercentage(1 / cellProps.row.original.currentRatio, 0)}</InterSpan>
+						),
+						width: 100,
+						sortable: false,
+					},
+					{
+						Header: (
+							<StyledTableHeader>{t('liquidations.columns.liquidatable-amount')}</StyledTableHeader>
+						),
+						accessor: 'liquidatableNonEscrowSNX',
+						sortType: 'basic',
+						Cell: (cellProps: CellProps<LiquidationsData>) => (
+							<InterSpan>{`${formatNumber(cellProps.row.original.currentBalanceOf)} ${
+								CryptoCurrency.SNX
+							}`}</InterSpan>
+						),
+						width: 100,
+						sortable: true,
+					},
+					{
+						Header: (
+							<StyledTableHeader>{t('liquidations.columns.amount-to-cover')}</StyledTableHeader>
+						),
+						accessor: 'collateral',
+						sortType: 'basic',
+						Cell: (cellProps: CellProps<LiquidationsData>) => {
+							if (
+								snxPrice != null &&
+								issuanceRatio != null &&
+								cellProps.row.original.currentCollateral
+							) {
+								const stakerTargetDebt =
+									(issuanceRatio / snxPrice) * cellProps.row.original.currentCollateral;
+								const stakerCurrentDebt =
+									(cellProps.row.original.currentRatio / snxPrice) *
+									cellProps.row.original.currentCollateral;
+								return (
+									<InterSpan>{`${formatNumber(stakerCurrentDebt - stakerTargetDebt)} ${
+										CryptoCurrency.sUSD
+									}`}</InterSpan>
+								);
+							}
+							return <InterSpan>{NO_VALUE}</InterSpan>;
+						},
+						width: 100,
+						sortable: true,
+					},
+				]}
+				columnsDeps={columnsDeps}
+				data={liquidationsData}
+				isLoading={isLoading}
+				noResultsMessage={
+					!isLoading && liquidationsData.length === 0 ? (
+						<TableNoResults>
+							<NoNotificationIcon />
+							<NoResults>{t('liquidations.no-results')}</NoResults>
+						</TableNoResults>
+					) : undefined
+				}
+				showPagination={true}
+			/>
+		</LiquidationsContainer>
 	);
 };
+
+const LiquidationsContainer = styled.div`
+	background: ${(props) => props.theme.colors.mediumBlue};
+	max-width: ${MAX_PAGE_WIDTH}px;
+	margin: 0px auto;
+	padding: 20px;
+`;
 
 const StyledTable = styled(Table)`
 	margin-top: 16px;
@@ -147,7 +159,8 @@ const TableNoResults = styled(FlexDiv)`
 	margin-top: -2px;
 	align-items: center;
 	display: flex;
-	width: 100%;
+	max-width: ${MAX_PAGE_WIDTH}px;
+	margin: 0px auto;
 `;
 
 const NoResults = styled.span`
