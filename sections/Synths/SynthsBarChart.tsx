@@ -14,8 +14,8 @@ const SynthsBarChart: FC<SynthsBarChartProps> = ({ data }) => {
 	const { t } = useTranslation();
 	return (
 		<SynthsBarChartContainer>
-			<ChartTitle>{t('homepage.synth-bar-chart.title')}</ChartTitle>
-			<ChartSubtitle>{t('homepage.synth-bar-chart.subtext')}</ChartSubtitle>
+			<ChartTitle>{t('synth-bar-chart.title')}</ChartTitle>
+			<ChartSubtitle>{t('synth-bar-chart.subtext')}</ChartSubtitle>
 			<SidewaysBarChart data={data} />
 		</SynthsBarChartContainer>
 	);

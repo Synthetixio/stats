@@ -2,7 +2,8 @@ import { createContext, FC, createRef, useState, RefObject } from 'react';
 import { AppProps } from 'next/app';
 import Head from 'next/head';
 import { ethers } from 'ethers';
-import { useTranslation } from 'react-i18next';
+import { ReactQueryCacheProvider, QueryCache } from 'react-query';
+import { ReactQueryDevtools } from 'react-query-devtools';
 
 import { synthetix, Network } from '@synthetixio/js';
 import { ThemeProvider as SCThemeProvider } from 'styled-components';
@@ -42,6 +43,17 @@ export const SNXContext = createContext({
 	setSNXPrice: (num: number) => null,
 	SNXStaked: null,
 	setSNXStaked: (num: number) => null,
+	issuanceRatio: null,
+	setIssuanceRatio: (num: number) => null,
+});
+
+const queryCache = new QueryCache({
+	defaultConfig: {
+		queries: {
+			retry: 1,
+			cacheTime: Infinity,
+		},
+	},
 });
 
 const snxjs = synthetix({ network: Network.Mainnet, provider });
@@ -49,10 +61,10 @@ const snxjs = synthetix({ network: Network.Mainnet, provider });
 export const SNXJSContext = createContext(snxjs);
 
 const App: FC<AppProps> = ({ Component, pageProps }) => {
-	const { t } = useTranslation();
 	const [sUSDPrice, setsUSDPrice] = useState<number | null>(null);
 	const [SNXPrice, setSNXPrice] = useState<number | null>(null);
 	const [SNXStaked, setSNXStaked] = useState<number | null>(null);
+	const [issuanceRatio, setIssuanceRatio] = useState<number | null>(null);
 
 	return (
 		<>
@@ -131,23 +143,39 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
 			</Head>
 			<SCThemeProvider theme={scTheme}>
 				<MuiThemeProvider theme={muiTheme}>
-					<HeadersContext.Provider value={headersAndScrollRef}>
-						<SNXJSContext.Provider value={snxjs}>
-							<ProviderContext.Provider value={provider}>
-								{/*
-	              // @ts-ignore */}
-								<SUSDContext.Provider value={{ sUSDPrice, setsUSDPrice }}>
+					<ReactQueryCacheProvider queryCache={queryCache}>
+						<HeadersContext.Provider value={headersAndScrollRef}>
+							<SNXJSContext.Provider value={snxjs}>
+								<ProviderContext.Provider value={provider}>
 									{/*
-									// @ts-ignore */}
-									<SNXContext.Provider value={{ SNXPrice, setSNXPrice, SNXStaked, setSNXStaked }}>
-										<Layout>
-											<Component {...pageProps} />
-										</Layout>
-									</SNXContext.Provider>
-								</SUSDContext.Provider>
-							</ProviderContext.Provider>
-						</SNXJSContext.Provider>
-					</HeadersContext.Provider>
+	                // @ts-ignore */}
+									<SUSDContext.Provider value={{ sUSDPrice, setsUSDPrice }}>
+										<SNXContext.Provider
+											value={{
+												// @ts-ignore
+												SNXPrice,
+												// @ts-ignore
+												setSNXPrice,
+												// @ts-ignore
+												SNXStaked,
+												// @ts-ignore
+												setSNXStaked,
+												// @ts-ignore
+												issuanceRatio,
+												// @ts-ignore
+												setIssuanceRatio,
+											}}
+										>
+											<Layout>
+												<Component {...pageProps} />
+											</Layout>
+										</SNXContext.Provider>
+									</SUSDContext.Provider>
+								</ProviderContext.Provider>
+							</SNXJSContext.Provider>
+						</HeadersContext.Provider>
+						<ReactQueryDevtools />
+					</ReactQueryCacheProvider>
 				</MuiThemeProvider>
 			</SCThemeProvider>
 		</>

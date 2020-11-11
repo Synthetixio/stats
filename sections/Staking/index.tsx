@@ -8,13 +8,16 @@ import SectionHeader from 'components/SectionHeader';
 import StatsRow from 'components/StatsRow';
 import StatsBox from 'components/StatsBox';
 import AreaChart from 'components/Charts/AreaChart';
+import { NewParagraph, LinkText } from 'components/common';
 
+import { useLiquidationsQuery, LiquidationsData } from 'queries/staking';
 import { COLORS } from 'constants/styles';
 import { SNXJSContext, SNXContext, SUSDContext } from 'pages/_app';
 import { FeePeriod, AreaChartData, ChartPeriod, ActiveStakersData } from 'types/data';
 import { formatIdToIsoString } from 'utils/formatter';
-import { NewParagraph, LinkText } from 'components/common';
 import { synthetixSubgraph } from 'constants/links';
+
+import Liquidations from './Liquidations';
 
 const Staking: FC = () => {
 	const { t } = useTranslation();
@@ -24,8 +27,12 @@ const Staking: FC = () => {
 	const [totalActiveStakers, setTotalActiveStakers] = useState<number | null>(null);
 	const [stakersChartData, setStakersChartData] = useState<AreaChartData[]>([]);
 	const snxjs = useContext(SNXJSContext);
-	const { SNXPrice, SNXStaked } = useContext(SNXContext);
+	const { SNXPrice, SNXStaked, issuanceRatio } = useContext(SNXContext);
 	const { sUSDPrice } = useContext(SUSDContext);
+	const { data: lidquidationsData, isLoading: isLiquidationsLoading } = useLiquidationsQuery();
+	const formattedLiquidationsData = (lidquidationsData ?? []).sort(
+		(a: LiquidationsData, b: LiquidationsData) => a.deadline - b.deadline
+	);
 
 	useEffect(() => {
 		const fetchFeePeriod = async (period: number): Promise<FeePeriod> => {
@@ -87,7 +94,7 @@ const Staking: FC = () => {
 			<StatsRow>
 				<StatsBox
 					key="SNXSTKAPY"
-					title={t('homepage.current-staking-apy.title')}
+					title={t('current-staking-apy.title')}
 					num={
 						sUSDPrice != null &&
 						SNXPrice != null &&
@@ -100,22 +107,22 @@ const Staking: FC = () => {
 							: null
 					}
 					percentChange={null}
-					subText={t('homepage.current-staking-apy.subtext')}
+					subText={t('current-staking-apy.subtext')}
 					color={COLORS.green}
 					numberStyle="percent2"
 					numBoxes={3}
-					infoData={t('homepage.current-staking-apy.infoData')}
+					infoData={t('current-staking-apy.infoData')}
 				/>
 				<StatsBox
 					key="SNXSTKAPYSUSD"
-					title={t('homepage.current-staking-apy-susd.title')}
+					title={t('current-staking-apy-susd.title')}
 					num={
 						sUSDPrice != null && currentFeePeriod != null && SNXValueStaked != null
 							? ((sUSDPrice ?? 0) * currentFeePeriod.feesToDistribute * 52) / SNXValueStaked
 							: null
 					}
 					percentChange={null}
-					subText={t('homepage.current-staking-apy-susd.subtext')}
+					subText={t('current-staking-apy-susd.subtext')}
 					color={COLORS.green}
 					numberStyle="percent2"
 					numBoxes={3}
@@ -123,7 +130,7 @@ const Staking: FC = () => {
 				/>
 				<StatsBox
 					key="SNXSTKAPYSNX"
-					title={t('homepage.current-staking-apy-snx.title')}
+					title={t('current-staking-apy-snx.title')}
 					num={
 						SNXPrice != null && currentFeePeriod != null && SNXValueStaked != null
 							? (((SNXPrice ?? 0) * currentFeePeriod?.rewardsToDistribute ?? 0) * 52) /
@@ -131,7 +138,7 @@ const Staking: FC = () => {
 							: null
 					}
 					percentChange={null}
-					subText={t('homepage.current-staking-apy-snx.subtext')}
+					subText={t('current-staking-apy-snx.subtext')}
 					color={COLORS.pink}
 					numberStyle="percent2"
 					numBoxes={3}
@@ -141,14 +148,14 @@ const Staking: FC = () => {
 			<StatsRow>
 				<StatsBox
 					key="CRRNTFEERWPOOLUSD"
-					title={t('homepage.current-fee-pool.title')}
+					title={t('current-fee-pool.title')}
 					num={
 						sUSDPrice != null && currentFeePeriod != null && sUSDPrice != null
 							? (sUSDPrice ?? 0) * currentFeePeriod.feesToDistribute
 							: null
 					}
 					percentChange={null}
-					subText={t('homepage.current-fee-pool.subtext', {
+					subText={t('current-fee-pool.subtext', {
 						startDate:
 							currentFeePeriod != null
 								? format(new Date(currentFeePeriod.startTime), 'MMMM dd')
@@ -159,7 +166,7 @@ const Staking: FC = () => {
 					numBoxes={4}
 					infoData={
 						<Trans
-							i18nKey="homepage.current-fee-pool.infoData"
+							i18nKey="current-fee-pool.infoData"
 							components={{
 								newParagraph: <NewParagraph />,
 							}}
@@ -168,14 +175,14 @@ const Staking: FC = () => {
 				/>
 				<StatsBox
 					key="CRRNTFEERWPOOLSNX"
-					title={t('homepage.current-fee-pool-snx.title')}
+					title={t('current-fee-pool-snx.title')}
 					num={
 						currentFeePeriod != null && SNXPrice != null
 							? (SNXPrice ?? 0) * currentFeePeriod.rewardsToDistribute
 							: null
 					}
 					percentChange={null}
-					subText={t('homepage.current-fee-pool-snx.subtext', {
+					subText={t('current-fee-pool-snx.subtext', {
 						startDate:
 							currentFeePeriod != null
 								? format(new Date(currentFeePeriod.startTime), 'MMMM dd')
@@ -188,7 +195,7 @@ const Staking: FC = () => {
 				/>
 				<StatsBox
 					key="UNCLMFEESUSD"
-					title={t('homepage.unclaimed-fees-and-rewards.title')}
+					title={t('unclaimed-fees-and-rewards.title')}
 					num={
 						currentFeePeriod != null && sUSDPrice != null && SNXPrice != null
 							? (sUSDPrice ?? 0) *
@@ -198,7 +205,7 @@ const Staking: FC = () => {
 							: null
 					}
 					percentChange={null}
-					subText={t('homepage.unclaimed-fees-and-rewards.subtext', {
+					subText={t('unclaimed-fees-and-rewards.subtext', {
 						startDate:
 							nextFeePeriod != null ? format(new Date(nextFeePeriod.startTime), 'MMMM dd') : '-',
 					})}
@@ -209,14 +216,14 @@ const Staking: FC = () => {
 				/>
 				<StatsBox
 					key="UPCOMINGFEESUSD"
-					title={t('homepage.fees-in-next-period.title')}
+					title={t('fees-in-next-period.title')}
 					num={
 						nextFeePeriod != null && sUSDPrice != null
 							? (sUSDPrice ?? 0) * nextFeePeriod.feesToDistribute
 							: null
 					}
 					percentChange={null}
-					subText={t('homepage.fees-in-next-period.subtext')}
+					subText={t('fees-in-next-period.subtext')}
 					color={COLORS.pink}
 					numberStyle="currency0"
 					numBoxes={4}
@@ -232,7 +239,7 @@ const Staking: FC = () => {
 					fetchNewChartData(period);
 				}}
 				data={stakersChartData}
-				title={t('homepage.total-active-stakers.title')}
+				title={t('total-active-stakers.title')}
 				num={totalActiveStakers}
 				numFormat="number"
 				percentChange={
@@ -243,12 +250,18 @@ const Staking: FC = () => {
 				timeSeries="1d"
 				infoData={
 					<Trans
-						i18nKey="homepage.total-active-stakers.infoData"
+						i18nKey="total-active-stakers.infoData"
 						components={{
 							linkText: <LinkText href={synthetixSubgraph} />,
 						}}
 					/>
 				}
+			/>
+			<Liquidations
+				liquidationsData={formattedLiquidationsData}
+				isLoading={isLiquidationsLoading}
+				issuanceRatio={issuanceRatio}
+				snxPrice={SNXPrice}
 			/>
 		</>
 	);

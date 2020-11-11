@@ -111,20 +111,20 @@ const Trading: FC = () => {
 	const periods: ChartPeriod[] = ['W', 'M', 'Y'];
 	return (
 		<>
-			<SectionHeader title={t('homepage.section-header.trading')} />
+			<SectionHeader title={t('section-header.trading')} />
 			<StatsRow>
 				<StatsBox
 					key="TOTALTRDVOLUME"
-					title={t('homepage.total-trading-volume.title')}
+					title={t('total-trading-volume.title')}
 					num={totalTradingVolume}
 					percentChange={null}
-					subText={t('homepage.total-trading-volume.subtext')}
+					subText={t('total-trading-volume.subtext')}
 					color={COLORS.green}
 					numberStyle="currency0"
 					numBoxes={4}
 					infoData={
 						<Trans
-							i18nKey="homepage.total-trading-volume.infoData"
+							i18nKey="total-trading-volume.infoData"
 							components={{
 								linkText: <LinkText href={etherscanArchernarBlock} />,
 								linkText2: <LinkText href={frontRunningWiki} />,
@@ -134,16 +134,16 @@ const Trading: FC = () => {
 				/>
 				<StatsBox
 					key="TOTLFEES"
-					title={t('homepage.total-trading-fees.title')}
+					title={t('total-trading-fees.title')}
 					num={totalTradingFees}
 					percentChange={null}
-					subText={t('homepage.total-trading-fees.subtext')}
+					subText={t('total-trading-fees.subtext')}
 					color={COLORS.green}
 					numberStyle="currency0"
 					numBoxes={4}
 					infoData={
 						<Trans
-							i18nKey="homepage.total-trading-fees.infoData"
+							i18nKey="total-trading-fees.infoData"
 							components={{
 								linkText: <LinkText href={etherscanArchernarBlock} />,
 								linkText2: <LinkText href={frontRunningWiki} />,
@@ -153,16 +153,16 @@ const Trading: FC = () => {
 				/>
 				<StatsBox
 					key="TOTLNOTRDES"
-					title={t('homepage.total-number-of-trades.title')}
+					title={t('total-number-of-trades.title')}
 					num={totalTrades}
 					percentChange={null}
-					subText={t('homepage.total-number-of-trades.subtext')}
+					subText={t('total-number-of-trades.subtext')}
 					color={COLORS.pink}
 					numberStyle="number"
 					numBoxes={4}
 					infoData={
 						<Trans
-							i18nKey="homepage.total-number-of-trades.infoData"
+							i18nKey="total-number-of-trades.infoData"
 							components={{
 								linkText: <LinkText href={etherscanArchernarBlock} />,
 								linkText2: <LinkText href={frontRunningWiki} />,
@@ -172,10 +172,10 @@ const Trading: FC = () => {
 				/>
 				<StatsBox
 					key="TOTLDAILYVOLUME"
-					title={t('homepage.24hr-exchange-volume.title')}
+					title={t('24hr-exchange-volume.title')}
 					num={totalDailyTradingVolume}
 					percentChange={null}
-					subText={t('homepage.24hr-exchange-volume.subtext')}
+					subText={t('24hr-exchange-volume.subtext')}
 					color={COLORS.green}
 					numberStyle="currency0"
 					numBoxes={4}
@@ -191,14 +191,14 @@ const Trading: FC = () => {
 					fetchNewChartData(period, 'volume');
 				}}
 				data={volumeChartData}
-				title={t('homepage.trading-volume.title')}
+				title={t('trading-volume.title')}
 				num={totalVolumeOverPeriod}
 				numFormat="currency0"
 				percentChange={null}
 				timeSeries="1d"
 				infoData={
 					<Trans
-						i18nKey="homepage.trading-volume.infoData"
+						i18nKey="trading-volume.infoData"
 						components={{
 							linkText: <LinkText href={synthetixExchangesSubgraph} />,
 							linkText2: <LinkText href={etherscanArchernarBlock} />,
@@ -211,10 +211,10 @@ const Trading: FC = () => {
 			<StatsRow>
 				<StatsBox
 					key="TOTALNOUNQTRADERS"
-					title={t('homepage.total-number-unique-traders.title')}
+					title={t('total-number-unique-traders.title')}
 					num={totalUsers}
 					percentChange={null}
-					subText={t('homepage.total-number-unique-traders.subtext')}
+					subText={t('total-number-unique-traders.subtext')}
 					color={COLORS.pink}
 					numberStyle="number"
 					numBoxes={2}
@@ -222,10 +222,10 @@ const Trading: FC = () => {
 				/>
 				<StatsBox
 					key="AVGDAILYTRDRS"
-					title={t('homepage.average-daily-traders.title')}
+					title={t('average-daily-traders.title')}
 					num={averageDailyTraders}
 					percentChange={null}
-					subText={t('homepage.average-daily-traders.subtext')}
+					subText={t('average-daily-traders.subtext')}
 					color={COLORS.green}
 					numberStyle="number"
 					numBoxes={2}
@@ -241,14 +241,14 @@ const Trading: FC = () => {
 					fetchNewChartData(period, 'trade');
 				}}
 				data={tradesChartData}
-				title={t('homepage.number-of-trades.title')}
+				title={t('number-of-trades.title')}
 				num={totalTradesOverPeriod}
 				numFormat="number"
 				percentChange={null}
 				timeSeries="1d"
 				infoData={
 					<Trans
-						i18nKey="homepage.number-of-trades.infoData"
+						i18nKey="number-of-trades.infoData"
 						components={{
 							linkText: <LinkText href={synthetixExchangesSubgraph} />,
 							fullLineLink: <FullLineLink href={githubSubgraph} />,
