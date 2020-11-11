@@ -1,7 +1,7 @@
 import styled, { css } from 'styled-components';
 import Link from '@material-ui/core/Link';
 
-import { COLORS, NumberColor } from 'constants/styles';
+import { COLORS, NumberColor, MAX_PAGE_WIDTH } from 'constants/styles';
 
 export const PercentChangeBox = styled.div<{ color: NumberColor }>`
 	width: 52px;
@@ -145,4 +145,11 @@ export const SectionSubtitle = styled.div`
 	color: ${(props) => props.theme.colors.white};
 	opacity: 0.5;
 	font-family: 'Inter', sans-serif;
+`;
+
+export const SectionWrap = styled.div`
+	background: ${(props) => props.theme.colors.mediumBlue};
+	max-width: ${MAX_PAGE_WIDTH - 40}px;
+	margin: 20px auto;
+	padding: 20px;
 `;

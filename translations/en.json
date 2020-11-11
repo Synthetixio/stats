@@ -210,7 +210,7 @@
 		"secondMetricTitle": "Annual Percentage Yield"
 	},
 	"liquidations": {
-		"title": "Liquidations",
+		"title": "LIQUIDATIONS",
 		"subtitle": "Active liquidations flagged within the past 30 days",
 		"no-results": "No liquidations found",
 		"columns": {

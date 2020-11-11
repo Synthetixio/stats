@@ -9,7 +9,7 @@ import { LiquidationsData } from 'queries/staking';
 
 import Table from 'components/Table';
 import Timer from 'components/Timer';
-import { SectionTitle, SectionSubtitle, FlexDiv } from 'components/common';
+import { SectionTitle, SectionSubtitle, FlexDiv, SectionWrap } from 'components/common';
 
 import NoNotificationIcon from 'assets/svg/no-notifications.svg';
 import { formatPercentage, formatNumber } from 'utils/formatter';
@@ -32,7 +32,7 @@ const Liquidations: FC<LiquidationsProps> = ({
 	const columnsDeps = useMemo(() => [issuanceRatio, snxPrice], [issuanceRatio, snxPrice]);
 
 	return (
-		<LiquidationsContainer>
+		<SectionWrap>
 			<SectionTitle>{t('liquidations.title')}</SectionTitle>
 			<SectionSubtitle>{t('liquidations.subtitle')}</SectionSubtitle>
 			<StyledTable
@@ -125,16 +125,9 @@ const Liquidations: FC<LiquidationsProps> = ({
 				}
 				showPagination={true}
 			/>
-		</LiquidationsContainer>
+		</SectionWrap>
 	);
 };
-
-const LiquidationsContainer = styled.div`
-	background: ${(props) => props.theme.colors.mediumBlue};
-	max-width: ${MAX_PAGE_WIDTH}px;
-	margin: 0px auto;
-	padding: 20px;
-`;
 
 const StyledTable = styled(Table)`
 	margin-top: 16px;
