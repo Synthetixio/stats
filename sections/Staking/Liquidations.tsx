@@ -1,10 +1,8 @@
-import React, { FC, useContext, useEffect, useState, useMemo } from 'react';
+import React, { FC, useMemo } from 'react';
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 import { CellProps } from 'react-table';
-import { BigNumber } from 'ethers';
 
-import { SNXJSContext } from 'pages/_app';
 import { NO_VALUE } from 'constants/placeholder';
 import { CryptoCurrency } from 'constants/currency';
 import { LiquidationsData } from 'queries/staking';
@@ -12,19 +10,16 @@ import { LiquidationsData } from 'queries/staking';
 import { GridDivCenteredRow } from 'components/common';
 
 import Table from 'components/Table';
+import Timer from 'components/Timer';
 
 import NoNotificationIcon from 'assets/svg/no-notifications.svg';
-import { formatPercentage, formatNumber, formatTime } from 'utils/formatter';
+import { formatPercentage, formatNumber } from 'utils/formatter';
 
 interface LiquidationsProps {
 	liquidationsData: LiquidationsData[];
 	isLoading: boolean;
 	issuanceRatio: number | null;
 	snxPrice: number | null;
-}
-
-interface LiquidationsDataWithCurrentRatio extends LiquidationsData {
-	currentRatio: number;
 }
 
 const Liquidations: FC<LiquidationsProps> = ({
@@ -34,28 +29,7 @@ const Liquidations: FC<LiquidationsProps> = ({
 	snxPrice,
 }) => {
 	const { t } = useTranslation();
-	const snxjs = useContext(SNXJSContext);
-	const [liquidationsDataWithCurrentRatio, setLiquidationsDataWithCurrentRatio] = useState<
-		LiquidationsDataWithCurrentRatio[]
-	>([]);
 	const columnsDeps = useMemo(() => [issuanceRatio, snxPrice], [issuanceRatio, snxPrice]);
-
-	useEffect(() => {
-		async function getCurrentRatio(): Promise<void> {
-			const liquidationsWithCurrent = liquidationsData.map(async (data) => {
-				const currentRatio = await snxjs.contracts.Synthetix.collateralisationRatio(data.account);
-				// @ts-ignore
-				data.currentRatio = Number(snxjs.utils.formatEther(currentRatio));
-				return data;
-			});
-			const updatedLiquidations = await Promise.all(liquidationsWithCurrent);
-			// @ts-ignore
-			setLiquidationsDataWithCurrentRatio(updatedLiquidations);
-		}
-		if ((liquidationsData ?? []).length > 0) {
-			getCurrentRatio();
-		}
-	}, [liquidationsData.length]);
 
 	return (
 		<StyledTable
@@ -66,7 +40,7 @@ const Liquidations: FC<LiquidationsProps> = ({
 					),
 					accessor: 'account',
 					sortType: 'basic',
-					Cell: (cellProps: CellProps<LiquidationsDataWithCurrentRatio>) => (
+					Cell: (cellProps: CellProps<LiquidationsData>) => (
 						<InterSpan>{cellProps.row.original.account}</InterSpan>
 					),
 					width: 200,
@@ -78,8 +52,10 @@ const Liquidations: FC<LiquidationsProps> = ({
 					),
 					accessor: 'deadline',
 					sortType: 'basic',
-					Cell: (cellProps: CellProps<LiquidationsDataWithCurrentRatio>) => (
-						<InterSpan>{formatTime(cellProps.row.original.deadline, 'dd:hh:mm:ss')}</InterSpan>
+					Cell: (cellProps: CellProps<LiquidationsData>) => (
+						<InterSpan>
+							<Timer expiryTimestamp={cellProps.row.original.deadline} />
+						</InterSpan>
 					),
 					width: 100,
 					sortable: true,
@@ -90,7 +66,7 @@ const Liquidations: FC<LiquidationsProps> = ({
 					),
 					accessor: 'cyrrentRatio',
 					sortType: 'basic',
-					Cell: (cellProps: CellProps<LiquidationsDataWithCurrentRatio>) => (
+					Cell: (cellProps: CellProps<LiquidationsData>) => (
 						<InterSpan>{formatPercentage(1 / cellProps.row.original.currentRatio, 0)}</InterSpan>
 					),
 					width: 100,
@@ -104,8 +80,8 @@ const Liquidations: FC<LiquidationsProps> = ({
 					),
 					accessor: 'liquidatableNonEscrowSNX',
 					sortType: 'basic',
-					Cell: (cellProps: CellProps<LiquidationsDataWithCurrentRatio>) => (
-						<InterSpan>{`${formatNumber(cellProps.row.original.liquidatableNonEscrowSNX)} ${
+					Cell: (cellProps: CellProps<LiquidationsData>) => (
+						<InterSpan>{`${formatNumber(cellProps.row.original.currentBalanceOf)} ${
 							CryptoCurrency.SNX
 						}`}</InterSpan>
 					),
@@ -120,13 +96,17 @@ const Liquidations: FC<LiquidationsProps> = ({
 					),
 					accessor: 'collateral',
 					sortType: 'basic',
-					Cell: (cellProps: CellProps<LiquidationsDataWithCurrentRatio>) => {
-						if (snxPrice != null && issuanceRatio != null && cellProps.row.original.collateral) {
+					Cell: (cellProps: CellProps<LiquidationsData>) => {
+						if (
+							snxPrice != null &&
+							issuanceRatio != null &&
+							cellProps.row.original.currentCollateral
+						) {
 							const stakerTargetDebt =
-								(issuanceRatio / snxPrice) * cellProps.row.original.collateral;
+								(issuanceRatio / snxPrice) * cellProps.row.original.currentCollateral;
 							const stakerCurrentDebt =
-								(cellProps.row.original.collateralRatio / snxPrice) *
-								cellProps.row.original.collateral;
+								(cellProps.row.original.currentRatio / snxPrice) *
+								cellProps.row.original.currentCollateral;
 							return (
 								<InterSpan>{`${formatNumber(stakerCurrentDebt - stakerTargetDebt)} ${
 									CryptoCurrency.sUSD
@@ -140,7 +120,7 @@ const Liquidations: FC<LiquidationsProps> = ({
 				},
 			]}
 			columnsDeps={columnsDeps}
-			data={liquidationsDataWithCurrentRatio}
+			data={liquidationsData}
 			isLoading={isLoading}
 			noResultsMessage={
 				!isLoading && liquidationsData.length === 0 ? (

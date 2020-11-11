@@ -74,32 +74,11 @@ export const formatIdToIsoString = (id: string, timeSeries: TimeSeries) => {
 
 export type TimeSeriesType = '15m' | '1d';
 
-type FormattedTime = 'dd:hh:mm:ss';
-
-export const formatTime = (created: string | number, type: TimeSeriesType | FormattedTime) => {
+export const formatTime = (created: string | number, type: TimeSeriesType) => {
 	if (type === '15m') {
 		return format(new Date(created), 'HH:00');
 	} else if (type === '1d') {
 		return format(new Date(created), 'MM/dd');
-	} else if (type === 'dd:hh:mm:ss') {
-		const now = new Date().getTime();
-		const liquidationTime = Math.max(new Date(created).getTime(), now);
-		const duration = intervalToDuration({
-			start: now,
-			end: liquidationTime,
-		});
-		const printInterval = (num: number) =>
-			num === 0
-				? '00:'
-				: num.toString().length === 2
-				? `${num.toString()}:`
-				: `0${num.toString()}:`;
-		return `${printInterval(duration.days ?? 0)}${printInterval(
-			duration.hours ?? 0
-		)}${printInterval(duration.minutes ?? 0)}${printInterval(duration.seconds ?? 0).replace(
-			':',
-			''
-		)}`;
 	}
 	throw new Error('unrecognized time to format');
 };
