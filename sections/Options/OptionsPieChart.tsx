@@ -15,8 +15,8 @@ const OptionsPieChart: FC<OptionsPieChartProps> = ({ data }) => {
 	const { t } = useTranslation();
 	return (
 		<OptionsPieChartContainer>
-			<ChartTitle>{t('homepage.options-pie-chart.title')}</ChartTitle>
-			<ChartSubtitle>{t('homepage.options-pie-chart.subtext')}</ChartSubtitle>
+			<ChartTitle>{t('options-pie-chart.title')}</ChartTitle>
+			<ChartSubtitle>{t('options-pie-chart.subtext')}</ChartSubtitle>
 			<PieChart data={data} />
 		</OptionsPieChartContainer>
 	);

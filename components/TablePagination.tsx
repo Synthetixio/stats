@@ -43,8 +43,8 @@ const TablePagination: FC<TablePaginationProps> = ({
 				</ArrowButton>
 			</span>
 			<PageInfo>
-				{t('homepage.liquidations.pagination.page')}{' '}
-				{t('homepage.liquidations.pagination.page-of-total-pages', {
+				{t('liquidations.pagination.page')}{' '}
+				{t('liquidations.pagination.page-of-total-pages', {
 					page: pageIndex + 1,
 					totalPages: pageCount,
 				})}

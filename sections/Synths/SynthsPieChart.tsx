@@ -14,8 +14,8 @@ const SynthsPieChart: FC<SynthsPieChartProps> = ({ data }) => {
 	const { t } = useTranslation();
 	return (
 		<SynthsPieChartContainer>
-			<ChartTitle>{t('homepage.synth-pie-chart.title')}</ChartTitle>
-			<ChartSubtitle>{t('homepage.synth-pie-chart.subtext')}</ChartSubtitle>
+			<ChartTitle>{t('synth-pie-chart.title')}</ChartTitle>
+			<ChartSubtitle>{t('synth-pie-chart.subtext')}</ChartSubtitle>
 			<PieChart data={data} />
 		</SynthsPieChartContainer>
 	);

@@ -7,10 +7,9 @@ import { NO_VALUE } from 'constants/placeholder';
 import { CryptoCurrency } from 'constants/currency';
 import { LiquidationsData } from 'queries/staking';
 
-import { GridDivCenteredRow } from 'components/common';
-
 import Table from 'components/Table';
 import Timer from 'components/Timer';
+import { FlexDiv } from 'components/common';
 
 import NoNotificationIcon from 'assets/svg/no-notifications.svg';
 import { formatPercentage, formatNumber } from 'utils/formatter';
@@ -35,9 +34,7 @@ const Liquidations: FC<LiquidationsProps> = ({
 		<StyledTable
 			columns={[
 				{
-					Header: (
-						<StyledTableHeader>{t('homepage.liquidations.columns.account')}</StyledTableHeader>
-					),
+					Header: <StyledTableHeader>{t('liquidations.columns.account')}</StyledTableHeader>,
 					accessor: 'account',
 					sortType: 'basic',
 					Cell: (cellProps: CellProps<LiquidationsData>) => (
@@ -47,9 +44,7 @@ const Liquidations: FC<LiquidationsProps> = ({
 					sortable: false,
 				},
 				{
-					Header: (
-						<StyledTableHeader>{t('homepage.liquidations.columns.deadline')}</StyledTableHeader>
-					),
+					Header: <StyledTableHeader>{t('liquidations.columns.deadline')}</StyledTableHeader>,
 					accessor: 'deadline',
 					sortType: 'basic',
 					Cell: (cellProps: CellProps<LiquidationsData>) => (
@@ -61,9 +56,7 @@ const Liquidations: FC<LiquidationsProps> = ({
 					sortable: true,
 				},
 				{
-					Header: (
-						<StyledTableHeader>{t('homepage.liquidations.columns.c-ratio')}</StyledTableHeader>
-					),
+					Header: <StyledTableHeader>{t('liquidations.columns.c-ratio')}</StyledTableHeader>,
 					accessor: 'cyrrentRatio',
 					sortType: 'basic',
 					Cell: (cellProps: CellProps<LiquidationsData>) => (
@@ -74,9 +67,7 @@ const Liquidations: FC<LiquidationsProps> = ({
 				},
 				{
 					Header: (
-						<StyledTableHeader>
-							{t('homepage.liquidations.columns.liquidatable-amount')}
-						</StyledTableHeader>
+						<StyledTableHeader>{t('liquidations.columns.liquidatable-amount')}</StyledTableHeader>
 					),
 					accessor: 'liquidatableNonEscrowSNX',
 					sortType: 'basic',
@@ -90,9 +81,7 @@ const Liquidations: FC<LiquidationsProps> = ({
 				},
 				{
 					Header: (
-						<StyledTableHeader>
-							{t('homepage.liquidations.columns.amount-to-cover')}
-						</StyledTableHeader>
+						<StyledTableHeader>{t('liquidations.columns.amount-to-cover')}</StyledTableHeader>
 					),
 					accessor: 'collateral',
 					sortType: 'basic',
@@ -120,13 +109,13 @@ const Liquidations: FC<LiquidationsProps> = ({
 				},
 			]}
 			columnsDeps={columnsDeps}
-			data={liquidationsData}
+			data={[] || liquidationsData}
 			isLoading={isLoading}
 			noResultsMessage={
-				!isLoading && liquidationsData.length === 0 ? (
+				!isLoading && [].length === 0 ? (
 					<TableNoResults>
 						<NoNotificationIcon />
-						{t('dashboard.transactions.table.no-results')}
+						<NoResults>{t('liquidations.no-results')}</NoResults>
 					</TableNoResults>
 				) : undefined
 			}
@@ -150,13 +139,19 @@ const StyledTableHeader = styled.div`
 	color: ${(props) => props.theme.colors.white};
 `;
 
-const TableNoResults = styled(GridDivCenteredRow)`
-	padding: 50px 0;
+const TableNoResults = styled(FlexDiv)`
+	padding: 70px 0;
 	justify-content: center;
 	background-color: ${(props) => props.theme.colors.mediumBlue};
+	color: ${(props) => props.theme.colors.white};
 	margin-top: -2px;
-	justify-items: center;
-	grid-gap: 10px;
+	align-items: center;
+	display: flex;
+	width: 100%;
+`;
+
+const NoResults = styled.span`
+	margin-left: 10px;
 `;
 
 export default Liquidations;

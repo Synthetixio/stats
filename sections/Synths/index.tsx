@@ -98,10 +98,10 @@ const SynthsSection: FC<{}> = () => {
 	const totalValue = pieChartData.reduce((acc, { value }) => acc + value, 0);
 	return (
 		<>
-			<SectionHeader title={t('homepage.section-header.synths')} />
+			<SectionHeader title={t('section-header.synths')} />
 			<SingleStatRow
-				text={t('homepage.total-synths.title')}
-				subtext={t('homepage.total-synths.subtext')}
+				text={t('total-synths.title')}
+				subtext={t('total-synths.subtext')}
 				num={totalValue}
 				color={COLORS.green}
 				numberStyle="currency0"
@@ -110,7 +110,7 @@ const SynthsSection: FC<{}> = () => {
 				<SynthsBarChart data={barChartData} />
 				<SynthsPieChart data={pieChartData} />
 			</SynthsCharts>
-			<SubsectionHeader>{t('homepage.top-synths.title')}</SubsectionHeader>
+			<SubsectionHeader>{t('top-synths.title')}</SubsectionHeader>
 			<StatsRow>
 				{pieChartData.map(({ name, totalSupply, value }: SynthTotalSupply, index: number) => {
 					if (index < NUMBER_OF_TOP_SYNTHS) {
@@ -119,11 +119,11 @@ const SynthsSection: FC<{}> = () => {
 								key={name}
 								title={name}
 								subtitle={subtitleText(name)}
-								firstMetricTitle={t('homepage.top-synths.price')}
+								firstMetricTitle={t('top-synths.price')}
 								firstMetricStyle="currency2"
 								firstMetric={name === 'sUSD' ? sUSDPrice : value / (totalSupply ?? 0)}
 								firstColor={index === 0 ? COLORS.pink : COLORS.green}
-								secondMetricTitle={t('homepage.top-synths.marketCap')}
+								secondMetricTitle={t('top-synths.marketCap')}
 								secondMetric={value}
 								secondColor={index === 2 ? COLORS.pink : COLORS.green}
 								secondMetricStyle="currency0"

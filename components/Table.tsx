@@ -118,7 +118,7 @@ export const Table: FC<TableProps> = ({
 							variant="rect"
 							animation="wave"
 							width="100%"
-							height="100%"
+							height="200px"
 						/>
 					) : (
 						page.length > 0 && (

@@ -102,14 +102,14 @@ const Options: FC = () => {
 
 	return (
 		<>
-			<SectionHeader title={t('homepage.section-header.options')} />
+			<SectionHeader title={t('section-header.options')} />
 			<StatsRow>
 				<StatsBox
 					key="LGSTACTVBINMKT"
-					title={t('homepage.largest-active-binary-market.title')}
+					title={t('largest-active-binary-market.title')}
 					num={Number(largestActiveMarket?.poolSize ?? 0)}
 					percentChange={null}
-					subText={t('homepage.largest-active-binary-market.subtext', {
+					subText={t('largest-active-binary-market.subtext', {
 						synth: largestActiveMarket?.currencyKey ?? '...',
 						price: formatCurrency(largestActiveMarket?.strikePrice ?? 0),
 						date: largestActiveMarket?.maturityDate
@@ -121,7 +121,7 @@ const Options: FC = () => {
 					numBoxes={2}
 					infoData={
 						<Trans
-							i18nKey="homepage.largest-active-binary-market.infoData"
+							i18nKey="largest-active-binary-market.infoData"
 							components={{
 								linkText: <LinkText href={synthetixOptionsSubgraph} />,
 							}}
@@ -130,10 +130,10 @@ const Options: FC = () => {
 				/>
 				<StatsBox
 					key="LGSTBINMKTTODATE"
-					title={t('homepage.largest-binary-market-to-date.title')}
+					title={t('largest-binary-market-to-date.title')}
 					num={Number(largestMarket?.poolSize ?? 0)}
 					percentChange={null}
-					subText={t('homepage.largest-binary-market-to-date.subtext', {
+					subText={t('largest-binary-market-to-date.subtext', {
 						synth: largestMarket?.currencyKey ?? '...',
 						price: formatCurrency(largestMarket?.strikePrice ?? 0),
 						date: largestMarket?.maturityDate
@@ -145,7 +145,7 @@ const Options: FC = () => {
 					numBoxes={2}
 					infoData={
 						<Trans
-							i18nKey="homepage.largest-binary-market-to-date.infoData"
+							i18nKey="largest-binary-market-to-date.infoData"
 							components={{
 								linkText: <LinkText href={synthetixOptionsSubgraph} />,
 							}}
@@ -156,16 +156,16 @@ const Options: FC = () => {
 			<StatsRow>
 				<StatsBox
 					key="NUMBNRYMRKTS"
-					title={t('homepage.number-of-active-binary-options-markets.title')}
+					title={t('number-of-active-binary-options-markets.title')}
 					num={numMarkets}
 					percentChange={null}
-					subText={t('homepage.number-of-active-binary-options-markets.subtext')}
+					subText={t('number-of-active-binary-options-markets.subtext')}
 					color={COLORS.green}
 					numberStyle="number"
 					numBoxes={3}
 					infoData={
 						<Trans
-							i18nKey="homepage.number-of-active-binary-options-markets.infoData"
+							i18nKey="number-of-active-binary-options-markets.infoData"
 							components={{
 								linkText: <LinkText href={synthetixOptionsSubgraph} />,
 							}}
@@ -174,16 +174,16 @@ const Options: FC = () => {
 				/>
 				<StatsBox
 					key="TTLAMOUNTPOOLEDBINOPT"
-					title={t('homepage.total-pooled-in-binary-options.title')}
+					title={t('total-pooled-in-binary-options.title')}
 					num={totalPoolSizes}
 					percentChange={null}
-					subText={t('homepage.total-pooled-in-binary-options.subtext')}
+					subText={t('total-pooled-in-binary-options.subtext')}
 					color={COLORS.pink}
 					numberStyle="currency0"
 					numBoxes={3}
 					infoData={
 						<Trans
-							i18nKey="homepage.total-pooled-in-binary-options.infoData"
+							i18nKey="total-pooled-in-binary-options.infoData"
 							components={{
 								linkText: <LinkText href={synthetixOptionsSubgraph} />,
 							}}
@@ -192,16 +192,16 @@ const Options: FC = () => {
 				/>
 				<StatsBox
 					key="TRADESBINOPTION"
-					title={t('homepage.trades-in-binary-options-24-hrs.title')}
+					title={t('trades-in-binary-options-24-hrs.title')}
 					num={num24HRTx}
 					percentChange={null}
-					subText={t('homepage.trades-in-binary-options-24-hrs.subtext')}
+					subText={t('trades-in-binary-options-24-hrs.subtext')}
 					color={COLORS.pink}
 					numberStyle="number"
 					numBoxes={3}
 					infoData={
 						<Trans
-							i18nKey="homepage.trades-in-binary-options-24-hrs.infoData"
+							i18nKey="trades-in-binary-options-24-hrs.infoData"
 							components={{
 								linkText: <LinkText href={synthetixOptionsSubgraph} />,
 							}}

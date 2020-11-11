@@ -198,7 +198,7 @@ const NetworkSection: FC = () => {
 	const pricePeriods: ChartPeriod[] = ['D', 'W', 'M', 'Y'];
 	return (
 		<>
-			<SectionHeader title={t('homepage.section-header.network')} first={true} />
+			<SectionHeader title={t('section-header.network')} first={true} />
 			<AreaChart
 				periods={pricePeriods}
 				activePeriod={priceChartPeriod}
@@ -208,7 +208,7 @@ const NetworkSection: FC = () => {
 					fetchNewChartData(period);
 				}}
 				data={SNXChartPriceData}
-				title={t('homepage.snx-price.title')}
+				title={t('snx-price.title')}
 				num={SNXPrice}
 				numFormat="currency2"
 				percentChange={
@@ -217,10 +217,10 @@ const NetworkSection: FC = () => {
 				timeSeries={priceChartPeriod === 'D' ? '15m' : '1d'}
 				infoData={
 					<Trans
-						i18nKey="homepage.snx-price.infoData"
+						i18nKey="snx-price.infoData"
 						values={{
-							sjsLinkText: t('homepage.snx-price.sjsLinkText'),
-							viewPlaygroundLinkText: t('homepage.snx-price.viewPlaygroundLinkText'),
+							sjsLinkText: t('snx-price.sjsLinkText'),
+							viewPlaygroundLinkText: t('snx-price.viewPlaygroundLinkText'),
 						}}
 						components={{
 							sjslink: <LinkText href={synthetixJSGithub} />,
@@ -233,18 +233,18 @@ const NetworkSection: FC = () => {
 			<StatsRow>
 				<StatsBox
 					key="SNXMKTCAP"
-					title={t('homepage.snx-market-cap.title')}
+					title={t('snx-market-cap.title')}
 					num={SNXPrice != null && SNXTotalSupply != null ? SNXTotalSupply * (SNXPrice ?? 0) : null}
 					percentChange={null}
-					subText={t('homepage.snx-market-cap.subtext')}
+					subText={t('snx-market-cap.subtext')}
 					color={COLORS.pink}
 					numberStyle="currency0"
 					numBoxes={3}
 					infoData={
 						<Trans
-							i18nKey="homepage.snx-market-cap.infoData"
+							i18nKey="snx-market-cap.infoData"
 							values={{
-								sjsLinkText: t('homepage.snx-market-cap.sjsLinkText'),
+								sjsLinkText: t('snx-market-cap.sjsLinkText'),
 							}}
 							components={{
 								linkText: <LinkText href={synthetixJSGithub} />,
@@ -254,18 +254,18 @@ const NetworkSection: FC = () => {
 				/>
 				<StatsBox
 					key="SUSDPRICE"
-					title={t('homepage.susd-price.title')}
+					title={t('susd-price.title')}
 					num={sUSDPrice}
 					percentChange={null}
-					subText={t('homepage.susd-price.subtext')}
+					subText={t('susd-price.subtext')}
 					color={COLORS.green}
 					numberStyle="currency2"
 					numBoxes={3}
 					infoData={
 						<Trans
-							i18nKey="homepage.susd-price.infoData"
+							i18nKey="susd-price.infoData"
 							values={{
-								curveDocLinkText: t('homepage.susd-price.curveDocLinkText'),
+								curveDocLinkText: t('susd-price.curveDocLinkText'),
 							}}
 							components={{
 								linkText: <LinkText href={curveDocumentation} />,
@@ -275,10 +275,10 @@ const NetworkSection: FC = () => {
 				/>
 				<StatsBox
 					key="SNXVOLUME"
-					title={t('homepage.snx-volume.title')}
+					title={t('snx-volume.title')}
 					num={SNX24HVolume}
 					percentChange={null}
-					subText={t('homepage.snx-volume.subtext')}
+					subText={t('snx-volume.subtext')}
 					color={COLORS.green}
 					numberStyle="currency0"
 					numBoxes={3}
@@ -288,23 +288,23 @@ const NetworkSection: FC = () => {
 			<StatsRow>
 				<StatsBox
 					key="TOTALSNXLOCKED"
-					title={t('homepage.total-snx-locked.title')}
+					title={t('total-snx-locked.title')}
 					num={
 						SNXPercentLocked != null && SNXTotalSupply != null && SNXPrice != null
 							? SNXPercentLocked * SNXTotalSupply * (SNXPrice ?? 0)
 							: null
 					}
 					percentChange={null}
-					subText={t('homepage.total-snx-locked.subtext')}
+					subText={t('total-snx-locked.subtext')}
 					color={COLORS.pink}
 					numberStyle="currency0"
 					numBoxes={4}
 					infoData={
 						<Trans
-							i18nKey="homepage.total-snx-locked.infoData"
+							i18nKey="total-snx-locked.infoData"
 							values={{
-								sDataLinkText: t('homepage.total-snx-locked.sDataLinkText'),
-								sjsLinkText: t('homepage.total-snx-locked.sjsLinkText'),
+								sDataLinkText: t('total-snx-locked.sDataLinkText'),
+								sjsLinkText: t('total-snx-locked.sjsLinkText'),
 							}}
 							components={{
 								sDataLink: <LinkText href={synthetixDataGithub} />,
@@ -316,18 +316,18 @@ const NetworkSection: FC = () => {
 				/>
 				<StatsBox
 					key="NETWORKCRATIO"
-					title={t('homepage.network-cratio.title')}
+					title={t('network-cratio.title')}
 					num={networkCRatio}
 					percentChange={null}
-					subText={t('homepage.network-cratio.subtext')}
+					subText={t('network-cratio.subtext')}
 					color={COLORS.green}
 					numberStyle="percent0"
 					numBoxes={4}
 					infoData={
 						<Trans
-							i18nKey="homepage.network-cratio.infoData"
+							i18nKey="network-cratio.infoData"
 							values={{
-								sjsLinkText: t('homepage.network-cratio.sjsLinkText'),
+								sjsLinkText: t('network-cratio.sjsLinkText'),
 							}}
 							components={{
 								sjsLink: <LinkText href={synthetixJSGithub} />,
@@ -337,18 +337,18 @@ const NetworkSection: FC = () => {
 				/>
 				<StatsBox
 					key="ACTIVECRATIO"
-					title={t('homepage.active-cratio.title')}
+					title={t('active-cratio.title')}
 					num={activeCRatio}
 					percentChange={null}
-					subText={t('homepage.active-cratio.subtext')}
+					subText={t('active-cratio.subtext')}
 					color={COLORS.green}
 					numberStyle="percent0"
 					numBoxes={4}
 					infoData={
 						<Trans
-							i18nKey="homepage.active-cratio.infoData"
+							i18nKey="active-cratio.infoData"
 							values={{
-								sDataLinkText: t('homepage.active-cratio.sDataLinkText'),
+								sDataLinkText: t('active-cratio.sDataLinkText'),
 							}}
 							components={{
 								sjsLink: <LinkText href={synthetixDataGithub} />,
@@ -359,18 +359,18 @@ const NetworkSection: FC = () => {
 				/>
 				<StatsBox
 					key="SNXHOLDRS"
-					title={t('homepage.snx-holders.title')}
+					title={t('snx-holders.title')}
 					num={SNXHolders}
 					percentChange={null}
-					subText={t('homepage.snx-holders.subtext')}
+					subText={t('snx-holders.subtext')}
 					color={COLORS.green}
 					numberStyle="number"
 					numBoxes={4}
 					infoData={
 						<Trans
-							i18nKey="homepage.snx-holders.infoData"
+							i18nKey="snx-holders.infoData"
 							values={{
-								subgraphLinkText: t('homepage.snx-holders.subgraphLinkText'),
+								subgraphLinkText: t('snx-holders.subgraphLinkText'),
 							}}
 							components={{
 								linkText: <LinkText href={synthetixSubgraph} />,
@@ -383,10 +383,10 @@ const NetworkSection: FC = () => {
 			<StatsRow>
 				<StatsBox
 					key="ETHLOCKED"
-					title={t('homepage.eth-collateral.title')}
+					title={t('eth-collateral.title')}
 					num={etherLocked}
 					percentChange={null}
-					subText={t('homepage.eth-collateral.subtext')}
+					subText={t('eth-collateral.subtext')}
 					color={COLORS.pink}
 					numberStyle="number4"
 					numBoxes={2}
@@ -394,10 +394,10 @@ const NetworkSection: FC = () => {
 				/>
 				<StatsBox
 					key="SUSDMINTEDETH"
-					title={t('homepage.susd-minted-from-eth.title')}
+					title={t('susd-minted-from-eth.title')}
 					num={sUSDFromEther}
 					percentChange={null}
-					subText={t('homepage.susd-minted-from-eth.subtext')}
+					subText={t('susd-minted-from-eth.subtext')}
 					color={COLORS.green}
 					numberStyle="currency0"
 					numBoxes={2}

@@ -14,8 +14,8 @@ const SUSDDistribution: FC<SUSDDistributionProps> = ({ data, totalSupplySUSD }) 
 	const { t } = useTranslation();
 	return (
 		<SectionWrap>
-			<SectionTitle>{t('homepage.susd-distribution.title')}</SectionTitle>
-			<SectionSubtitle>{t('homepage.susd-distribution.subtext')}</SectionSubtitle>
+			<SectionTitle>{t('susd-distribution.title')}</SectionTitle>
+			<SectionSubtitle>{t('susd-distribution.subtext')}</SectionSubtitle>
 			<BasicTreeMap data={data} totalSupplySUSD={totalSupplySUSD} />
 		</SectionWrap>
 	);
