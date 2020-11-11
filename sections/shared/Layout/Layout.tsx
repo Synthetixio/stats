@@ -31,7 +31,7 @@ const GlobalStyle = createGlobalStyle`
 		background-color: ${(props) => props.theme.colors.darkBlue};
 		color: ${(props) => props.theme.colors.lightFont};
 
-		.stats-box-skeleton, .chart-skeleton {
+		.stats-box-skeleton, .chart-skeleton, .liquidations-skeleton {
 			background-color: ${(props) => props.theme.colors.mediumBlue};
 		}
 
@@ -39,31 +39,41 @@ const GlobalStyle = createGlobalStyle`
 			margin-top: -100px;
 		}
 
-		.stats-box-skeleton::after, .chart-skeleton::after {
+		.stats-box-skeleton::after, .chart-skeleton::after, .liquidations-skeleton::after {
 			background: linear-gradient(90deg, #08021E 0%, #120446 146.21%);
 		}
 
 		/* Let's get this party started */
 		*::-webkit-scrollbar, ::-webkit-scrollbar {
-				width: 12px;
+				width: 8px;
+				height: 8px;
 		}
 		
 		/* Track */
 		*::-webkit-scrollbar-track, ::-webkit-scrollbar-track {
-				-webkit-box-shadow: inset 0 0 6px ${(props) => props.theme.colors.mediumBlue}; 
+				-webkit-box-shadow: inset 0 0 10px ${(props) => props.theme.colors.darkBlue}; 
+				box-shadow: inset 0 0 10px ${(props) => props.theme.colors.darkBlue}; 
 				-webkit-border-radius: 10px;
 				border-radius: 10px;
+				width: 8px;
+				height: 8px;
+				background: ${(props) => props.theme.colors.darkBlue};
 		}
 		
 		/* Handle */
 		*::-webkit-scrollbar-thumb, ::-webkit-scrollbar-thumb {
 				-webkit-border-radius: 10px;
 				border-radius: 10px;
-				background: ${(props) => props.theme.colors.brightPink}; 
-				-webkit-box-shadow: inset 0 0 6px ${(props) => props.theme.colors.mediumBlue}; 
+				background: ${(props) => props.theme.colors.mutedBrightPink}; 
+				width: 8px;
+				height: 8px;
+				-webkit-box-shadow: inset 0 0 10px ${(props) => props.theme.colors.mutedBrightPink}; 
+				box-shadow: inset 0 0 10px ${(props) => props.theme.colors.mutedBrightPink}; 
 		}
 		*::-webkit-scrollbar-thumb:window-inactive, ::-webkit-scrollbar-thumb:window-inactive {
-			background: ${(props) => props.theme.colors.brightPink}; 
+			background: ${(props) => props.theme.colors.brightPink};
+			width: 8px;
+			height: 8px;
 		}
 
 		svg.recharts-surface tspan {

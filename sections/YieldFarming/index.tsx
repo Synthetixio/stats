@@ -25,14 +25,14 @@ import { FullLineText } from '../../components/common';
 const SubtitleText = ({ name }: { name: string }) =>
 	name === 'sUSD' ? (
 		<Trans
-			i18nKey={'homepage.yield-farming-subtitle-text.sUSD'}
+			i18nKey={'yield-farming-subtitle-text.sUSD'}
 			values={{
 				name,
 			}}
 		/>
 	) : (
 		<Trans
-			i18nKey={'homepage.yield-farming-subtitle-text.default'}
+			i18nKey={'yield-farming-subtitle-text.default'}
 			values={{
 				name,
 			}}
@@ -155,10 +155,10 @@ const YieldFarming: FC = () => {
 
 	return (
 		<>
-			<SectionHeader title={t('homepage.section-header.yieldFarming')} />
+			<SectionHeader title={t('section-header.yieldFarming')} />
 			<SingleStatRow
-				text={t('homepage.lending-apy.title')}
-				subtext={t('homepage.lending-apy.subtext')}
+				text={t('lending-apy.title')}
+				subtext={t('lending-apy.subtext')}
 				num={aaveDepositRate}
 				color={COLORS.green}
 				numberStyle="percent2"
@@ -166,15 +166,15 @@ const YieldFarming: FC = () => {
 			<StatsRowEmptySpace>
 				<DoubleStatsBox
 					key="CRVSUSDRWRDS"
-					title={t('homepage.curve-susd.title')}
+					title={t('curve-susd.title')}
 					subtitle={<SubtitleText name="sUSD" />}
-					firstMetricTitle={t('homepage.curve-susd.firstMetricTitle')}
+					firstMetricTitle={t('curve-susd.firstMetricTitle')}
 					firstMetricStyle="number"
 					firstMetric={
 						distributions != null ? distributions[curvepoolRewards.address] : distributions
 					}
 					firstColor={COLORS.pink}
-					secondMetricTitle={t('homepage.curve-susd.secondMetricTitle')}
+					secondMetricTitle={t('curve-susd.secondMetricTitle')}
 					secondMetric={
 						SNXPrice != null &&
 						distributions != null &&
@@ -192,7 +192,7 @@ const YieldFarming: FC = () => {
 					secondMetricStyle="percent2"
 					infoData={
 						<Trans
-							i18nKey={'homepage.curve-susd.infoData'}
+							i18nKey={'curve-susd.infoData'}
 							values={{
 								rewards: curveTokenAPY != null ? formatPercentage(curveTokenAPY) : '...',
 								snxRewards:
@@ -213,13 +213,13 @@ const YieldFarming: FC = () => {
 				/>
 				<DoubleStatsBox
 					key="iETHRWRDS"
-					title={t('homepage.iETH.title')}
+					title={t('iETH.title')}
 					subtitle={<SubtitleText name="iETH" />}
-					firstMetricTitle={t('homepage.iETH.firstMetricTitle')}
+					firstMetricTitle={t('iETH.firstMetricTitle')}
 					firstMetricStyle="number"
 					firstMetric={distributions != null ? distributions[iEth4Rewards.address] : distributions}
 					firstColor={COLORS.green}
-					secondMetricTitle={t('homepage.iETH.secondMetricTitle')}
+					secondMetricTitle={t('iETH.secondMetricTitle')}
 					secondMetric={
 						distributions != null && iEthAPYFields != null && SNXPrice != null
 							? ((distributions[iEth4Rewards.address] * (SNXPrice ?? 0)) /
