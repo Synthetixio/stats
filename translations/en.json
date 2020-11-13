@@ -209,6 +209,11 @@
 		"firstMetricTitle": "WEEKLY REWARDS (SNX)",
 		"secondMetricTitle": "Annual Percentage Yield"
 	},
+	"iBTC": {
+		"title": "iBTC",
+		"firstMetricTitle": "WEEKLY REWARDS (SNX)",
+		"secondMetricTitle": "Annual Percentage Yield"
+	},
 	"liquidations": {
 		"title": "LIQUIDATIONS",
 		"subtitle": "Active liquidations flagged within the past 30 days",
