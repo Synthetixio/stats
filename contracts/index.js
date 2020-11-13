@@ -5,10 +5,12 @@ import curveSusdPoolToken from './curveSusdPoolToken';
 import curveSusdGauge from './curveSusdGauge';
 import curveGaugeController from './curveGaugeController';
 import synthSummaryUtil from './synthSummaryUtil';
+import iBtcRewards from './iBtcRewards';
 
 export {
 	curvepoolRewards,
 	iEth4Rewards,
+	iBtcRewards,
 	curveSusdPool,
 	curveSusdPoolToken,
 	curveSusdGauge,
