@@ -1,6 +1,6 @@
 {
 	"name": "synthetix-stats",
-	"version": "2.33.0-ovm",
+	"version": "2.33.1",
 	"scripts": {
 		"dev": "next",
 		"build": "next build",
