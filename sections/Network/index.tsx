@@ -43,7 +43,9 @@ const NetworkSection: FC = () => {
 	const [SUSDHolders, setSUSDHolders] = useState<TreeMapData[]>([]);
 	const snxjs = useContext(SNXJSContext);
 	const { sUSDPrice, setsUSDPrice } = useContext(SUSDContext);
-	const { SNXPrice, setSNXPrice, setSNXStaked, setIssuanceRatio } = useContext(SNXContext);
+	const { SNXPrice, setSNXPrice, setSNXStaked, setIssuanceRatio, issuanceRatio } = useContext(
+		SNXContext
+	);
 	const provider = useContext(ProviderContext);
 
 	// NOTE: use interval? or save data calls?
@@ -85,7 +87,7 @@ const NetworkSection: FC = () => {
 				axios.get(CMC_API),
 				snxjs.contracts.SynthetixState.lastDebtLedgerEntry(),
 				snxjs.contracts.Synthetix.totalIssuedSynthsExcludeEtherCollateral(snxjs.toBytes32('sUSD')),
-				snxjs.contracts.SynthetixState.issuanceRatio(),
+				snxjs.contracts.SystemSettings.issuanceRatio(),
 				snxData.snx.holders({ max: 1000 }),
 				snxData.snx.total(),
 				snxjs.contracts.SynthsUSD.totalSupply(),
@@ -115,7 +117,7 @@ const NetworkSection: FC = () => {
 
 			const lastDebtLedgerEntry = Number(formatUnits(unformattedLastDebtLedgerEntry, 27));
 
-			const [totalIssuedSynths, issuanceRatio, usdToSnxPrice, sUSDTotalSupply] = [
+			const [totalIssuedSynths, tempIssuanceRatio, usdToSnxPrice, sUSDTotalSupply] = [
 				unformattedTotalIssuedSynths,
 				unformattedIssuanceRatio,
 				unformattedSnxPrice,
@@ -136,7 +138,7 @@ const NetworkSection: FC = () => {
 					debtBalance = 0;
 					collateralRatio = 0;
 				}
-				const lockedSnx = collateral * Math.min(1, collateralRatio / issuanceRatio);
+				const lockedSnx = collateral * Math.min(1, collateralRatio / tempIssuanceRatio);
 
 				if (Number(debtBalance) > 0) {
 					stakersTotalDebt += Number(debtBalance);
@@ -156,7 +158,7 @@ const NetworkSection: FC = () => {
 			const percentLocked = snxLocked / snxTotal;
 			setSNXPercentLocked(percentLocked);
 			setSNXStaked(totalSupply * percentLocked);
-			setIssuanceRatio(issuanceRatio);
+			setIssuanceRatio(tempIssuanceRatio);
 			setTotalSupplySUSD(sUSDTotalSupply);
 			setActiveCRatio(1 / (stakersTotalDebt / stakersTotalCollateral));
 			setNetworkCRatio((totalSupply * formattedSNXPrice) / totalIssuedSynths);
@@ -239,7 +241,7 @@ const NetworkSection: FC = () => {
 					subText={t('snx-market-cap.subtext')}
 					color={COLORS.pink}
 					numberStyle="currency0"
-					numBoxes={3}
+					numBoxes={4}
 					infoData={
 						<Trans
 							i18nKey="snx-market-cap.infoData"
@@ -260,7 +262,7 @@ const NetworkSection: FC = () => {
 					subText={t('susd-price.subtext')}
 					color={COLORS.green}
 					numberStyle="currency2"
-					numBoxes={3}
+					numBoxes={4}
 					infoData={
 						<Trans
 							i18nKey="susd-price.infoData"
@@ -281,8 +283,19 @@ const NetworkSection: FC = () => {
 					subText={t('snx-volume.subtext')}
 					color={COLORS.green}
 					numberStyle="currency0"
-					numBoxes={3}
+					numBoxes={4}
 					infoData={null}
+				/>
+				<StatsBox
+					key="ISSUANCECRATIO"
+					title={t('issuance-ratio.title')}
+					num={issuanceRatio != null ? 1 / (issuanceRatio ?? 0) : null}
+					percentChange={null}
+					subText={t('issuance-ratio.subtext')}
+					color={COLORS.green}
+					numberStyle="percent0"
+					numBoxes={4}
+					infoData={<>{t('issuance-ratio.infoData')}</>}
 				/>
 			</StatsRow>
 			<StatsRow>
