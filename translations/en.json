@@ -54,8 +54,7 @@
 	"issuance-ratio": {
 		"title": "ISSUANCE RATIO",
 		"subtext": "The base issuance ratio of SNX/(sUSD debt) for all SNX stakers",
-		"infoData": "This is the base ratio all stakers must be at or above in order to claim SNX.",
-		"sjsLinkText": "synthetix-js repo"
+		"infoData": "This is the base ratio all stakers must be at or above in order to claim SNX."
 	},
 	"active-cratio": {
 		"title": "ACTIVE C-RATIO",
