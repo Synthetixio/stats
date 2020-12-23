@@ -76,6 +76,10 @@
 		"title": "ETH COLLATERAL",
 		"subtext": "Total number of Ether locked as collateral"
 	},
+	"btc-collateral": {
+		"title": "BTC COLLATERAL",
+		"subtext": "Total number of renBTC locked as collateral"
+	},
 	"susd-minted-from-eth": {
 		"title": "sUSD MINTED FROM ETH",
 		"subtext": "Total number of sUSD minted using Ether as collateral"
@@ -154,7 +158,8 @@
 	},
 	"synth-bar-chart": {
 		"title": "TOTAL SYNTHS",
-		"subtext": "The total value of all Synths in USD"
+		"subtext": "The total value of all Synths in USD",
+		"shorts": "shorts"
 	},
 	"synth-pie-chart": {
 		"title": "SYNTH DOMINANCE",

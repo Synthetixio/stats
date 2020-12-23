@@ -6,6 +6,7 @@ import curveSusdGauge from './curveSusdGauge';
 import curveGaugeController from './curveGaugeController';
 import synthSummaryUtil from './synthSummaryUtil';
 import iBtcRewards from './iBtcRewards';
+import renBTC from './renBTC';
 
 export {
 	curvepoolRewards,
@@ -16,4 +17,5 @@ export {
 	curveSusdGauge,
 	curveGaugeController,
 	synthSummaryUtil,
+	renBTC,
 };

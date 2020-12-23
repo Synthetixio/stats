@@ -22,14 +22,14 @@ import { SNXJSContext, SUSDContext, SNXContext, ProviderContext } from 'pages/_a
 import { formatIdToIsoString } from 'utils/formatter';
 import { getSUSDHoldersName } from 'utils/dataMapping';
 import { LinkText, NewParagraph } from 'components/common';
-import { curveSusdPool } from 'contracts';
+import { curveSusdPool, renBTC } from 'contracts';
 
 const CMC_API = 'https://coinmarketcap-api.synthetix.io/public/prices?symbols=SNX';
 
 const NetworkSection: FC = () => {
 	const { t } = useTranslation();
 	const [etherLocked, setEtherLocked] = useState<number | null>(null);
-	const [sUSDFromEther, setsUSDFromEther] = useState<number | null>(null);
+	const [bitcoinLocked, setBitcoinLocked] = useState<number | null>(null);
 	const [priorSNXPrice, setPriorSNXPrice] = useState<number | null>(null);
 	const [priceChartPeriod, setPriceChartPeriod] = useState<ChartPeriod>('D');
 	const [SNXChartPriceData, setSNXChartPriceData] = useState<AreaChartData[]>([]);
@@ -60,6 +60,13 @@ const NetworkSection: FC = () => {
 				provider
 			);
 
+			const renBTCContract = new ethers.Contract(
+				renBTC.address,
+				// @ts-ignore
+				renBTC.abi,
+				provider
+			);
+
 			const usdcContractNumber = 1;
 			const susdContractNumber = 3;
 			const susdAmount = 10000;
@@ -77,9 +84,10 @@ const NetworkSection: FC = () => {
 				snxTotals,
 				unformattedSUSDTotalSupply,
 				topSUSDHolders,
-				sUSDFromEth,
 				ethSusdCollateralBalance,
 				ethCollateralBalance,
+				multiCollateralEtherBalance,
+				multiCollateralRenBtcBalance,
 			] = await Promise.all([
 				snxjs.contracts.ExchangeRates.rateForCurrency(snxjs.toBytes32('SNX')),
 				snxjs.contracts.Synthetix.totalSupply(),
@@ -92,15 +100,18 @@ const NetworkSection: FC = () => {
 				snxData.snx.total(),
 				snxjs.contracts.SynthsUSD.totalSupply(),
 				snxData.synths.holders({ max: 5, synth: 'sUSD' }),
-				snxjs.contracts.EtherCollateralsUSD.totalIssuedSynths(),
 				provider.getBalance(snxjs.contracts.EtherCollateralsUSD.address),
 				provider.getBalance(snxjs.contracts.EtherCollateral.address),
+				provider.getBalance(snxjs.contracts.CollateralEth.address),
+				renBTCContract.balanceOf(snxjs.contracts.CollateralErc20.address),
 			]);
 
 			setEtherLocked(
-				Number(snxjs.utils.formatEther(ethCollateralBalance)) +
-					Number(snxjs.utils.formatEther(ethSusdCollateralBalance))
+				Number(formatEther(ethCollateralBalance)) +
+					Number(formatEther(ethSusdCollateralBalance)) +
+					Number(formatEther(multiCollateralEtherBalance))
 			);
+			setBitcoinLocked(Number(formatEther(multiCollateralRenBtcBalance)));
 			setSNXHolders(snxTotals.snxHolders);
 			const formattedSNXPrice = Number(formatEther(unformattedSnxPrice));
 			setSNXPrice(formattedSNXPrice);
@@ -108,7 +119,6 @@ const NetworkSection: FC = () => {
 			setSNXTotalSupply(totalSupply);
 			const exchangeAmount = Number(formatUnits(unformattedExchangeAmount, 6));
 			setsUSDPrice(exchangeAmount / susdAmount);
-			setsUSDFromEther(Number(snxjs.utils.formatEther(sUSDFromEth)));
 
 			const dailyVolume = cmcSNXData?.data?.data?.SNX?.quote?.USD?.volume_24h;
 			if (dailyVolume) {
@@ -406,13 +416,13 @@ const NetworkSection: FC = () => {
 					infoData={null}
 				/>
 				<StatsBox
-					key="SUSDMINTEDETH"
-					title={t('susd-minted-from-eth.title')}
-					num={sUSDFromEther}
+					key="BTCLOCKED"
+					title={t('btc-collateral.title')}
+					num={bitcoinLocked}
 					percentChange={null}
-					subText={t('susd-minted-from-eth.subtext')}
+					subText={t('btc-collateral.subtext')}
 					color={COLORS.green}
-					numberStyle="currency0"
+					numberStyle="number4"
 					numBoxes={2}
 					infoData={null}
 				/>

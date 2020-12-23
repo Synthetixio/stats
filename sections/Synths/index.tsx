@@ -28,6 +28,7 @@ const SynthsSection: FC<{}> = () => {
 	const snxjs = useContext(SNXJSContext);
 	const { sUSDPrice } = useContext(SUSDContext);
 	const provider = useContext(ProviderContext);
+	const { formatEther, parseBytes32String } = snxjs.utils;
 
 	useEffect(() => {
 		const fetchData = async () => {
@@ -37,16 +38,34 @@ const SynthsSection: FC<{}> = () => {
 				provider
 			);
 
-			const synthTotalSupplies = await SynthSummaryUtil.synthsTotalSupplies();
+			const [synthTotalSupplies, unformattedEthShorts, unformattedBtcShorts] = await Promise.all([
+				SynthSummaryUtil.synthsTotalSupplies(),
+				snxjs.contracts.CollateralManager.short(snxjs.toBytes32('sETH')),
+				snxjs.contracts.CollateralManager.short(snxjs.toBytes32('sBTC')),
+			]);
+
+			const [ethShorts, btcShorts] = [unformattedEthShorts, unformattedBtcShorts].map((val) =>
+				Number(formatEther(val))
+			);
 
 			let totalValue = 0;
 			const unsortedOpenInterest: SynthTotalSupply[] = [];
 			for (let i = 0; i < synthTotalSupplies[0].length; i++) {
-				let value = Number(snxjs.utils.formatEther(synthTotalSupplies[2][i]));
+				let value = Number(formatEther(synthTotalSupplies[2][i]));
+				const synthName = parseBytes32String(synthTotalSupplies[0][i]);
+				let combinedWithShortsValue = value;
+				if (synthName === 'iETH') {
+					combinedWithShortsValue += ethShorts;
+				} else if (synthName === 'iBTC') {
+					combinedWithShortsValue += btcShorts;
+				}
 				unsortedOpenInterest.push({
-					name: snxjs.utils.parseBytes32String(synthTotalSupplies[0][i]),
-					totalSupply: Number(snxjs.utils.formatEther(synthTotalSupplies[1][i])),
-					value,
+					name:
+						synthName === 'iETH' || synthName === 'iBTC'
+							? `${synthName}/ ${t('synth-bar-chart.shorts')}`
+							: synthName,
+					totalSupply: Number(formatEther(synthTotalSupplies[1][i])),
+					value: combinedWithShortsValue,
 				});
 				totalValue += value;
 			}
