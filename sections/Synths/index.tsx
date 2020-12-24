@@ -52,18 +52,15 @@ const SynthsSection: FC<{}> = () => {
 			const unsortedOpenInterest: SynthTotalSupply[] = [];
 			for (let i = 0; i < synthTotalSupplies[0].length; i++) {
 				let value = Number(formatEther(synthTotalSupplies[2][i]));
-				const synthName = parseBytes32String(synthTotalSupplies[0][i]);
+				const name = parseBytes32String(synthTotalSupplies[0][i]);
 				let combinedWithShortsValue = value;
-				if (synthName === 'iETH') {
+				if (name === 'iETH') {
 					combinedWithShortsValue += ethShorts;
-				} else if (synthName === 'iBTC') {
+				} else if (name === 'iBTC') {
 					combinedWithShortsValue += btcShorts;
 				}
 				unsortedOpenInterest.push({
-					name:
-						synthName === 'iETH' || synthName === 'iBTC'
-							? `${synthName}/ ${t('synth-bar-chart.shorts')}`
-							: synthName,
+					name,
 					totalSupply: Number(formatEther(synthTotalSupplies[1][i])),
 					value: combinedWithShortsValue,
 				});
@@ -78,10 +75,22 @@ const SynthsSection: FC<{}> = () => {
 				.filter((item) => openInterestSynths.includes(item.name))
 				.reduce((acc: OpenInterest, curr: SynthTotalSupply): OpenInterest => {
 					const name = curr.name.slice(1);
+					const isEthShort = curr.name === 'iETH';
+					const isBtcShort = curr.name === 'iBTC';
+					const isShort = isEthShort || isBtcShort;
+					const assetPrice = curr.value / (curr.totalSupply ?? 0);
+					const newSupply = isEthShort
+						? ethShorts / assetPrice
+							? isBtcShort
+								? btcShorts / assetPrice
+								: 0
+							: 0
+						: 0;
 					const subObject = {
 						[curr.name]: {
 							value: curr.value,
-							totalSupply: curr.totalSupply ?? 0,
+							totalSupply: curr.totalSupply ?? 0 + newSupply,
+							isShort,
 						},
 					};
 					if (acc[name]) {
