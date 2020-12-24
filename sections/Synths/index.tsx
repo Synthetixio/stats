@@ -12,7 +12,6 @@ import { OpenInterest, SynthTotalSupply } from 'types/data';
 import SingleStatRow from 'components/SingleStatRow';
 import DoubleStatsBox from 'components/DoubleStatsBox';
 import StatsRow from 'components/StatsRow';
-import { synthSummaryUtil } from 'contracts';
 
 import SynthsBarChart from './SynthsBarChart';
 import SynthsPieChart from './SynthsPieChart';
@@ -32,36 +31,44 @@ const SynthsSection: FC<{}> = () => {
 
 	useEffect(() => {
 		const fetchData = async () => {
-			const SynthSummaryUtil = new ethers.Contract(
-				synthSummaryUtil.address,
-				synthSummaryUtil.abi,
-				provider
-			);
-
-			const [synthTotalSupplies, unformattedEthShorts, unformattedBtcShorts] = await Promise.all([
-				SynthSummaryUtil.synthsTotalSupplies(),
+			const [
+				synthTotalSupplies,
+				unformattedEthShorts,
+				unformattedBtcShorts,
+				unformattedBtcPrice,
+				unformattedEthPrice,
+			] = await Promise.all([
+				snxjs.contracts.SynthUtil.synthsTotalSupplies(),
 				snxjs.contracts.CollateralManager.short(snxjs.toBytes32('sETH')),
 				snxjs.contracts.CollateralManager.short(snxjs.toBytes32('sBTC')),
+				snxjs.contracts.ExchangeRates.rateForCurrency(snxjs.toBytes32('sBTC')),
+				snxjs.contracts.ExchangeRates.rateForCurrency(snxjs.toBytes32('sETH')),
 			]);
 
-			const [ethShorts, btcShorts] = [unformattedEthShorts, unformattedBtcShorts].map((val) =>
-				Number(formatEther(val))
-			);
+			const [ethShorts, btcShorts, btcPrice, ethPrice] = [
+				unformattedEthShorts,
+				unformattedBtcShorts,
+				unformattedBtcPrice,
+				unformattedEthPrice,
+			].map((val) => Number(formatEther(val)));
 
 			let totalValue = 0;
 			const unsortedOpenInterest: SynthTotalSupply[] = [];
 			for (let i = 0; i < synthTotalSupplies[0].length; i++) {
-				let value = Number(formatEther(synthTotalSupplies[2][i]));
+				const value = Number(formatEther(synthTotalSupplies[2][i]));
 				const name = parseBytes32String(synthTotalSupplies[0][i]);
+				const totalSupply = Number(formatEther(synthTotalSupplies[1][i]));
+
 				let combinedWithShortsValue = value;
+				const assetPrice = value / totalSupply;
 				if (name === 'iETH') {
-					combinedWithShortsValue += ethShorts;
+					combinedWithShortsValue += ethShorts * ethPrice;
 				} else if (name === 'iBTC') {
-					combinedWithShortsValue += btcShorts;
+					combinedWithShortsValue += btcShorts * btcPrice;
 				}
 				unsortedOpenInterest.push({
 					name,
-					totalSupply: Number(formatEther(synthTotalSupplies[1][i])),
+					totalSupply,
 					value: combinedWithShortsValue,
 				});
 				totalValue += value;
@@ -78,19 +85,13 @@ const SynthsSection: FC<{}> = () => {
 					const isEthShort = curr.name === 'iETH';
 					const isBtcShort = curr.name === 'iBTC';
 					const isShort = isEthShort || isBtcShort;
-					const assetPrice = curr.value / (curr.totalSupply ?? 0);
-					const newSupply = isEthShort
-						? ethShorts / assetPrice
-							? isBtcShort
-								? btcShorts / assetPrice
-								: 0
-							: 0
-						: 0;
+
 					const subObject = {
 						[curr.name]: {
 							value: curr.value,
-							totalSupply: curr.totalSupply ?? 0 + newSupply,
+							totalSupply: curr.totalSupply ?? 0,
 							isShort,
+							shortSupply: isEthShort ? ethShorts : isBtcShort ? btcShorts : null,
 						},
 					};
 					if (acc[name]) {

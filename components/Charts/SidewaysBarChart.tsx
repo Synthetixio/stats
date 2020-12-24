@@ -30,6 +30,7 @@ const SidewaysBarChart: FC<SidewaysBarChartProps> = ({ data }) => {
 						const synthTotalSupply = data[key][synthName].totalSupply;
 						const inverseTotalSupply = data[key][inverseName].totalSupply;
 						const isShort = data[key][inverseName].isShort;
+						const shortSupply = data[key][inverseName].shortSupply;
 
 						const totalValue = synthValue + inverseValue;
 
@@ -40,12 +41,19 @@ const SidewaysBarChart: FC<SidewaysBarChartProps> = ({ data }) => {
 										<SynthLabel>
 											{inverseName === 'iBTC' || inverseName === 'iETH'
 												? `${inverseName} + ${t('synth-bar-chart.shorts')}`
-												: null}
+												: inverseName}
 										</SynthLabel>
-										<LabelSmall>{`${formatNumber(inverseTotalSupply)} (${formatCurrency(
-											inverseValue,
-											0
-										)})`}</LabelSmall>
+										<LabelSmall>
+											{inverseName === 'iBTC' || inverseName === 'iETH'
+												? `(${formatNumber(inverseTotalSupply)} + ${shortSupply}) (${formatCurrency(
+														inverseValue,
+														0
+												  )})`
+												: `(${formatNumber(inverseTotalSupply)}) (${formatCurrency(
+														inverseValue,
+														0
+												  )})`}
+										</LabelSmall>
 										{isShort ? (
 											<InfoPopover
 												noPaddingTop={true}
@@ -55,7 +63,7 @@ const SidewaysBarChart: FC<SidewaysBarChartProps> = ({ data }) => {
 									</SynthInfo>
 									<SynthInfo>
 										<SynthLabel>{synthName}</SynthLabel>
-										<LabelSmall>{`${formatNumber(synthTotalSupply)} (${formatCurrency(
+										<LabelSmall>{`(${formatNumber(synthTotalSupply)}) (${formatCurrency(
 											synthValue,
 											0
 										)})`}</LabelSmall>

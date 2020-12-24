@@ -80,6 +80,10 @@
 		"title": "BTC COLLATERAL",
 		"subtext": "Total number of renBTC locked as collateral"
 	},
+	"short-collateral": {
+		"title": "sUSD BACKED SHORTS",
+		"subtext": "sUSD backing shorts against ETH and BTC"
+	},
 	"susd-minted-from-eth": {
 		"title": "sUSD MINTED FROM ETH",
 		"subtext": "Total number of sUSD minted using Ether as collateral"

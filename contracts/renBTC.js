@@ -10,5 +10,14 @@ export default {
 			stateMutability: 'view',
 			type: 'function',
 		},
+		{
+			constant: true,
+			inputs: [{ internalType: 'address', name: '_account', type: 'address' }],
+			name: 'balanceOfUnderlying',
+			outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+			payable: false,
+			stateMutability: 'view',
+			type: 'function',
+		},
 	],
 };

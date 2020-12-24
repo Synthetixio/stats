@@ -4,6 +4,7 @@ export type OpenInterest = {
 			value: number;
 			totalSupply: number;
 			isShort: boolean;
+			shortSupply: number | null;
 		};
 	};
 };

@@ -30,6 +30,7 @@ const NetworkSection: FC = () => {
 	const { t } = useTranslation();
 	const [etherLocked, setEtherLocked] = useState<number | null>(null);
 	const [bitcoinLocked, setBitcoinLocked] = useState<number | null>(null);
+	const [sUSDShortLocked, setsUSDShortLocked] = useState<number | null>(null);
 	const [priorSNXPrice, setPriorSNXPrice] = useState<number | null>(null);
 	const [priceChartPeriod, setPriceChartPeriod] = useState<ChartPeriod>('D');
 	const [SNXChartPriceData, setSNXChartPriceData] = useState<AreaChartData[]>([]);
@@ -88,6 +89,7 @@ const NetworkSection: FC = () => {
 				ethCollateralBalance,
 				multiCollateralEtherBalance,
 				multiCollateralRenBtcBalance,
+				shortCollateralsUSDBalance,
 			] = await Promise.all([
 				snxjs.contracts.ExchangeRates.rateForCurrency(snxjs.toBytes32('SNX')),
 				snxjs.contracts.Synthetix.totalSupply(),
@@ -103,15 +105,19 @@ const NetworkSection: FC = () => {
 				provider.getBalance(snxjs.contracts.EtherCollateralsUSD.address),
 				provider.getBalance(snxjs.contracts.EtherCollateral.address),
 				provider.getBalance(snxjs.contracts.CollateralEth.address),
-				renBTCContract.balanceOf(snxjs.contracts.CollateralErc20.address),
+				renBTCContract.balanceOfUnderlying(snxjs.contracts.CollateralErc20.address),
+				snxjs.contracts.SynthsUSD.balanceOf(snxjs.contracts.CollateralShort.address),
 			]);
+			const btcLocked = Number(formatUnits(multiCollateralRenBtcBalance, 8));
+			const shortLocked = Number(formatEther(shortCollateralsUSDBalance));
 
+			setsUSDShortLocked(shortLocked);
 			setEtherLocked(
 				Number(formatEther(ethCollateralBalance)) +
 					Number(formatEther(ethSusdCollateralBalance)) +
 					Number(formatEther(multiCollateralEtherBalance))
 			);
-			setBitcoinLocked(Number(formatEther(multiCollateralRenBtcBalance)));
+			setBitcoinLocked(btcLocked);
 			setSNXHolders(snxTotals.snxHolders);
 			const formattedSNXPrice = Number(formatEther(unformattedSnxPrice));
 			setSNXPrice(formattedSNXPrice);
@@ -410,9 +416,9 @@ const NetworkSection: FC = () => {
 					num={etherLocked}
 					percentChange={null}
 					subText={t('eth-collateral.subtext')}
-					color={COLORS.pink}
+					color={COLORS.green}
 					numberStyle="number4"
-					numBoxes={2}
+					numBoxes={3}
 					infoData={null}
 				/>
 				<StatsBox
@@ -423,7 +429,18 @@ const NetworkSection: FC = () => {
 					subText={t('btc-collateral.subtext')}
 					color={COLORS.green}
 					numberStyle="number4"
-					numBoxes={2}
+					numBoxes={3}
+					infoData={null}
+				/>
+				<StatsBox
+					key="USDLOCKEDSHORT"
+					title={t('short-collateral.title')}
+					num={sUSDShortLocked}
+					percentChange={null}
+					subText={t('short-collateral.subtext')}
+					color={COLORS.pink}
+					numberStyle="currency0"
+					numBoxes={3}
 					infoData={null}
 				/>
 			</StatsRow>
