@@ -76,6 +76,14 @@
 		"title": "ETH COLLATERAL",
 		"subtext": "Total number of Ether locked as collateral"
 	},
+	"btc-collateral": {
+		"title": "BTC COLLATERAL",
+		"subtext": "Total number of renBTC locked as collateral"
+	},
+	"short-collateral": {
+		"title": "sUSD BACKED SHORTS",
+		"subtext": "sUSD backing shorts against ETH and BTC"
+	},
 	"susd-minted-from-eth": {
 		"title": "sUSD MINTED FROM ETH",
 		"subtext": "Total number of sUSD minted using Ether as collateral"
@@ -154,7 +162,9 @@
 	},
 	"synth-bar-chart": {
 		"title": "TOTAL SYNTHS",
-		"subtext": "The total value of all Synths in USD"
+		"subtext": "The total value of all Synths in USD",
+		"shorts": "shorts",
+		"info-data": "It is possible to short {{asset}} without buying an inverse synth. You borrow a loan in s{{asset}} terms, but receive the equivalent value in sUSD instead, thereby going short. The UI for this mechanism is coming soon; currently it is only available for advanced smart contract users"
 	},
 	"synth-pie-chart": {
 		"title": "SYNTH DOMINANCE",

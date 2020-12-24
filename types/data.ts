@@ -3,6 +3,8 @@ export type OpenInterest = {
 		[subName: string]: {
 			value: number;
 			totalSupply: number;
+			isShort: boolean;
+			shortSupply: number | null;
 		};
 	};
 };

@@ -1,61 +1,85 @@
 import { FC } from 'react';
+import { useTranslation } from 'react-i18next';
 import styled, { css, keyframes } from 'styled-components';
 
-import { formatCurrency, formatNumber } from '../../utils/formatter';
-import { OpenInterest } from '../../types/data';
-import colors from '../../styles/colors';
+import { formatCurrency, formatNumber } from 'utils/formatter';
+import { OpenInterest } from 'types/data';
+import colors from 'styles/colors';
 
+import InfoPopover from '../InfoPopover';
 interface SidewaysBarChartProps {
 	data: OpenInterest;
 }
 
-const SidewaysBarChart: FC<SidewaysBarChartProps> = ({ data }) => (
-	<ChartContainer>
-		<VerticalBar />
-		<HeaderRow>
-			<StyledLabel>Shorts</StyledLabel>
-			<StyledLabel>Longs</StyledLabel>
-		</HeaderRow>
-		{data
-			? Object.keys(data).map((key) => {
-					const synthName = `s${key}`;
-					const inverseName = `i${key}`;
+const SidewaysBarChart: FC<SidewaysBarChartProps> = ({ data }) => {
+	const { t } = useTranslation();
+	return (
+		<ChartContainer>
+			<VerticalBar />
+			<HeaderRow>
+				<StyledLabel>Shorts</StyledLabel>
+				<StyledLabel>Longs</StyledLabel>
+			</HeaderRow>
+			{data
+				? Object.keys(data).map((key) => {
+						const synthName = `s${key}`;
+						const inverseName = `i${key}`;
 
-					const synthValue = data[key][synthName].value;
-					const inverseValue = data[key][inverseName].value;
-					const synthTotalSupply = data[key][synthName].totalSupply;
-					const inverseTotalSupply = data[key][inverseName].totalSupply;
+						const synthValue = data[key][synthName].value;
+						const inverseValue = data[key][inverseName].value;
+						const synthTotalSupply = data[key][synthName].totalSupply;
+						const inverseTotalSupply = data[key][inverseName].totalSupply;
+						const isShort = data[key][inverseName].isShort;
+						const shortSupply = data[key][inverseName].shortSupply;
 
-					const totalValue = synthValue + inverseValue;
+						const totalValue = synthValue + inverseValue;
 
-					return (
-						<SynthContainer key={`synth-${key}`}>
-							<SynthLabels>
-								<SynthInfo>
-									<SynthLabel>{inverseName}</SynthLabel>
-									<LabelSmall>{`${formatNumber(inverseTotalSupply)} (${formatCurrency(
-										inverseValue,
-										0
-									)})`}</LabelSmall>
-								</SynthInfo>
-								<SynthInfo>
-									<SynthLabel>{synthName}</SynthLabel>
-									<LabelSmall>{`${formatNumber(synthTotalSupply)} (${formatCurrency(
-										synthValue,
-										0
-									)})`}</LabelSmall>
-								</SynthInfo>
-							</SynthLabels>
-							<BarContainer>
-								<ShortBar value={inverseValue / totalValue}></ShortBar>
-								<LongBar value={synthValue / totalValue}></LongBar>
-							</BarContainer>
-						</SynthContainer>
-					);
-			  })
-			: null}
-	</ChartContainer>
-);
+						return (
+							<SynthContainer key={`synth-${key}`}>
+								<SynthLabels>
+									<SynthInfo>
+										<SynthLabel>
+											{inverseName === 'iBTC' || inverseName === 'iETH'
+												? `${inverseName} + ${t('synth-bar-chart.shorts')}`
+												: inverseName}
+										</SynthLabel>
+										<LabelSmall>
+											{inverseName === 'iBTC' || inverseName === 'iETH'
+												? `(${formatNumber(inverseTotalSupply)} + ${shortSupply}) (${formatCurrency(
+														inverseValue,
+														0
+												  )})`
+												: `(${formatNumber(inverseTotalSupply)}) (${formatCurrency(
+														inverseValue,
+														0
+												  )})`}
+										</LabelSmall>
+										{isShort ? (
+											<InfoPopover
+												noPaddingTop={true}
+												infoData={<>{t('synth-bar-chart.info-data', { asset: key })}</>}
+											/>
+										) : null}
+									</SynthInfo>
+									<SynthInfo>
+										<SynthLabel>{synthName}</SynthLabel>
+										<LabelSmall>{`(${formatNumber(synthTotalSupply)}) (${formatCurrency(
+											synthValue,
+											0
+										)})`}</LabelSmall>
+									</SynthInfo>
+								</SynthLabels>
+								<BarContainer>
+									<ShortBar value={inverseValue / totalValue}></ShortBar>
+									<LongBar value={synthValue / totalValue}></LongBar>
+								</BarContainer>
+							</SynthContainer>
+						);
+				  })
+				: null}
+		</ChartContainer>
+	);
+};
 
 const ChartContainer = styled.div`
 	min-height: 250px;
