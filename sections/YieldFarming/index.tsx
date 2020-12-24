@@ -146,7 +146,6 @@ const YieldFarming: FC = () => {
 					curveSusdTokenPrice;
 				const curvePrice = fetchedData[10];
 				setCurveTokenAPY(rate * curvePrice);
-				console.log('iBtcBalance after call', iBtcBalance);
 
 				setiEthAPYFields({ balanceOf: iEthBalance, price: iEthPrice });
 				setiBtcAPYFields({ balanceOf: iBtcBalance, price: iBtcPrice });
