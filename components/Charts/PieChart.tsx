@@ -37,7 +37,7 @@ export const BRIGHT_COLORS = [
 ];
 
 const BasicPieChart: FC<BasicPieChartProps> = ({ data }) => (
-	<ResponsiveContainer width="100%" height={380}>
+	<ResponsiveContainer width="100%" height="100%">
 		<PieChart height={380}>
 			<Pie
 				data={data}

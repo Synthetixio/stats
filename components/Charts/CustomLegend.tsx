@@ -35,10 +35,8 @@ const CustomLegendContainer = styled.div`
 	display: flex;
 	flex-direction: column;
 	border: 1px solid ${colors.linedBlue};
-	position: absolute;
 	width: 80%;
 	margin: 0 auto;
-	left: 10%;
 	font-family: 'Inter', sans-serif;
 `;
 
