@@ -25,11 +25,11 @@ const OptionsPieChart: FC<OptionsPieChartProps> = ({ data }) => {
 const OptionsPieChartContainer = styled.div`
 	background: ${(props) => props.theme.colors.mediumBlue};
 	max-width: ${MAX_PAGE_WIDTH}px;
-	height: 760px;
 	margin: 20px auto 50px auto;
-
+	padding: 16px 0 210px 0;
+	height: 600px;
 	@media only screen and (max-width: 500px) {
-		height: 900px;
+		height: 700px;
 	}
 `;
 

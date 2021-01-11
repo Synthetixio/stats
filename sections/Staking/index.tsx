@@ -19,6 +19,8 @@ import { synthetixSubgraph } from 'constants/links';
 
 import Liquidations from './Liquidations';
 
+const WEEK = 86400 * 7 * 1000;
+
 const Staking: FC = () => {
 	const { t } = useTranslation();
 	const [currentFeePeriod, setCurrentFeePeriod] = useState<FeePeriod | null>(null);
@@ -156,9 +158,9 @@ const Staking: FC = () => {
 					}
 					percentChange={null}
 					subText={t('current-fee-pool.subtext', {
-						startDate:
+						endDate:
 							currentFeePeriod != null
-								? format(new Date(currentFeePeriod.startTime), 'MMMM dd')
+								? format(new Date(currentFeePeriod.startTime + WEEK), 'MMMM dd')
 								: '-',
 					})}
 					color={COLORS.pink}
@@ -183,9 +185,9 @@ const Staking: FC = () => {
 					}
 					percentChange={null}
 					subText={t('current-fee-pool-snx.subtext', {
-						startDate:
+						endDate:
 							currentFeePeriod != null
-								? format(new Date(currentFeePeriod.startTime), 'MMMM dd')
+								? format(new Date(currentFeePeriod.startTime + WEEK), 'MMMM dd')
 								: '-',
 					})}
 					color={COLORS.green}
@@ -206,8 +208,10 @@ const Staking: FC = () => {
 					}
 					percentChange={null}
 					subText={t('unclaimed-fees-and-rewards.subtext', {
-						startDate:
-							nextFeePeriod != null ? format(new Date(nextFeePeriod.startTime), 'MMMM dd') : '-',
+						endDate:
+							nextFeePeriod != null
+								? format(new Date(nextFeePeriod.startTime + WEEK), 'MMMM dd')
+								: '-',
 					})}
 					color={COLORS.green}
 					numberStyle="currency0"
