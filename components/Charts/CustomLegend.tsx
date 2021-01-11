@@ -40,6 +40,8 @@ const CustomLegendContainer = styled.div`
 	margin: 0 auto;
 	left: 10%;
 	font-family: 'Inter', sans-serif;
+	height: 225px;
+	overflow-y: scroll;
 `;
 
 const CustomLegendItemValue = styled.div`
