@@ -90,7 +90,6 @@ const Staking: FC = () => {
 	const stakingPeriods: ChartPeriod[] = ['W', 'M', 'Y'];
 	const SNXValueStaked = useMemo(() => (SNXPrice ?? 0) * (SNXStaked ?? 0), [SNXPrice, SNXStaked]);
 
-	console.log('nextFeePeriod', nextFeePeriod);
 	return (
 		<>
 			<SectionHeader title="STAKING" />
