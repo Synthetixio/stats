@@ -1,9 +1,11 @@
 import { FC, useEffect, useState, useContext } from 'react';
 import axios from 'axios';
 import snxData from 'synthetix-data';
-import { ethers } from 'ethers';
+import initSynthetixJS from '@synthetixio/js';
+import { ethers, providers } from 'ethers';
 import { Trans, useTranslation } from 'react-i18next';
 
+import { OVM_RPC_URL } from 'constants/ovm';
 import { AreaChartData, ChartPeriod, SNXPriceData, TimeSeries, TreeMapData } from 'types/data';
 import StatsBox from 'components/StatsBox';
 import StatsRow from 'components/StatsRow';
@@ -35,6 +37,7 @@ const NetworkSection: FC = () => {
 	const [priceChartPeriod, setPriceChartPeriod] = useState<ChartPeriod>('D');
 	const [SNXChartPriceData, setSNXChartPriceData] = useState<AreaChartData[]>([]);
 	const [SNXTotalSupply, setSNXTotalSupply] = useState<number | null>(null);
+	const [OVMSNXTotalSupply, setOVMSNXTotalSupply] = useState<number | null>(null);
 	const [totalSupplySUSD, setTotalSupplySUSD] = useState<number | null>(null);
 	const [SNX24HVolume, setSNX24HVolume] = useState<number | null>(null);
 	const [activeCRatio, setActiveCRatio] = useState<number | null>(null);
@@ -48,6 +51,11 @@ const NetworkSection: FC = () => {
 		SNXContext
 	);
 	const provider = useContext(ProviderContext);
+	const ovmProvider = new providers.JsonRpcProvider(OVM_RPC_URL);
+	const synthetixOVM = initSynthetixJS({
+		provider: ovmProvider,
+		useOvm: true,
+	});
 
 	// NOTE: use interval? or save data calls?
 	useEffect(() => {
@@ -90,6 +98,7 @@ const NetworkSection: FC = () => {
 				multiCollateralEtherBalance,
 				multiCollateralRenBtcBalance,
 				shortCollateralsUSDBalance,
+				unformattedOVMTotalSupply,
 			] = await Promise.all([
 				snxjs.contracts.ExchangeRates.rateForCurrency(snxjs.toBytes32('SNX')),
 				snxjs.contracts.Synthetix.totalSupply(),
@@ -107,6 +116,7 @@ const NetworkSection: FC = () => {
 				provider.getBalance(snxjs.contracts.CollateralEth.address),
 				renBTCContract.balanceOfUnderlying(snxjs.contracts.CollateralErc20.address),
 				snxjs.contracts.SynthsUSD.balanceOf(snxjs.contracts.CollateralShort.address),
+				synthetixOVM.contracts.Synthetix.totalSupply(),
 			]);
 			const btcLocked = Number(formatUnits(multiCollateralRenBtcBalance, 8));
 			const shortLocked = Number(formatEther(shortCollateralsUSDBalance));
@@ -133,11 +143,18 @@ const NetworkSection: FC = () => {
 
 			const lastDebtLedgerEntry = Number(formatUnits(unformattedLastDebtLedgerEntry, 27));
 
-			const [totalIssuedSynths, tempIssuanceRatio, usdToSnxPrice, sUSDTotalSupply] = [
+			const [
+				totalIssuedSynths,
+				tempIssuanceRatio,
+				usdToSnxPrice,
+				sUSDTotalSupply,
+				ovmTotalSupply,
+			] = [
 				unformattedTotalIssuedSynths,
 				unformattedIssuanceRatio,
 				unformattedSnxPrice,
 				unformattedSUSDTotalSupply,
+				unformattedOVMTotalSupply,
 			].map((val) => Number(formatEther(val)));
 
 			let snxTotal = 0;
@@ -173,6 +190,7 @@ const NetworkSection: FC = () => {
 			setSUSDHolders(topHolders);
 			const percentLocked = snxLocked / snxTotal;
 			setSNXPercentLocked(percentLocked);
+			setOVMSNXTotalSupply(ovmTotalSupply);
 			setSNXStaked(totalSupply * percentLocked);
 			setIssuanceRatio(tempIssuanceRatio);
 			setTotalSupplySUSD(sUSDTotalSupply);
@@ -320,7 +338,9 @@ const NetworkSection: FC = () => {
 					title={t('total-snx-locked.title')}
 					num={
 						SNXPercentLocked != null && SNXTotalSupply != null && SNXPrice != null
-							? SNXPercentLocked * SNXTotalSupply * (SNXPrice ?? 0)
+							? (SNXPercentLocked * (SNXTotalSupply - (OVMSNXTotalSupply ?? 0)) +
+									(OVMSNXTotalSupply ?? 0)) *
+							  (SNXPrice ?? 0)
 							: null
 					}
 					percentChange={null}
