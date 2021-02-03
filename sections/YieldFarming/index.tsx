@@ -9,8 +9,6 @@ import StatsRow from 'components/StatsRow';
 import DoubleStatsBox from 'components/DoubleStatsBox';
 import {
 	curvepoolRewards,
-	iEth4Rewards,
-	iBtcRewards,
 	curveSusdPool,
 	curveSusdPoolToken,
 	curveSusdGauge,
@@ -64,11 +62,6 @@ const YieldFarming: FC = () => {
 			curvepoolRewards.abi,
 			provider
 		);
-		const iEth4RewardsContract = new ethers.Contract(
-			iEth4Rewards.address,
-			iEth4Rewards.abi,
-			provider
-		);
 		const curveSusdPoolContract = new ethers.Contract(
 			curveSusdPool.address,
 			// @ts-ignore
@@ -92,11 +85,14 @@ const YieldFarming: FC = () => {
 			curveGaugeController.abi,
 			provider
 		);
-		const iBtcRewardsContract = new ethers.Contract(iBtcRewards.address, iBtcRewards.abi, provider);
 
 		const fetchData = async () => {
 			try {
-				const contracts = [curvepoolContract, iEth4RewardsContract, iBtcRewardsContract];
+				const contracts = [
+					curvepoolContract,
+					snxjs.contracts.StakingRewardsiETH,
+					snxjs.contracts.StakingRewardsiBTC,
+				];
 				const rewardsData = await Promise.all(
 					contracts.map((contract) => {
 						const getDuration = contract.DURATION || contract.rewardsDuration;
@@ -115,8 +111,8 @@ const YieldFarming: FC = () => {
 				setDistributions(contractRewards);
 
 				const fetchedData = await Promise.all([
-					snxjs.contracts.ProxyiETH.balanceOf(iEth4Rewards.address),
-					snxjs.contracts.ProxyiBTC.balanceOf(iBtcRewards.address),
+					snxjs.contracts.ProxyiETH.balanceOf(snxjs.contracts.StakingRewardsiETH.address),
+					snxjs.contracts.ProxyiBTC.balanceOf(snxjs.contracts.StakingRewardsiBTC.address),
 					snxjs.contracts.ExchangeRates.rateForCurrency(snxjs.toBytes32('iETH')),
 					snxjs.contracts.ExchangeRates.rateForCurrency(snxjs.toBytes32('iBTC')),
 					curveSusdPoolTokenContract.balanceOf(curvepoolRewards.address),
@@ -225,12 +221,16 @@ const YieldFarming: FC = () => {
 					subtitle={<SubtitleText name="iETH" />}
 					firstMetricTitle={t('iETH.firstMetricTitle')}
 					firstMetricStyle="number"
-					firstMetric={distributions != null ? distributions[iEth4Rewards.address] : distributions}
+					firstMetric={
+						distributions != null
+							? distributions[snxjs.contracts.StakingRewardsiETH.address]
+							: distributions
+					}
 					firstColor={COLORS.green}
 					secondMetricTitle={t('iETH.secondMetricTitle')}
 					secondMetric={
 						distributions != null && iEthAPYFields != null && SNXPrice != null
-							? ((distributions[iEth4Rewards.address] * (SNXPrice ?? 0)) /
+							? ((distributions[snxjs.contracts.StakingRewardsiETH.address] * (SNXPrice ?? 0)) /
 									(iEthAPYFields.balanceOf * iEthAPYFields.price)) *
 							  52
 							: null
@@ -244,12 +244,16 @@ const YieldFarming: FC = () => {
 					subtitle={<SubtitleText name="iBTC" />}
 					firstMetricTitle={t('iBTC.firstMetricTitle')}
 					firstMetricStyle="number"
-					firstMetric={distributions != null ? distributions[iBtcRewards.address] : distributions}
+					firstMetric={
+						distributions != null
+							? distributions[snxjs.contracts.StakingRewardsiBTC.address]
+							: distributions
+					}
 					firstColor={COLORS.green}
 					secondMetricTitle={t('iBTC.secondMetricTitle')}
 					secondMetric={
 						distributions != null && iBtcAPYFields != null && SNXPrice != null
-							? ((distributions[iBtcRewards.address] * (SNXPrice ?? 0)) /
+							? ((distributions[snxjs.contracts.StakingRewardsiBTC.address] * (SNXPrice ?? 0)) /
 									(iBtcAPYFields.balanceOf * iBtcAPYFields.price)) *
 							  52
 							: null
