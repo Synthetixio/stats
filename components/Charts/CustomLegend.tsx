@@ -6,16 +6,17 @@ import { formatCurrency, formatPercentage } from '../../utils/formatter';
 import { BRIGHT_COLORS } from './PieChart';
 
 interface CustomLegendProps {
+	isShortLegend: boolean;
 	payload?: { value: number; payload: { value: number } }[];
 }
 
-const CustomLegend: FC<CustomLegendProps> = ({ payload }) => {
+const CustomLegend: FC<CustomLegendProps> = ({ payload, isShortLegend }) => {
 	if (payload == null) {
 		return null;
 	}
 	const total = payload.reduce((acc, { payload: { value } }) => (acc += value || 0), 0);
 	return (
-		<CustomLegendContainer>
+		<CustomLegendContainer isShortLegend={isShortLegend}>
 			{payload.map((entry, index) => (
 				<CustomLegendItemWrapper key={`item-${index}`}>
 					<CustomLegendItemKey index={index}>{entry.value}</CustomLegendItemKey>
@@ -31,14 +32,14 @@ const CustomLegend: FC<CustomLegendProps> = ({ payload }) => {
 
 export default CustomLegend;
 
-const CustomLegendContainer = styled.div`
+const CustomLegendContainer = styled.div<{ isShortLegend: boolean }>`
 	display: flex;
 	flex-direction: column;
 	border: 1px solid ${colors.linedBlue};
 	width: 80%;
 	margin: 0 auto;
 	font-family: 'Inter', sans-serif;
-	height: 225px;
+	height: ${(props) => (props.isShortLegend ? '100px' : '225px')};
 	overflow-y: scroll;
 `;
 

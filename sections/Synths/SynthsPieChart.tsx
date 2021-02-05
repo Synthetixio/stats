@@ -16,7 +16,7 @@ const SynthsPieChart: FC<SynthsPieChartProps> = ({ data }) => {
 		<SynthsPieChartContainer>
 			<ChartTitle>{t('synth-pie-chart.title')}</ChartTitle>
 			<ChartSubtitle>{t('synth-pie-chart.subtext')}</ChartSubtitle>
-			<PieChart data={data} />
+			<PieChart data={data} isShortLegend={true} />
 		</SynthsPieChartContainer>
 	);
 };
