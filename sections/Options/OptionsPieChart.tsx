@@ -17,7 +17,7 @@ const OptionsPieChart: FC<OptionsPieChartProps> = ({ data }) => {
 		<OptionsPieChartContainer>
 			<ChartTitle>{t('options-pie-chart.title')}</ChartTitle>
 			<ChartSubtitle>{t('options-pie-chart.subtext')}</ChartSubtitle>
-			<PieChart data={data} />
+			<PieChart data={data} isShortLegend={false} />
 		</OptionsPieChartContainer>
 	);
 };
