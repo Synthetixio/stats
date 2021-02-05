@@ -21,3 +21,5 @@ export const synthetixOptionsSubgraph =
 export const etherscanArchernarBlock = 'https://etherscan.io/block/9518914';
 
 export const frontRunningWiki = 'https://en.wikipedia.org/wiki/Front_running';
+
+export const shortingLink = 'https://synthetix.surge.sh/';

@@ -1,10 +1,12 @@
 import { FC } from 'react';
-import { useTranslation } from 'react-i18next';
+import { useTranslation, Trans } from 'react-i18next';
 import styled, { css, keyframes } from 'styled-components';
 
 import { formatCurrency, formatNumber } from 'utils/formatter';
 import { OpenInterest } from 'types/data';
 import colors from 'styles/colors';
+import { shortingLink } from 'constants/links';
+import { LinkText } from 'components/common';
 
 import InfoPopover from '../InfoPopover';
 interface SidewaysBarChartProps {
@@ -57,7 +59,17 @@ const SidewaysBarChart: FC<SidewaysBarChartProps> = ({ data }) => {
 										{isShort ? (
 											<InfoPopover
 												noPaddingTop={true}
-												infoData={<>{t('synth-bar-chart.info-data', { asset: key })}</>}
+												infoData={
+													<Trans
+														i18nKey="synth-bar-chart.info-data"
+														values={{
+															link: t('synth-bar-chart.shortLinkText'),
+														}}
+														components={{
+															linkText: <LinkText href={shortingLink} />,
+														}}
+													/>
+												}
 											/>
 										) : null}
 									</SynthInfo>
