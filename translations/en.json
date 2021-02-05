@@ -164,7 +164,8 @@
 		"title": "TOTAL SYNTHS",
 		"subtext": "The total value of all Synths in USD",
 		"shorts": "shorts",
-		"info-data": "It is possible to short {{asset}} without buying an inverse synth. You borrow a loan in s{{asset}} terms, but receive the equivalent value in sUSD instead, thereby going short. The UI for this mechanism is coming soon; currently it is only available for advanced smart contract users"
+		"shortLinkText": "Synthetix Surge",
+		"info-data": "It is possible to short {{asset}} without buying an inverse synth. You borrow a loan in s{{asset}} terms, but receive the equivalent value in sUSD instead, thereby going short. The UI for this mechanism is available at the <linkText>{{link}}</linkText> site"
 	},
 	"synth-pie-chart": {
 		"title": "SYNTH DOMINANCE",
