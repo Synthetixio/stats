@@ -28,11 +28,15 @@ const SidewaysBarChart: FC<SidewaysBarChartProps> = ({ data }) => {
 						const inverseName = `i${key}`;
 
 						const synthValue = data[key][synthName].value;
-						const inverseValue = data[key][inverseName].value;
+						const inverseValue =
+							(data[key] && data[key][inverseName] && data[key][inverseName].value) || 0;
 						const synthTotalSupply = data[key][synthName].totalSupply;
-						const inverseTotalSupply = data[key][inverseName].totalSupply;
-						const isShort = data[key][inverseName].isShort;
-						const shortSupply = data[key][inverseName].shortSupply;
+						const inverseTotalSupply =
+							(data[key] && data[key][inverseName] && data[key][inverseName].totalSupply) || 0;
+						const isShort =
+							(data[key] && data[key][inverseName] && data[key][inverseName].isShort) || false;
+						const shortSupply =
+							(data[key] && data[key][inverseName] && data[key][inverseName].shortSupply) || 0;
 
 						const totalValue = synthValue + inverseValue;
 
