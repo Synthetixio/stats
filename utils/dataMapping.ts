@@ -11,3 +11,16 @@ export const getSUSDHoldersName = (id: string): string => {
 	const address = id.split('-')[0];
 	return KNOWN_ADDRESSES[address] ?? 'unknown';
 };
+
+export function periodToDays(period: string): number {
+	switch (period) {
+		case 'W':
+			return 7;
+		case 'M':
+			return 30;
+		case 'Y':
+			return 365;
+	}
+
+	return 0;
+}

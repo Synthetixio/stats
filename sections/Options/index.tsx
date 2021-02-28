@@ -1,5 +1,4 @@
-import { FC, useEffect, useState } from 'react';
-import snxData from 'synthetix-data';
+import { FC } from 'react';
 import findIndex from 'lodash/findIndex';
 import { format } from 'date-fns';
 import { useTranslation, Trans } from 'react-i18next';
@@ -13,92 +12,73 @@ import { SynthTotalSupply, OptionsMarket } from 'types/data';
 import { formatCurrency } from 'utils/formatter';
 import { LinkText } from 'components/common';
 import { synthetixOptionsSubgraph } from 'constants/links';
+import { useOptionsMarketsQuery, useOptionsTransactionsQuery } from 'queries/options';
 
 const MIN_PERCENT_FOR_PIE_CHART = 0.03;
 
 const Options: FC = () => {
 	const { t } = useTranslation();
-	const [num24HRTx, setNum24HRTx] = useState<number | null>(null);
-	const [largestMarket, setLargestMarket] = useState<OptionsMarket | null>(null);
-	const [largestActiveMarket, setLargestActiveMarket] = useState<OptionsMarket | null>(null);
-	const [numMarkets, setNumMarkets] = useState<number | null>(null);
-	const [totalPoolSizes, setTotalPoolSizes] = useState<number | null>(null);
-	const [pieChartData, setPieChartData] = useState<SynthTotalSupply[]>([]);
 
-	useEffect(() => {
-		const fetchData = async () => {
-			const [unformattedOptionTransactions, unformattedMarkets] = await Promise.all([
-				snxData.binaryOptions.optionTransactions(),
-				snxData.binaryOptions.markets({ max: 5000 }),
-			]);
-			const now = new Date();
-			const sortedMarkets = unformattedMarkets.sort((a: OptionsMarket, b: OptionsMarket) => {
-				return parseFloat(b.poolSize) - parseFloat(a.poolSize);
-			});
+	const sortedMarkets = useOptionsMarketsQuery({ max: 5000 });
+	const optionsTransactions = useOptionsTransactionsQuery({});
 
-			const marketsData = sortedMarkets
-				.filter((market: OptionsMarket, index: number) => {
-					if (index === 0) {
-						const { currencyKey, poolSize, maturityDate, strikePrice } = market;
-						setLargestMarket({ currencyKey, poolSize, maturityDate, strikePrice });
-					}
-					const expiryDate = new Date(market.expiryDate as string);
-					return expiryDate > now;
-				})
-				.reduce(
-					([count, sum]: [number, number], activeMarket: OptionsMarket, index: number) => {
-						if (index === 0) {
-							const { currencyKey, poolSize, maturityDate, strikePrice } = activeMarket;
-							setLargestActiveMarket({ currencyKey, poolSize, maturityDate, strikePrice });
-						}
-						count++;
-						sum += parseFloat(activeMarket.poolSize);
-						return [count, sum];
-					},
-					[0, 0]
-				);
+	const now = new Date();
 
-			const totalPoolSizes = marketsData[1];
+	let largestMarket: OptionsMarket | null = null;
+	let largestActiveMarket: OptionsMarket | null = null;
 
-			const formattedPieChartData = sortedMarkets.reduce(
-				(acc: SynthTotalSupply[], curr: OptionsMarket) => {
-					if (Number(curr.poolSize) / totalPoolSizes < MIN_PERCENT_FOR_PIE_CHART) {
-						const othersIndex = findIndex(acc, (o) => o.name === 'others');
-						if (othersIndex === -1) {
-							acc.push({ name: 'others', value: curr?.value ?? 0 });
-						} else {
-							acc[othersIndex].value = acc[othersIndex].value + Number(curr.poolSize);
-						}
-					} else {
-						acc.push({
-							name: `${curr.currencyKey} > ${formatCurrency(curr.strikePrice)} @${format(
-								new Date(curr.maturityDate),
-								'MM/dd/yyyy'
-							)}`,
-							value: Number(curr.poolSize),
-						});
-					}
-					return acc;
-				},
-				[]
-			);
+	let totalPoolSizes: number | null = null;
+	let numMarkets: number | null = null;
+	let pieChartData: SynthTotalSupply[] = [];
 
-			setNumMarkets(marketsData[0]);
-			setTotalPoolSizes(totalPoolSizes);
-			setPieChartData(formattedPieChartData);
+	if (sortedMarkets.isSuccess) {
+		largestMarket = sortedMarkets.data![0];
 
-			const yesterday = new Date();
-			yesterday.setDate(yesterday.getDate() - 1);
-			const optionTransactions = unformattedOptionTransactions.filter(
-				(optionTx: { timestamp: number }) => {
-					return new Date(optionTx.timestamp) > yesterday;
+		const activeMarkets = sortedMarkets.data!.filter((market: OptionsMarket, index: number) => {
+			const expiryDate = new Date(market.expiryDate as string);
+			return expiryDate > now;
+		});
+
+		largestActiveMarket = activeMarkets[0];
+
+		const marketsData = activeMarkets.reduce(
+			([count, sum]: [number, number], activeMarket: OptionsMarket, index: number) => {
+				count++;
+				sum += parseFloat(activeMarket.poolSize);
+				return [count, sum];
+			},
+			[0, 0]
+		);
+
+		[numMarkets, totalPoolSizes] = marketsData;
+
+		pieChartData = sortedMarkets.data!.reduce((acc: SynthTotalSupply[], curr: OptionsMarket) => {
+			if (Number(curr.poolSize) / totalPoolSizes! < MIN_PERCENT_FOR_PIE_CHART) {
+				const othersIndex = findIndex(acc, (o) => o.name === 'others');
+				if (othersIndex === -1) {
+					acc.push({ name: 'others', value: curr?.value ?? 0 });
+				} else {
+					acc[othersIndex].value = acc[othersIndex].value + Number(curr.poolSize);
 				}
-			);
+			} else {
+				acc.push({
+					name: `${curr.currencyKey} > ${formatCurrency(curr.strikePrice)} @${format(
+						new Date(curr.maturityDate),
+						'MM/dd/yyyy'
+					)}`,
+					value: Number(curr.poolSize),
+				});
+			}
+			return acc;
+		}, []);
+	}
 
-			setNum24HRTx(optionTransactions.length);
-		};
-		fetchData();
-	}, []);
+	const yesterday = new Date();
+	yesterday.setDate(yesterday.getDate() - 1);
+
+	const num24HRTx = optionsTransactions.isSuccess
+		? (optionsTransactions.data?.length as number)
+		: 0;
 
 	return (
 		<>
@@ -107,7 +87,7 @@ const Options: FC = () => {
 				<StatsBox
 					key="LGSTACTVBINMKT"
 					title={t('largest-active-binary-market.title')}
-					num={Number(largestActiveMarket?.poolSize ?? 0)}
+					num={Number(largestActiveMarket ? largestActiveMarket.poolSize : 0)}
 					percentChange={null}
 					subText={t('largest-active-binary-market.subtext', {
 						synth: largestActiveMarket?.currencyKey ?? '...',
