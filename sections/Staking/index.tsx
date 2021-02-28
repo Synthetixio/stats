@@ -54,7 +54,7 @@ const Staking: FC = () => {
 		max: periodToDays(stakersChartPeriod),
 	});
 
-	const { data: lidquidationsData, isLoading: isLiquidationsLoading } = useLiquidationsQuery();
+	const liquidations = useLiquidationsQuery();
 
 	let stakersChartData: AreaChartData[] = [];
 	let totalActiveStakers: number | null = null;
@@ -64,7 +64,7 @@ const Staking: FC = () => {
 		totalActiveStakers = d[d.length - 1].count;
 	}
 
-	const formattedLiquidationsData = (lidquidationsData ?? []).sort(
+	const formattedLiquidationsData = (liquidations.data ?? []).sort(
 		(a: LiquidationsData, b: LiquidationsData) => a.deadline - b.deadline
 	);
 
@@ -240,7 +240,7 @@ const Staking: FC = () => {
 			/>
 			<Liquidations
 				liquidationsData={formattedLiquidationsData}
-				isLoading={isLiquidationsLoading}
+				isLoading={liquidations.isFetching}
 				issuanceRatio={issuanceRatio}
 				snxPrice={SNXPrice}
 			/>
