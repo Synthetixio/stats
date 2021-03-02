@@ -24,14 +24,16 @@ export const useRewardsContractInfo = (
 	return useQuery<RewardsContractInfo, string>(
 		QUERY_KEYS.YieldFarming.RewardsInfo(contractAddress),
 		async () => {
-			const r = await Promise.all([
+			const rawRewardsContractInfo = await Promise.all([
 				rewardsContract.DURATION ? rewardsContract.DURATION() : rewardsContract.rewardsDuration(),
 				rewardsContract.rewardRate(),
 				rewardsContract.periodFinish(),
 			]);
 
-			let [duration, rate, periodFinish] = r.map((d) => Number(ethers.utils.formatEther(d)));
-			periodFinish = r[2].toNumber();
+			let [duration, rate, periodFinish] = rawRewardsContractInfo.map((d) =>
+				Number(ethers.utils.formatEther(d))
+			);
+			periodFinish = rawRewardsContractInfo[2].toNumber();
 
 			return {
 				duration,

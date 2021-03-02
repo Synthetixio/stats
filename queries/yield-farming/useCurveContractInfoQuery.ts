@@ -44,7 +44,7 @@ export const useCurveContractInfoQuery = (provider: ethers.providers.Provider) =
 	);
 
 	return useQuery<CurveContractInfo, string>(QUERY_KEYS.YieldFarming.CurveInfo, async () => {
-		const r = await Promise.all([
+		const rawCurveContractInfo = await Promise.all([
 			curveSusdPoolTokenContract.balanceOf(curvepoolRewards.address),
 			curveSusdPoolContract.get_virtual_price(),
 			curveSusdGaugeContract.inflation_rate(),
@@ -58,7 +58,7 @@ export const useCurveContractInfoQuery = (provider: ethers.providers.Provider) =
 			curveInflationRate,
 			curveWorkingSupply,
 			gaugeRelativeWeight,
-		] = r.map((d) => Number(ethers.utils.formatEther(d)));
+		] = rawCurveContractInfo.map((d) => Number(ethers.utils.formatEther(d)));
 
 		return {
 			curveSusdBalance,

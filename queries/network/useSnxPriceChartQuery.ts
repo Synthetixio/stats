@@ -38,7 +38,7 @@ export const useSnxPriceChartQuery = (fetchPeriod: string) => {
 			} else if (fetchPeriod === 'Y') {
 				newSNXPriceData = await snxData.rate.snxAggregate({ timeSeries, max: 365 });
 			}
-			newSNXPriceData = newSNXPriceData.reverse();
+			newSNXPriceData.reverse();
 			return formatChartData(newSNXPriceData, timeSeries as TimeSeries);
 		}
 	);
