@@ -37,7 +37,8 @@ const queryClient = new QueryClient({
 	defaultOptions: {
 		queries: {
 			retry: 0, // on failure, do not repeat the request
-			refetchInterval: 60000, // reloads query data automatically every minute
+			refetchOnWindowFocus: false,
+			refetchOnReconnect: false,
 		},
 	},
 });
