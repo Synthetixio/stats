@@ -2,8 +2,8 @@ import { createContext, FC, createRef, RefObject } from 'react';
 import { AppProps } from 'next/app';
 import Head from 'next/head';
 import { ethers } from 'ethers';
-import { ReactQueryCacheProvider, QueryCache } from 'react-query';
-import { ReactQueryDevtools } from 'react-query-devtools';
+import { QueryClientProvider, QueryClient } from 'react-query';
+import { ReactQueryDevtools } from 'react-query/devtools';
 
 import { synthetix, Network } from '@synthetixio/js';
 import { ThemeProvider as SCThemeProvider } from 'styled-components';
@@ -33,11 +33,12 @@ export const ProviderContext = createContext(provider);
 
 export const HeadersContext = createContext(headersAndScrollRef);
 
-const queryCache = new QueryCache({
-	defaultConfig: {
+const queryClient = new QueryClient({
+	defaultOptions: {
 		queries: {
-			retry: 1,
-			cacheTime: Infinity,
+			retry: 0, // on failure, do not repeat the request
+			refetchOnWindowFocus: false,
+			refetchOnReconnect: false,
 		},
 	},
 });
@@ -124,7 +125,7 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
 			</Head>
 			<SCThemeProvider theme={scTheme}>
 				<MuiThemeProvider theme={muiTheme}>
-					<ReactQueryCacheProvider queryCache={queryCache}>
+					<QueryClientProvider client={queryClient}>
 						<HeadersContext.Provider value={headersAndScrollRef}>
 							<SNXJSContext.Provider value={snxjs}>
 								<ProviderContext.Provider value={provider}>
@@ -135,7 +136,7 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
 							</SNXJSContext.Provider>
 						</HeadersContext.Provider>
 						<ReactQueryDevtools />
-					</ReactQueryCacheProvider>
+					</QueryClientProvider>
 				</MuiThemeProvider>
 			</SCThemeProvider>
 		</>
