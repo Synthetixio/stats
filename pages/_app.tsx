@@ -1,9 +1,9 @@
-import { createContext, FC, createRef, useState, RefObject } from 'react';
+import { createContext, FC, createRef, RefObject } from 'react';
 import { AppProps } from 'next/app';
 import Head from 'next/head';
 import { ethers } from 'ethers';
-import { ReactQueryCacheProvider, QueryCache } from 'react-query';
-import { ReactQueryDevtools } from 'react-query-devtools';
+import { QueryClientProvider, QueryClient } from 'react-query';
+import { ReactQueryDevtools } from 'react-query/devtools';
 
 import { synthetix, Network } from '@synthetixio/js';
 import { ThemeProvider as SCThemeProvider } from 'styled-components';
@@ -33,25 +33,12 @@ export const ProviderContext = createContext(provider);
 
 export const HeadersContext = createContext(headersAndScrollRef);
 
-export const SUSDContext = createContext({
-	sUSDPrice: null,
-	setsUSDPrice: (num: number) => null,
-});
-
-export const SNXContext = createContext({
-	SNXPrice: null,
-	setSNXPrice: (num: number) => null,
-	SNXStaked: null,
-	setSNXStaked: (num: number) => null,
-	issuanceRatio: null,
-	setIssuanceRatio: (num: number) => null,
-});
-
-const queryCache = new QueryCache({
-	defaultConfig: {
+const queryClient = new QueryClient({
+	defaultOptions: {
 		queries: {
-			retry: 1,
-			cacheTime: Infinity,
+			retry: 0, // on failure, do not repeat the request
+			refetchOnWindowFocus: false,
+			refetchOnReconnect: false,
 		},
 	},
 });
@@ -61,11 +48,6 @@ const snxjs = synthetix({ network: Network.Mainnet, provider });
 export const SNXJSContext = createContext(snxjs);
 
 const App: FC<AppProps> = ({ Component, pageProps }) => {
-	const [sUSDPrice, setsUSDPrice] = useState<number | null>(null);
-	const [SNXPrice, setSNXPrice] = useState<number | null>(null);
-	const [SNXStaked, setSNXStaked] = useState<number | null>(null);
-	const [issuanceRatio, setIssuanceRatio] = useState<number | null>(null);
-
 	return (
 		<>
 			<Head>
@@ -143,39 +125,18 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
 			</Head>
 			<SCThemeProvider theme={scTheme}>
 				<MuiThemeProvider theme={muiTheme}>
-					<ReactQueryCacheProvider queryCache={queryCache}>
+					<QueryClientProvider client={queryClient}>
 						<HeadersContext.Provider value={headersAndScrollRef}>
 							<SNXJSContext.Provider value={snxjs}>
 								<ProviderContext.Provider value={provider}>
-									{/*
-	                // @ts-ignore */}
-									<SUSDContext.Provider value={{ sUSDPrice, setsUSDPrice }}>
-										<SNXContext.Provider
-											value={{
-												// @ts-ignore
-												SNXPrice,
-												// @ts-ignore
-												setSNXPrice,
-												// @ts-ignore
-												SNXStaked,
-												// @ts-ignore
-												setSNXStaked,
-												// @ts-ignore
-												issuanceRatio,
-												// @ts-ignore
-												setIssuanceRatio,
-											}}
-										>
-											<Layout>
-												<Component {...pageProps} />
-											</Layout>
-										</SNXContext.Provider>
-									</SUSDContext.Provider>
+									<Layout>
+										<Component {...pageProps} />
+									</Layout>
 								</ProviderContext.Provider>
 							</SNXJSContext.Provider>
 						</HeadersContext.Provider>
 						<ReactQueryDevtools />
-					</ReactQueryCacheProvider>
+					</QueryClientProvider>
 				</MuiThemeProvider>
 			</SCThemeProvider>
 		</>

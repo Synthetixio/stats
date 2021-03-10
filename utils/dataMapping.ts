@@ -1,3 +1,5 @@
+import { ChartPeriod } from 'types/data';
+
 const KNOWN_ADDRESSES: { [address: string]: string } = {
 	'0xa5407eae9ba41422680e2e00537571bcc53efbfd': 'Curve',
 	'0xf80758ab42c3b07da84053fd88804bcb6baa4b5c': 'Uniswap v2',
@@ -11,3 +13,16 @@ export const getSUSDHoldersName = (id: string): string => {
 	const address = id.split('-')[0];
 	return KNOWN_ADDRESSES[address] ?? 'unknown';
 };
+
+export function periodToDays(period: ChartPeriod): number {
+	switch (period) {
+		case 'W':
+			return 7;
+		case 'M':
+			return 30;
+		case 'Y':
+			return 365;
+	}
+
+	return 0;
+}

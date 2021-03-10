@@ -1,5 +1,4 @@
-import { FC, useEffect, useState } from 'react';
-import snxData from 'synthetix-data';
+import { FC, useState } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
 
 import SectionHeader from 'components/SectionHeader';
@@ -16,99 +15,77 @@ import {
 	etherscanArchernarBlock,
 	frontRunningWiki,
 } from 'constants/links';
-import { getPostArchernarTotals } from 'utils/customGraphQueries';
+import { usePageResults } from 'queries/shared/usePageResults';
+import { synthetixExchanges } from 'constants/graph-urls';
+import { useTradesOverPeriodQuery, useGeneralTradingInfoQuery } from 'queries/trading';
+import { periodToDays } from 'utils/dataMapping';
+
+function getTotalValue(data: AreaChartData[]): number {
+	return data.reduce((acc, curr) => (acc += curr.value), 0);
+}
+
+function formatChartData(data: TradesRequestData[], type: 'trade' | 'volume'): AreaChartData[] {
+	return data.map(({ id, trades, exchangeUSDTally }) => ({
+		created: formatIdToIsoString(id, '1d'),
+		value: type === 'trade' ? trades : exchangeUSDTally,
+	}));
+}
 
 const Trading: FC = () => {
 	const { t } = useTranslation();
-	const [totalTradingVolume, setTotalTradingVolume] = useState<number | null>(null);
-	const [totalTradingFees, setTotalTradingFees] = useState<number | null>(null);
-	const [totalDailyTradingVolume, setTotalDailyTradingVolume] = useState<number | null>(null);
-	const [averageDailyTraders, setAverageDailyTraders] = useState<number | null>(null);
-	const [totalTrades, setTotalTrades] = useState<number | null>(null);
-	const [totalUsers, setTotalUsers] = useState<number | null>(null);
+
 	const [tradesChartPeriod, setTradesChartPeriod] = useState<ChartPeriod>('M');
-	const [tradesChartData, setTradesChartData] = useState<AreaChartData[]>([]);
 	const [volumeChartPeriod, setVolumeChartPeriod] = useState<ChartPeriod>('M');
-	const [volumeChartData, setVolumeChartData] = useState<AreaChartData[]>([]);
-	const [totalTradesOverPeriod, setTotalTradesOverPeriod] = useState<number | null>(null);
-	const [totalVolumeOverPeriod, setTotalVolumeOverPeriod] = useState<number | null>(null);
 
-	useEffect(() => {
-		const fetchData = async () => {
-			const ts = Math.floor(Date.now() / 1e3);
-			const oneDayAgo = ts - 3600 * 24;
+	const tradesChartPeriodDays = periodToDays(tradesChartPeriod);
+	const volumeChartPeriodDays = periodToDays(volumeChartPeriod);
 
-			const [exchangeVolumeData, exchanges, allTimeData] = await Promise.all([
-				getPostArchernarTotals(),
-				snxData.exchanges.since({ minTimestamp: oneDayAgo }),
-				snxData.exchanges.total(),
-			]);
-			// @ts-ignore
-			const last24Hours = exchanges.reduce((acc, { fromAmountInUSD }) => acc + fromAmountInUSD, 0);
+	const generalTradingInfo = useGeneralTradingInfoQuery();
 
-			setTotalDailyTradingVolume(last24Hours);
-			setTotalTradingVolume(exchangeVolumeData.exchangeUSDTally);
-			setTotalTradingFees(exchangeVolumeData.totalFeesGeneratedInUSD);
-			setTotalTrades(exchangeVolumeData.trades);
-			setTotalUsers(allTimeData.exchangers);
-		};
-		fetchData();
-	}, []);
-
-	const formatChartData = (data: TradesRequestData[], type: 'trade' | 'volume'): AreaChartData[] =>
-		data.map(({ id, trades, exchangeUSDTally }) => ({
-			created: formatIdToIsoString(id, '1d'),
-			value: type === 'trade' ? trades : exchangeUSDTally,
-		}));
-
-	const getTotalValue = (data: AreaChartData[]) =>
-		data.reduce((acc, curr) => (acc += curr.value), 0);
-
-	const setChartData = (data: TradesRequestData[], type: 'trade' | 'volume') => {
-		const formattedChartData = formatChartData(data, type);
-		const aggregate = formattedChartData.length > 0 ? getTotalValue(formattedChartData) : 0;
-		if (type === 'trade') {
-			setTotalTradesOverPeriod(aggregate);
-			setTradesChartData(formattedChartData);
-		} else if (type === 'volume') {
-			setTotalVolumeOverPeriod(aggregate);
-			setVolumeChartData(formattedChartData);
-		}
-	};
-
-	const fetchNewChartData = async (fetchPeriod: ChartPeriod, type: 'trade' | 'volume' | 'both') => {
-		const timeSeries = '1d';
-		let tradesOverPeriodData = [];
-		if (fetchPeriod === 'W') {
-			tradesOverPeriodData = await snxData.exchanges.aggregate({ timeSeries, max: 7 });
-		} else if (fetchPeriod === 'M') {
-			tradesOverPeriodData = await snxData.exchanges.aggregate({ timeSeries, max: 30 });
-			const totalMonthlyTraders = tradesOverPeriodData.reduce(
-				(acc: number, { exchangers }: TradesRequestData) => {
-					acc += exchangers;
-					return acc;
+	const exchangeVolumeData = usePageResults<any>({
+		api: synthetixExchanges,
+		query: {
+			entity: 'postArchernarTotals',
+			selection: {
+				where: {
+					id: `\\"mainnet\\"`,
 				},
-				0
-			);
-			setAverageDailyTraders(Math.floor(totalMonthlyTraders / 30));
-		} else if (fetchPeriod === 'Y') {
-			tradesOverPeriodData = await snxData.exchanges.aggregate({ timeSeries, max: 365 });
-		}
-		tradesOverPeriodData = tradesOverPeriodData.reverse();
+			},
+			properties: ['trades', 'exchangers', 'exchangeUSDTally', 'totalFeesGeneratedInUSD'],
+		},
+		max: 1,
+	});
 
-		if (type === 'both') {
-			setChartData(tradesOverPeriodData, 'trade');
-			setChartData(tradesOverPeriodData, 'volume');
-		} else if (type === 'volume' || type === 'trade') {
-			setChartData(tradesOverPeriodData, type);
-		}
-	};
+	const timeSeries = '1d';
 
-	useEffect(() => {
-		fetchNewChartData(tradesChartPeriod, 'both');
-	}, []);
+	const tradesChartData = useTradesOverPeriodQuery({ timeSeries, max: tradesChartPeriodDays });
+	const volumeChartData = useTradesOverPeriodQuery({ timeSeries, max: volumeChartPeriodDays });
+	const monthlyTradersData = useTradesOverPeriodQuery({ timeSeries, max: 30 });
+
+	const totalTradingVolume = exchangeVolumeData.isSuccess
+		? exchangeVolumeData.data![0].exchangeUSDTally / 1e18
+		: null;
+	const totalTradingFees = exchangeVolumeData.isSuccess
+		? exchangeVolumeData.data![0].totalFeesGeneratedInUSD / 1e18
+		: null;
+	const totalTrades = exchangeVolumeData.isSuccess ? exchangeVolumeData.data![0].trades : null;
+
+	const tradesFormattedChartData = formatChartData(tradesChartData.data || [], 'trade');
+	const volumeFormattedChartData = formatChartData(volumeChartData.data || [], 'volume');
+
+	const totalTradesOverPeriod = getTotalValue(tradesFormattedChartData);
+	const totalVolumeOverPeriod = getTotalValue(volumeFormattedChartData);
+
+	const totalMonthlyTraders = monthlyTradersData.isSuccess
+		? monthlyTradersData.data!.reduce((acc: number, { exchangers }: TradesRequestData) => {
+				acc += exchangers;
+				return acc;
+		  }, 0)
+		: null;
+	const averageDailyTraders = totalMonthlyTraders ? Math.floor(totalMonthlyTraders / 30) : null;
 
 	const periods: ChartPeriod[] = ['W', 'M', 'Y'];
+
 	return (
 		<>
 			<SectionHeader title={t('section-header.trading')} />
@@ -173,7 +150,7 @@ const Trading: FC = () => {
 				<StatsBox
 					key="TOTLDAILYVOLUME"
 					title={t('24hr-exchange-volume.title')}
-					num={totalDailyTradingVolume}
+					num={generalTradingInfo.data?.totalDailyTradingVolume || null}
 					percentChange={null}
 					subText={t('24hr-exchange-volume.subtext')}
 					color={COLORS.green}
@@ -186,11 +163,9 @@ const Trading: FC = () => {
 				periods={periods}
 				activePeriod={volumeChartPeriod}
 				onPeriodSelect={(period: ChartPeriod) => {
-					setVolumeChartData([]); // will force loading state
 					setVolumeChartPeriod(period);
-					fetchNewChartData(period, 'volume');
 				}}
-				data={volumeChartData}
+				data={volumeFormattedChartData}
 				title={t('trading-volume.title')}
 				num={totalVolumeOverPeriod}
 				numFormat="currency0"
@@ -212,7 +187,7 @@ const Trading: FC = () => {
 				<StatsBox
 					key="TOTALNOUNQTRADERS"
 					title={t('total-number-unique-traders.title')}
-					num={totalUsers}
+					num={generalTradingInfo.data?.totalUsers || null}
 					percentChange={null}
 					subText={t('total-number-unique-traders.subtext')}
 					color={COLORS.pink}
@@ -236,11 +211,9 @@ const Trading: FC = () => {
 				periods={periods}
 				activePeriod={tradesChartPeriod}
 				onPeriodSelect={(period: ChartPeriod) => {
-					setTradesChartData([]); // will force loading state
 					setTradesChartPeriod(period);
-					fetchNewChartData(period, 'trade');
 				}}
-				data={tradesChartData}
+				data={tradesFormattedChartData}
 				title={t('number-of-trades.title')}
 				num={totalTradesOverPeriod}
 				numFormat="number"
