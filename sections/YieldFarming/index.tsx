@@ -18,7 +18,7 @@ import { useSnxjsContractQuery } from 'queries/shared/useSnxjsContractQuery';
 import { useCMCQuery } from 'queries/shared/useCMCQuery';
 
 import QUERY_KEYS from 'constants/queryKeys';
-import { QueryResult, useQuery } from 'react-query';
+import { UseQueryResult, useQuery } from 'react-query';
 import {
 	RewardsContractInfo,
 	useRewardsContractInfo,
@@ -56,7 +56,7 @@ const YieldFarming: FC = () => {
 
 	const curveContractInfo = useCurveContractInfoQuery(provider);
 
-	const rewardsData: { [id: string]: QueryResult<RewardsContractInfo, string> } = {
+	const rewardsData: { [id: string]: UseQueryResult<RewardsContractInfo, string> } = {
 		CURVE_SUSD: useRewardsContractInfo(provider, curvepoolRewards.address, true),
 		iETH: useRewardsContractInfo(provider, snxjs.contracts.StakingRewardsiETH.address, false),
 		iBTC: useRewardsContractInfo(provider, snxjs.contracts.StakingRewardsiBTC.address, false),
