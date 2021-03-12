@@ -44,7 +44,7 @@ const Staking: FC = () => {
 	const snxjs = useContext(SNXJSContext);
 	const provider = useContext(ProviderContext);
 
-	const { SNXPrice, SNXStaked, issuanceRatio } = useSNXInfo(snxjs);
+	const { SNXPrice, SNXStaked, issuanceRatio, totalIssuedSynths } = useSNXInfo(snxjs);
 	const { sUSDPrice } = useSUSDInfo(provider);
 
 	const currentFeePeriod = useFeePeriodQuery(snxjs, 1);
@@ -74,6 +74,27 @@ const Staking: FC = () => {
 		SNXStaked,
 	]);
 
+	let stakeApySnx: number | null = null;
+	let stakeApyFees: number | null = null;
+
+	if (
+		sUSDPrice != null &&
+		SNXPrice != null &&
+		issuanceRatio != null &&
+		currentFeePeriod.isSuccess &&
+		totalIssuedSynths != null &&
+		SNXValueStaked != null
+	) {
+		const fakeSnxStaked = 1000;
+		const fakesUSDMinted = fakeSnxStaked * SNXPrice * issuanceRatio;
+		const feePoolPortion = fakesUSDMinted / totalIssuedSynths;
+		const usdThisWeek = sUSDPrice * currentFeePeriod.data!.feesToDistribute * feePoolPortion;
+		const snxThisWeek = currentFeePeriod.data!.rewardsToDistribute * feePoolPortion;
+
+		stakeApySnx = (snxThisWeek * (365.0 / 7)) / fakeSnxStaked;
+		stakeApyFees = (usdThisWeek * (365.0 / 7)) / (SNXPrice * fakeSnxStaked);
+	}
+
 	return (
 		<>
 			<SectionHeader title="STAKING" />
@@ -81,17 +102,7 @@ const Staking: FC = () => {
 				<StatsBox
 					key="SNXSTKAPY"
 					title={t('current-staking-apy.title')}
-					num={
-						sUSDPrice != null &&
-						SNXPrice != null &&
-						currentFeePeriod.isSuccess &&
-						SNXValueStaked != null
-							? (((sUSDPrice ?? 0) * currentFeePeriod.data!.feesToDistribute +
-									(SNXPrice ?? 0) * currentFeePeriod.data!.rewardsToDistribute) *
-									52) /
-							  SNXValueStaked
-							: null
-					}
+					num={stakeApyFees && stakeApySnx ? stakeApyFees + stakeApySnx : null}
 					percentChange={null}
 					subText={t('current-staking-apy.subtext')}
 					color={COLORS.green}
@@ -102,11 +113,7 @@ const Staking: FC = () => {
 				<StatsBox
 					key="SNXSTKAPYSUSD"
 					title={t('current-staking-apy-susd.title')}
-					num={
-						sUSDPrice != null && currentFeePeriod.isSuccess && SNXValueStaked != null
-							? ((sUSDPrice ?? 0) * currentFeePeriod.data!.feesToDistribute * 52) / SNXValueStaked
-							: null
-					}
+					num={stakeApyFees}
 					percentChange={null}
 					subText={t('current-staking-apy-susd.subtext')}
 					color={COLORS.green}
@@ -117,12 +124,7 @@ const Staking: FC = () => {
 				<StatsBox
 					key="SNXSTKAPYSNX"
 					title={t('current-staking-apy-snx.title')}
-					num={
-						SNXPrice != null && currentFeePeriod.isSuccess && SNXValueStaked != null
-							? (((SNXPrice ?? 0) * currentFeePeriod?.data!.rewardsToDistribute ?? 0) * 52) /
-							  SNXValueStaked
-							: null
-					}
+					num={stakeApySnx}
 					percentChange={null}
 					subText={t('current-staking-apy-snx.subtext')}
 					color={COLORS.pink}

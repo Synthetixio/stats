@@ -120,10 +120,17 @@ export const useSNXInfo = (snxjs: SynthetixJS) => {
 		}
 	}
 
+	const SNXPrice = unformattedSnxPrice.isSuccess
+		? Number(formatEther(unformattedSnxPrice.data!))
+		: null;
+
 	return {
-		SNXPrice: unformattedSnxPrice.isSuccess ? Number(formatEther(unformattedSnxPrice.data!)) : null,
+		SNXPrice,
 		SNXTotalSupply,
-		SNXStaked: SNXTotalSupply && snxTotal ? (SNXTotalSupply * snxLocked) / snxTotal : null,
+		SNXStaked:
+			SNXPrice && totalIssuedSynths && tempIssuanceRatio
+				? totalIssuedSynths / tempIssuanceRatio / SNXPrice
+				: null,
 		SNXPercentLocked: snxTotal ? snxLocked / snxTotal : null,
 		issuanceRatio: tempIssuanceRatio,
 		activeCRatio: stakersTotalDebt ? stakersTotalCollateral / stakersTotalDebt : null,
