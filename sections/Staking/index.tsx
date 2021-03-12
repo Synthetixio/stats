@@ -69,7 +69,10 @@ const Staking: FC = () => {
 	);
 
 	const stakingPeriods: ChartPeriod[] = ['W', 'M', 'Y'];
-	const SNXValueStaked = useMemo(() => (SNXPrice ?? 0) * (SNXStaked ?? 0), [SNXPrice, SNXStaked]);
+	const SNXValueStaked = useMemo(() => (SNXPrice && SNXStaked ? SNXPrice * SNXStaked : null), [
+		SNXPrice,
+		SNXStaked,
+	]);
 
 	return (
 		<>
