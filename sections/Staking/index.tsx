@@ -90,8 +90,6 @@ const Staking: FC = () => {
 
 		stakeApySnx = (snxThisWeek * (365.0 / 7)) / fakeSnxStaked;
 		stakeApyFees = (usdThisWeek * (365.0 / 7)) / (SNXPrice * fakeSnxStaked);
-
-		console.log(stakeApySnx, stakeApyFees);
 	}
 
 	return (
