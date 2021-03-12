@@ -1,11 +1,9 @@
-import { useQuery } from 'react-query';
-
-import QUERY_KEYS from 'constants/queryKeys';
 import { SynthetixJS } from '@synthetixio/js';
-import snxData from 'synthetix-data';
 import { ethers } from 'ethers';
 import { useSnxjsContractQuery } from 'queries/shared/useSnxjsContractQuery';
 import { formatEther, formatUnits } from 'ethers/lib/utils';
+import { usePageResults } from './usePageResults';
+import { synthetixSnx } from 'constants/graph-urls';
 
 export const useSNXInfo = (snxjs: SynthetixJS) => {
 	const unformattedSnxPrice = useSnxjsContractQuery<ethers.BigNumber>(
@@ -39,9 +37,27 @@ export const useSNXInfo = (snxjs: SynthetixJS) => {
 		[]
 	);
 
-	const holders = useQuery<any, string>(QUERY_KEYS.SnxHolders, async () => {
-		return snxData.snx.holders({ max: 1000 });
+	const holders = usePageResults<any[]>({
+		api: synthetixSnx,
+		query: {
+			entity: 'snxholders',
+			selection: {
+				orderBy: 'collateral',
+				orderDirection: 'desc',
+				where: {
+					block_gt: 5873222,
+				},
+			},
+			properties: ['collateral', 'debtEntryAtIndex', 'initialDebtOwnership'],
+		},
+		max: 1000,
 	});
+
+	/*const holders = useQuery<any, string>(QUERY_KEYS.SnxHolders, async () => {
+		return 
+		
+		snxData.snx.holders({ max: 1000 });
+	});*/
 
 	const lastDebtLedgerEntry = unformattedLastDebtLedgerEntry.isSuccess
 		? Number(formatUnits(unformattedLastDebtLedgerEntry.data!, 27))
@@ -74,21 +90,32 @@ export const useSNXInfo = (snxjs: SynthetixJS) => {
 		holders.isSuccess
 	) {
 		for (const { collateral, debtEntryAtIndex, initialDebtOwnership } of holders.data!) {
+			//console.log(collateral, debtEntryAtIndex, initialDebtOwnership)
+			if (!collateral || !debtEntryAtIndex || !initialDebtOwnership) continue;
+
+			const collateralFmt = Number(ethers.utils.formatEther(ethers.BigNumber.from(collateral)));
+			const debtEntryAtIndexFmt = Number(
+				ethers.utils.formatEther(ethers.BigNumber.from(debtEntryAtIndex))
+			);
+			const initialDebtOwnershipFmt = Number(
+				ethers.utils.formatEther(ethers.BigNumber.from(initialDebtOwnership))
+			);
+
 			let debtBalance =
-				((totalIssuedSynths * lastDebtLedgerEntry) / debtEntryAtIndex) * initialDebtOwnership;
-			let collateralRatio = debtBalance / collateral / usdToSnxPrice;
+				((totalIssuedSynths * lastDebtLedgerEntry) / debtEntryAtIndexFmt) * initialDebtOwnershipFmt;
+			let collateralRatio = debtBalance / collateralFmt / usdToSnxPrice;
 
 			if (isNaN(debtBalance)) {
 				debtBalance = 0;
 				collateralRatio = 0;
 			}
-			const lockedSnx = collateral * Math.min(1, collateralRatio / tempIssuanceRatio);
+			const lockedSnx = collateralFmt * Math.min(1, collateralRatio / tempIssuanceRatio);
 
 			if (Number(debtBalance) > 0) {
 				stakersTotalDebt += Number(debtBalance);
-				stakersTotalCollateral += Number(collateral * usdToSnxPrice);
+				stakersTotalCollateral += Number(collateralFmt * usdToSnxPrice);
 			}
-			snxTotal += Number(collateral);
+			snxTotal += Number(collateralFmt);
 			snxLocked += Number(lockedSnx);
 		}
 	}
