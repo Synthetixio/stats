@@ -112,16 +112,7 @@ const YieldFarming: FC = () => {
 						firstMetric={d[1].distribution}
 						firstColor={COLORS.green}
 						secondMetricTitle={t('iETH.secondMetricTitle')}
-						secondMetric={
-							d[1].distribution != null &&
-							d[1].rewardsInfo != null &&
-							d[1].price != null &&
-							SNXPrice != null
-								? d[1].apy /*((d[1].distribution * SNXPrice) /
-									(d[1].balance * d[1].price))*/
-								: //52
-								  null
-						}
+						secondMetric={d[1].apy}
 						secondColor={COLORS.green}
 						secondMetricStyle="percent2"
 					/>
