@@ -225,8 +225,13 @@
 		"firstMetricTitle": "WEEKLY REWARDS (SNX)",
 		"secondMetricTitle": "Annual Percentage Yield"
 	},
-	"iBTC": {
-		"title": "iBTC",
+	"ShortsETH": {
+		"title": "Short sETH",
+		"firstMetricTitle": "WEEKLY REWARDS (SNX)",
+		"secondMetricTitle": "Annual Percentage Yield"
+	},
+	"ShortsBTC": {
+		"title": "Short sBTC",
 		"firstMetricTitle": "WEEKLY REWARDS (SNX)",
 		"secondMetricTitle": "Annual Percentage Yield"
 	},
