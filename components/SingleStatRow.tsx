@@ -47,7 +47,7 @@ const SingleStatRow: FC<SingleStatRowProps> = ({
 				<SingleStatsNumber color={color}>{formattedNumber}</SingleStatsNumber>
 				<InfoWrapper>
 					{hasQueryError && <WarningIcon />}
-					<SnxTooltip arrow title={t('refresh-tooltip')} placement="top">
+					<SnxTooltip arrow title={t('refresh-tooltip') as string} placement="top">
 						<RefetchIconButton aria-label="refetch" onClick={refetch}>
 							<RefetchIcon />
 						</RefetchIconButton>

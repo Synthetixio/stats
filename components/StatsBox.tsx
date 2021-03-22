@@ -68,7 +68,7 @@ const StatsBox: FC<StatsBoxProps> = ({
 						</TitleWrapper>
 						<InfoWrapper>
 							{hasQueryError && <WarningIcon />}
-							<SnxTooltip arrow title={t('refresh-tooltip')} placement="top">
+							<SnxTooltip arrow title={t('refresh-tooltip') as string} placement="top">
 								<RefetchIconButton aria-label="refetch" onClick={refetch}>
 									<RefetchIcon />
 								</RefetchIconButton>
