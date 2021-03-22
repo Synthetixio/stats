@@ -1,4 +1,4 @@
-import { useQuery } from 'react-query';
+import { useQuery, UseQueryResult } from 'react-query';
 
 import QUERY_KEYS from 'constants/queryKeys';
 import { ethers } from 'ethers';
@@ -21,6 +21,7 @@ export interface RewardsData {
 	apy: number | null;
 	distribution: number | null;
 	rewardsInfo: RewardsContractInfo | null;
+	queries: UseQueryResult[];
 }
 
 export const useRewardsContractInfo = (
@@ -86,6 +87,8 @@ export const useRewardsContractInfo = (
 			Number(ethers.utils.formatEther(price.data!));
 	}
 
+	const queries: UseQueryResult[] = [price, SNXPrice, rewardsInfo];
+
 	if (type === 'curve') {
 		/* eslint-disable react-hooks/rules-of-hooks */
 		const curveContractInfo = useCurveContractInfoQuery(provider);
@@ -105,6 +108,8 @@ export const useRewardsContractInfo = (
 		}
 
 		apy += curveApy?.data?.apy?.day?.susd || 0;
+
+		queries.push(curveContractInfo, crvPriceInfo, curveApy);
 	}
 
 	return {
@@ -112,5 +117,6 @@ export const useRewardsContractInfo = (
 		rewardsInfo: rewardsInfo.data,
 		distribution,
 		apy: apy || null,
+		queries,
 	};
 };

@@ -13,8 +13,8 @@ export const formatCurrency = (
 	value: string | number,
 	decimals: number = DEFAULT_CURRENCY_DECIMALS
 ): string => {
-	if (!value || !Number(value)) {
-		return '0';
+	if ((value !== 0 && !value) || !Number(value)) {
+		return '$-.--';
 	}
 
 	// always use dollars for now

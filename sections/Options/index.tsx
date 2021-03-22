@@ -88,6 +88,7 @@ const Options: FC = () => {
 					key="LGSTACTVBINMKT"
 					title={t('largest-active-binary-market.title')}
 					num={Number(largestActiveMarket ? largestActiveMarket.poolSize : 0)}
+					queries={[sortedMarkets]}
 					percentChange={null}
 					subText={t('largest-active-binary-market.subtext', {
 						synth: largestActiveMarket?.currencyKey ?? '...',
@@ -112,6 +113,7 @@ const Options: FC = () => {
 					key="LGSTBINMKTTODATE"
 					title={t('largest-binary-market-to-date.title')}
 					num={Number(largestMarket?.poolSize ?? 0)}
+					queries={[sortedMarkets]}
 					percentChange={null}
 					subText={t('largest-binary-market-to-date.subtext', {
 						synth: largestMarket?.currencyKey ?? '...',
@@ -138,6 +140,7 @@ const Options: FC = () => {
 					key="NUMBNRYMRKTS"
 					title={t('number-of-active-binary-options-markets.title')}
 					num={numMarkets}
+					queries={[sortedMarkets]}
 					percentChange={null}
 					subText={t('number-of-active-binary-options-markets.subtext')}
 					color={COLORS.green}
@@ -156,6 +159,7 @@ const Options: FC = () => {
 					key="TTLAMOUNTPOOLEDBINOPT"
 					title={t('total-pooled-in-binary-options.title')}
 					num={totalPoolSizes}
+					queries={[sortedMarkets]}
 					percentChange={null}
 					subText={t('total-pooled-in-binary-options.subtext')}
 					color={COLORS.pink}
@@ -174,6 +178,7 @@ const Options: FC = () => {
 					key="TRADESBINOPTION"
 					title={t('trades-in-binary-options-24-hrs.title')}
 					num={num24HRTx}
+					queries={[optionsTransactions]}
 					percentChange={null}
 					subText={t('trades-in-binary-options-24-hrs.subtext')}
 					color={COLORS.pink}

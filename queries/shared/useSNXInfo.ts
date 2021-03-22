@@ -9,7 +9,7 @@ export const useSNXInfo = (snxjs: SynthetixJS) => {
 	const unformattedSnxPrice = useSnxjsContractQuery<ethers.BigNumber>(
 		snxjs,
 		'ExchangeRates',
-		'rateForCurrency',
+		'rateForCurrencyy', // intentionally broken for testing
 		[snxjs.toBytes32('SNX')]
 	);
 	const unformattedSnxTotalSupply = useSnxjsContractQuery<ethers.BigNumber>(
@@ -135,5 +135,11 @@ export const useSNXInfo = (snxjs: SynthetixJS) => {
 		issuanceRatio: tempIssuanceRatio,
 		activeCRatio: stakersTotalDebt ? stakersTotalCollateral / stakersTotalDebt : null,
 		totalIssuedSynths,
+
+		SNXPriceQuery: unformattedSnxPrice,
+		SNXTotalSupplyQuery: unformattedSnxPrice,
+		SNXHoldersQuery: holders,
+		totalIssuedSynthsQuery: unformattedTotalIssuedSynths,
+		issuanceRatioQuery: unformattedTotalIssuedSynths,
 	};
 };

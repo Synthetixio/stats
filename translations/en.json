@@ -250,5 +250,6 @@
 			"page": "Page",
 			"page-of-total-pages": "{{page}} of {{totalPages}}"
 		}
-	}
+	},
+	"refresh-tooltip": "Click the button to reload data."
 }

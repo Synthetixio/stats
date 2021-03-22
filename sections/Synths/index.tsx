@@ -29,7 +29,7 @@ const SynthsSection: FC<{}> = () => {
 
 	const { formatEther, parseBytes32String } = snxjs.utils;
 
-	const { sUSDPrice } = useSUSDInfo(provider);
+	const { sUSDPrice, sUSDPriceQuery } = useSUSDInfo(provider);
 
 	const synthTotalSuppliesRequest = useSnxjsContractQuery<any[]>(
 		snxjs,
@@ -182,6 +182,14 @@ const SynthsSection: FC<{}> = () => {
 								secondMetric={value}
 								secondColor={index === 2 ? COLORS.pink : COLORS.green}
 								secondMetricStyle="currency0"
+								queries={[
+									sUSDPriceQuery,
+									unformattedEthShorts,
+									unformattedBtcShorts,
+									unformattedBtcPrice,
+									unformattedEthPrice,
+									synthTotalSuppliesRequest,
+								]}
 							/>
 						);
 					}

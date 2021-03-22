@@ -27,5 +27,7 @@ export const useSUSDInfo = (provider: ethers.providers.Provider) => {
 		sUSDPrice: unformattedsUSDExchangeAmount.isSuccess
 			? Number(formatUnits(unformattedsUSDExchangeAmount.data!, 6))
 			: null,
+
+		sUSDPriceQuery: unformattedsUSDExchangeAmount,
 	};
 };

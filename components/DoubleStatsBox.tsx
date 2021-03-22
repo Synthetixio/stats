@@ -4,6 +4,15 @@ import styled from 'styled-components';
 import { NumberColor, COLORS, NumberStyle } from 'constants/styles';
 import { getFormattedNumber } from 'utils/formatter';
 import InfoPopover from './InfoPopover';
+import { UseQueryResult } from 'react-query';
+
+import { SnxTooltip } from './common';
+
+import { IconButton, withStyles } from '@material-ui/core';
+
+import ErrorIcon from 'assets/svg/error';
+import RefetchIcon from 'assets/svg/refetch.svg';
+import { useTranslation } from 'react-i18next';
 
 type DoubleStatsBoxProps = {
 	title: string;
@@ -16,6 +25,7 @@ type DoubleStatsBoxProps = {
 	secondMetric: number | null;
 	secondColor: NumberColor;
 	secondMetricStyle: NumberStyle;
+	queries?: UseQueryResult[];
 	infoData?: ReactNode;
 };
 
@@ -30,16 +40,42 @@ const DoubleStatsBox: FC<DoubleStatsBoxProps> = ({
 	secondMetric,
 	secondMetricTitle,
 	secondMetricStyle,
+	queries = [],
 	infoData,
 }) => {
-	const formattedFirstMetric = getFormattedNumber(firstMetric, firstMetricStyle);
-	const formattedSecondMetric = getFormattedNumber(secondMetric, secondMetricStyle);
+	const { t } = useTranslation();
+
+	const allQueriesLoaded = !queries.find((q) => q.isLoading);
+	const hasQueryError = !!queries.find((q) => q.isError);
+
+	const refetch = () => queries.forEach((q) => q.refetch());
+
+	const formattedFirstMetric =
+		allQueriesLoaded && firstMetric != null
+			? getFormattedNumber(firstMetric, firstMetricStyle)
+			: getFormattedNumber(0, firstMetricStyle)!.replace(/0/g, '-');
+
+	const formattedSecondMetric =
+		allQueriesLoaded && secondMetric != null
+			? getFormattedNumber(secondMetric, secondMetricStyle)
+			: getFormattedNumber(0, secondMetricStyle)!.replace(/0/g, '-');
+
 	return (
 		<DoubleStatsBoxContainer>
-			<TitleWrapper>
-				<DoubleStatsBoxTitle>{title}</DoubleStatsBoxTitle>
-				{infoData != null ? <InfoPopover infoData={infoData} /> : null}
-			</TitleWrapper>
+			<HeaderWrapper>
+				<TitleWrapper>
+					<DoubleStatsBoxTitle>{title}</DoubleStatsBoxTitle>
+					{infoData != null ? <InfoPopover infoData={infoData} /> : null}
+				</TitleWrapper>
+				<InfoWrapper>
+					{hasQueryError && <WarningIcon />}
+					<SnxTooltip arrow title={t('refresh-tooltip')} placement="top">
+						<RefetchIconButton aria-label="refetch" onClick={refetch}>
+							<RefetchIcon />
+						</RefetchIconButton>
+					</SnxTooltip>
+				</InfoWrapper>
+			</HeaderWrapper>
 			<DoubleStatsBoxSubtitle>{subtitle}</DoubleStatsBoxSubtitle>
 			<DoubleStatsBoxMetricTitle>{firstMetricTitle}</DoubleStatsBoxMetricTitle>
 			<DoubleStatsBoxMetric color={firstColor}>{formattedFirstMetric}</DoubleStatsBoxMetric>
@@ -64,6 +100,34 @@ const DoubleStatsBoxContainer = styled.div`
 		width: 100%;
 	}
 `;
+
+const HeaderWrapper = styled.div`
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-top: 20px;
+	margin-bottom: 15px;
+	margin-right: 10px;
+`;
+
+const InfoWrapper = styled.div`
+	display: flex;
+	justify-content: flex-end;
+	align-items: center;
+	margin-right: -10px;
+`;
+
+const WarningIcon = styled(ErrorIcon)`
+	fill: ${(props) => `${props.theme.colors.red}`};
+	margin-right: 10px;
+`;
+
+const RefetchIconButton = withStyles(() => ({
+	root: {
+		backgroundColor: '#312065',
+		padding: '6px',
+	},
+}))(IconButton);
 
 export const TitleWrapper = styled.div`
 	display: flex;

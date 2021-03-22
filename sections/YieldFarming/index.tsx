@@ -37,8 +37,6 @@ const YieldFarming: FC = () => {
 
 	const snxjs = useContext(SNXJSContext);
 
-	const { SNXPrice } = useSNXInfo(snxjs);
-
 	const provider = useContext(ProviderContext);
 
 	const rewardsData: { [id: string]: any } = {
@@ -98,6 +96,7 @@ const YieldFarming: FC = () => {
 				text={t('lending-apy.title')}
 				subtext={t('lending-apy.subtext')}
 				num={aaveDepositRate}
+				queries={[aaveDepositInfo]}
 				color={COLORS.green}
 				numberStyle="percent2"
 			/>
@@ -115,6 +114,7 @@ const YieldFarming: FC = () => {
 						secondMetric={d[1].apy}
 						secondColor={COLORS.green}
 						secondMetricStyle="percent2"
+						queries={d[1].queries}
 					/>
 				))}
 			</StatsRow>

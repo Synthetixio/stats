@@ -4,12 +4,19 @@ import styled, { css } from 'styled-components';
 
 import { getFormattedNumber } from 'utils/formatter';
 import { COLORS, NumberColor, NumberStyle } from 'constants/styles';
-import { PercentChangeBox } from './common';
+import { PercentChangeBox, SnxTooltip } from './common';
 import InfoPopover from './InfoPopover';
+import { UseQueryResult } from 'react-query';
+import { IconButton, withStyles } from '@material-ui/core';
+
+import ErrorIcon from 'assets/svg/error';
+import RefetchIcon from 'assets/svg/refetch.svg';
+import { useTranslation } from 'react-i18next';
 
 interface StatsBoxProps {
 	title: string;
 	num: number | null;
+	queries?: UseQueryResult[];
 	percentChange: number | null;
 	subText: string;
 	color: NumberColor;
@@ -22,6 +29,7 @@ interface StatsBoxProps {
 const StatsBox: FC<StatsBoxProps> = ({
 	title,
 	num,
+	queries = [],
 	percentChange,
 	subText,
 	color,
@@ -29,10 +37,21 @@ const StatsBox: FC<StatsBoxProps> = ({
 	numBoxes,
 	infoData,
 }) => {
-	const formattedNumber = getFormattedNumber(num, numberStyle);
+	const { t } = useTranslation();
+
+	const allQueriesLoaded = !queries.find((q) => q.isLoading);
+	const hasQueryError = !!queries.find((q) => q.isError);
+
+	const refetch = () => queries.forEach((q) => q.refetch());
+
+	const formattedNumber =
+		allQueriesLoaded && num != null
+			? getFormattedNumber(num, numberStyle)
+			: getFormattedNumber(0, numberStyle)!.replace(/0/g, '-');
+
 	return (
-		<StatsBoxContainer num={num} numBoxes={numBoxes}>
-			{num == null ? (
+		<StatsBoxContainer num={100} numBoxes={numBoxes}>
+			{false ? (
 				<Skeleton
 					className="stats-box-skeleton"
 					variant="rect"
@@ -42,10 +61,20 @@ const StatsBox: FC<StatsBoxProps> = ({
 				/>
 			) : (
 				<>
-					<TitleWrapper>
-						<StatsBoxTitle>{title}</StatsBoxTitle>
-						{infoData != null ? <InfoPopover infoData={infoData} /> : null}
-					</TitleWrapper>
+					<HeaderWrapper>
+						<TitleWrapper>
+							<StatsBoxTitle>{title}</StatsBoxTitle>
+							{infoData != null ? <InfoPopover infoData={infoData} /> : null}
+						</TitleWrapper>
+						<InfoWrapper>
+							{hasQueryError && <WarningIcon />}
+							<SnxTooltip arrow title={t('refresh-tooltip')} placement="top">
+								<RefetchIconButton aria-label="refetch" onClick={refetch}>
+									<RefetchIcon />
+								</RefetchIconButton>
+							</SnxTooltip>
+						</InfoWrapper>
+					</HeaderWrapper>
 					<StatsBoxNumber color={color}>{formattedNumber}</StatsBoxNumber>
 					{percentChange != null ? (
 						<PercentChangeBox color={color}>{percentChange}</PercentChangeBox>
@@ -62,6 +91,7 @@ export default StatsBox;
 const StatsBoxContainer = styled.div<{ num: number | null; numBoxes: number }>`
 	margin-top: 20px;
 	padding: ${(props) => (props.num == null ? '0' : '20px')};
+	padding-top: 0;
 	${(props) => {
 		if (props.num == null && props.numBoxes === 2) {
 			return css`
@@ -111,13 +141,41 @@ const StatsBoxContainer = styled.div<{ num: number | null; numBoxes: number }>`
 	}
 `;
 
+const HeaderWrapper = styled.div`
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-top: 20px;
+	margin-bottom: 15px;
+	margin-right: 10px;
+`;
+
+const InfoWrapper = styled.div`
+	display: flex;
+	justify-content: flex-end;
+	align-items: center;
+	margin-right: -10px;
+`;
+
+const WarningIcon = styled(ErrorIcon)`
+	fill: ${(props) => `${props.theme.colors.red}`};
+	margin-right: 10px;
+`;
+
+const RefetchIconButton = withStyles(() => ({
+	root: {
+		backgroundColor: '#312065',
+		padding: '6px',
+	},
+}))(IconButton);
+
 const TitleWrapper = styled.div`
 	display: flex;
+	align-items: center;
 `;
 
 const StatsBoxTitle = styled.div`
 	height: 24px;
-	margin-bottom: 15px;
 
 	font-family: ${(props) => `${props.theme.fonts.condensedMedium}, ${props.theme.fonts.regular}`};
 	font-size: 14px;

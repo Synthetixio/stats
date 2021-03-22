@@ -44,8 +44,17 @@ const Staking: FC = () => {
 	const snxjs = useContext(SNXJSContext);
 	const provider = useContext(ProviderContext);
 
-	const { SNXPrice, SNXStaked, issuanceRatio, totalIssuedSynths } = useSNXInfo(snxjs);
-	const { sUSDPrice } = useSUSDInfo(provider);
+	const {
+		SNXPrice,
+		SNXStaked,
+		issuanceRatio,
+		totalIssuedSynths,
+
+		SNXPriceQuery,
+		issuanceRatioQuery,
+		totalIssuedSynthsQuery,
+	} = useSNXInfo(snxjs);
+	const { sUSDPrice, sUSDPriceQuery } = useSUSDInfo(provider);
 
 	const currentFeePeriod = useFeePeriodQuery(snxjs, 1);
 	const nextFeePeriod = useFeePeriodQuery(snxjs, 0);
@@ -103,6 +112,13 @@ const Staking: FC = () => {
 					key="SNXSTKAPY"
 					title={t('current-staking-apy.title')}
 					num={stakeApyFees && stakeApySnx ? stakeApyFees + stakeApySnx : null}
+					queries={[
+						sUSDPriceQuery,
+						SNXPriceQuery,
+						issuanceRatioQuery,
+						totalIssuedSynthsQuery,
+						currentFeePeriod,
+					]}
 					percentChange={null}
 					subText={t('current-staking-apy.subtext')}
 					color={COLORS.green}
@@ -114,6 +130,13 @@ const Staking: FC = () => {
 					key="SNXSTKAPYSUSD"
 					title={t('current-staking-apy-susd.title')}
 					num={stakeApyFees}
+					queries={[
+						sUSDPriceQuery,
+						SNXPriceQuery,
+						issuanceRatioQuery,
+						totalIssuedSynthsQuery,
+						currentFeePeriod,
+					]}
 					percentChange={null}
 					subText={t('current-staking-apy-susd.subtext')}
 					color={COLORS.green}
@@ -125,6 +148,13 @@ const Staking: FC = () => {
 					key="SNXSTKAPYSNX"
 					title={t('current-staking-apy-snx.title')}
 					num={stakeApySnx}
+					queries={[
+						sUSDPriceQuery,
+						SNXPriceQuery,
+						issuanceRatioQuery,
+						totalIssuedSynthsQuery,
+						currentFeePeriod,
+					]}
 					percentChange={null}
 					subText={t('current-staking-apy-snx.subtext')}
 					color={COLORS.pink}
@@ -142,6 +172,7 @@ const Staking: FC = () => {
 							? (sUSDPrice ?? 0) * currentFeePeriod.data!.feesToDistribute
 							: null
 					}
+					queries={[sUSDPriceQuery, currentFeePeriod]}
 					percentChange={null}
 					subText={t('current-fee-pool.subtext', {
 						endDate: currentFeePeriod.isSuccess
@@ -168,6 +199,7 @@ const Staking: FC = () => {
 							? (SNXPrice ?? 0) * currentFeePeriod.data!.rewardsToDistribute
 							: null
 					}
+					queries={[SNXPriceQuery, currentFeePeriod]}
 					percentChange={null}
 					subText={t('current-fee-pool-snx.subtext', {
 						endDate: currentFeePeriod.isSuccess
@@ -191,6 +223,7 @@ const Staking: FC = () => {
 										currentFeePeriod.data!.rewardsClaimed)
 							: null
 					}
+					queries={[sUSDPriceQuery, SNXPriceQuery, currentFeePeriod]}
 					percentChange={null}
 					subText={t('unclaimed-fees-and-rewards.subtext', {
 						endDate: nextFeePeriod.isSuccess
@@ -210,6 +243,7 @@ const Staking: FC = () => {
 							? (sUSDPrice ?? 0) * nextFeePeriod.data!.feesToDistribute
 							: null
 					}
+					queries={[sUSDPriceQuery, nextFeePeriod]}
 					percentChange={null}
 					subText={t('fees-in-next-period.subtext')}
 					color={COLORS.pink}

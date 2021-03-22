@@ -94,6 +94,7 @@ const Trading: FC = () => {
 					key="TOTALTRDVOLUME"
 					title={t('total-trading-volume.title')}
 					num={totalTradingVolume}
+					queries={[exchangeVolumeData]}
 					percentChange={null}
 					subText={t('total-trading-volume.subtext')}
 					color={COLORS.green}
@@ -113,6 +114,7 @@ const Trading: FC = () => {
 					key="TOTLFEES"
 					title={t('total-trading-fees.title')}
 					num={totalTradingFees}
+					queries={[exchangeVolumeData]}
 					percentChange={null}
 					subText={t('total-trading-fees.subtext')}
 					color={COLORS.green}
@@ -132,6 +134,7 @@ const Trading: FC = () => {
 					key="TOTLNOTRDES"
 					title={t('total-number-of-trades.title')}
 					num={totalTrades}
+					queries={[exchangeVolumeData]}
 					percentChange={null}
 					subText={t('total-number-of-trades.subtext')}
 					color={COLORS.pink}
@@ -151,6 +154,7 @@ const Trading: FC = () => {
 					key="TOTLDAILYVOLUME"
 					title={t('24hr-exchange-volume.title')}
 					num={generalTradingInfo.data?.totalDailyTradingVolume || null}
+					queries={[generalTradingInfo]}
 					percentChange={null}
 					subText={t('24hr-exchange-volume.subtext')}
 					color={COLORS.green}
@@ -188,6 +192,7 @@ const Trading: FC = () => {
 					key="TOTALNOUNQTRADERS"
 					title={t('total-number-unique-traders.title')}
 					num={generalTradingInfo.data?.totalUsers || null}
+					queries={[generalTradingInfo]}
 					percentChange={null}
 					subText={t('total-number-unique-traders.subtext')}
 					color={COLORS.pink}
@@ -199,6 +204,7 @@ const Trading: FC = () => {
 					key="AVGDAILYTRDRS"
 					title={t('average-daily-traders.title')}
 					num={averageDailyTraders}
+					queries={[monthlyTradersData]}
 					percentChange={null}
 					subText={t('average-daily-traders.subtext')}
 					color={COLORS.green}

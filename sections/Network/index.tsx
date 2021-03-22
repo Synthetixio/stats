@@ -48,8 +48,14 @@ const NetworkSection: FC = () => {
 		issuanceRatio,
 		activeCRatio,
 		totalIssuedSynths,
+
+		SNXPriceQuery,
+		SNXTotalSupplyQuery,
+		issuanceRatioQuery,
+		totalIssuedSynthsQuery,
+		SNXHoldersQuery,
 	} = useSNXInfo(snxjs);
-	const { sUSDPrice } = useSUSDInfo(provider);
+	const { sUSDPrice, sUSDPriceQuery } = useSUSDInfo(provider);
 
 	const unformattedSUSDTotalSupply = useSnxjsContractQuery<ethers.BigNumber>(
 		snxjs,
@@ -160,6 +166,7 @@ const NetworkSection: FC = () => {
 					key="SNXMKTCAP"
 					title={t('snx-market-cap.title')}
 					num={SNXPrice != null && SNXTotalSupply != null ? SNXTotalSupply * (SNXPrice ?? 0) : null}
+					queries={[SNXPriceQuery, SNXTotalSupplyQuery]}
 					percentChange={null}
 					subText={t('snx-market-cap.subtext')}
 					color={COLORS.pink}
@@ -181,6 +188,7 @@ const NetworkSection: FC = () => {
 					key="SUSDPRICE"
 					title={t('susd-price.title')}
 					num={sUSDPrice}
+					queries={[sUSDPriceQuery]}
 					percentChange={null}
 					subText={t('susd-price.subtext')}
 					color={COLORS.green}
@@ -213,6 +221,7 @@ const NetworkSection: FC = () => {
 					key="ISSUANCECRATIO"
 					title={t('issuance-ratio.title')}
 					num={issuanceRatio != null ? 1 / (issuanceRatio ?? 0) : null}
+					queries={[issuanceRatioQuery]}
 					percentChange={null}
 					subText={t('issuance-ratio.subtext')}
 					color={COLORS.green}
@@ -230,6 +239,7 @@ const NetworkSection: FC = () => {
 							? SNXPercentLocked * SNXTotalSupply * (SNXPrice ?? 0)
 							: null
 					}
+					queries={[SNXTotalSupplyQuery, SNXPriceQuery]}
 					percentChange={null}
 					subText={t('total-snx-locked.subtext')}
 					color={COLORS.pink}
@@ -254,6 +264,7 @@ const NetworkSection: FC = () => {
 					key="NETWORKCRATIO"
 					title={t('network-cratio.title')}
 					num={networkCRatio}
+					queries={[SNXTotalSupplyQuery, SNXPriceQuery, totalIssuedSynthsQuery]}
 					percentChange={null}
 					subText={t('network-cratio.subtext')}
 					color={COLORS.green}
@@ -297,6 +308,7 @@ const NetworkSection: FC = () => {
 					key="SNXHOLDRS"
 					title={t('snx-holders.title')}
 					num={SNXHolders}
+					queries={[SNXHoldersQuery]}
 					percentChange={null}
 					subText={t('snx-holders.subtext')}
 					color={COLORS.green}
@@ -321,6 +333,7 @@ const NetworkSection: FC = () => {
 					key="ETHLOCKED"
 					title={t('eth-collateral.title')}
 					num={etherLocked}
+					queries={[ethCollateralBalance, ethSusdCollateralBalance, multiCollateralEtherBalance]}
 					percentChange={null}
 					subText={t('eth-collateral.subtext')}
 					color={COLORS.green}
@@ -332,6 +345,7 @@ const NetworkSection: FC = () => {
 					key="BTCLOCKED"
 					title={t('btc-collateral.title')}
 					num={parseFloat(bitcoinLocked.data || '0')}
+					queries={[bitcoinLocked]}
 					percentChange={null}
 					subText={t('btc-collateral.subtext')}
 					color={COLORS.green}
@@ -343,6 +357,7 @@ const NetworkSection: FC = () => {
 					key="USDLOCKEDSHORT"
 					title={t('short-collateral.title')}
 					num={parseFloat(sUSDShortLocked.data || '0')}
+					queries={[sUSDShortLocked]}
 					percentChange={null}
 					subText={t('short-collateral.subtext')}
 					color={COLORS.pink}
