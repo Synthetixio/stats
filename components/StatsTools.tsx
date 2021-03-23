@@ -10,6 +10,7 @@ import RefetchIcon from 'assets/svg/refetch';
 import { useTranslation } from 'react-i18next';
 
 import { SPIN360 } from '../constants/styles';
+import colors from 'styles/colors';
 
 // TODO what if num is 0 and is supposed to be zero!!
 const StatsTools: FC<{ queries: UseQueryResult[] }> = ({ queries = [] }) => {
@@ -54,7 +55,7 @@ const SpinningRefetchIcon = styled(RefetchIcon)`
 
 const RefetchIconButton = withStyles(() => ({
 	root: {
-		backgroundColor: '#312065',
+		backgroundColor: colors.darkGrayish,
 		padding: '6px',
 	},
 }))(IconButton);

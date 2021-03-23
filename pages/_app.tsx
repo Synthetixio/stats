@@ -1,8 +1,8 @@
-import { createContext, FC, createRef, RefObject } from 'react';
+import { createContext, FC, createRef, RefObject, useState } from 'react';
 import { AppProps } from 'next/app';
 import Head from 'next/head';
 import { ethers } from 'ethers';
-import { QueryClientProvider, QueryClient } from 'react-query';
+import { QueryClientProvider, QueryClient, Query } from 'react-query';
 import { ReactQueryDevtools } from 'react-query/devtools';
 
 import { synthetix, Network } from '@synthetixio/js';
@@ -15,6 +15,11 @@ import 'styles/index.css';
 import '../i18n';
 
 import Layout from 'sections/shared/Layout';
+import { Snackbar, withStyles } from '@material-ui/core';
+import { useTranslation } from 'react-i18next';
+import { debounce } from 'lodash';
+import { Alert } from '@material-ui/lab';
+import colors from 'styles/colors';
 
 export const headersAndScrollRef: { [key: string]: RefObject<unknown> } = {
 	NETWORK: createRef(),
@@ -48,6 +53,36 @@ const snxjs = synthetix({ network: Network.Mainnet, provider });
 export const SNXJSContext = createContext(snxjs);
 
 const App: FC<AppProps> = ({ Component, pageProps }) => {
+	const { t } = useTranslation();
+
+	const [failedQueries, setFailedQueries] = useState<Query[]>([]);
+
+	const qc = queryClient.getQueryCache();
+
+	let unsub: any = null;
+
+	const refreshQueries = debounce(
+		() => {
+			unsub();
+			setFailedQueries(
+				qc.findAll(undefined, {
+					predicate: (q) => {
+						return !q.isFetching && q.state.status === 'error';
+					},
+				})
+			);
+		},
+		3000,
+		{ leading: false, trailing: true }
+	);
+
+	unsub = qc.subscribe(refreshQueries);
+
+	const refetchFailedQueries = () => {
+		failedQueries.forEach((q) => q.fetch());
+		setFailedQueries([]);
+	};
+
 	return (
 		<>
 			<Head>
@@ -135,6 +170,17 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
 								</ProviderContext.Provider>
 							</SNXJSContext.Provider>
 						</HeadersContext.Provider>
+						<Snackbar
+							anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+							open={failedQueries.length > 0}
+							key="load-failed"
+						>
+							<SynthetixAlert severity="error" onClick={refetchFailedQueries}>
+								<b>{t('uh-oh')}</b>
+								<br />
+								{t('load-failed')}
+							</SynthetixAlert>
+						</Snackbar>
 						<ReactQueryDevtools />
 					</QueryClientProvider>
 				</MuiThemeProvider>
@@ -144,3 +190,26 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
 };
 
 export default App;
+
+const SynthetixAlert = withStyles(() => ({
+	root: {
+		color: colors.white,
+		backgroundColor: colors.mutedBrightPink,
+		borderRadius: 0,
+		borderColor: colors.brightPink,
+		borderWidth: '2px',
+		borderStyle: 'solid',
+		cursor: 'pointer',
+		maxWidth: '200px',
+		paddingTop: '10px',
+		paddingBottom: '10px',
+		paddingRight: '10px',
+		paddingLeft: '10px',
+	},
+	icon: {
+		display: 'none',
+	},
+	title: {
+		margin: '0',
+	},
+}))(Alert);
