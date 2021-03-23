@@ -4,14 +4,11 @@ import styled, { css } from 'styled-components';
 
 import { getFormattedNumber } from 'utils/formatter';
 import { COLORS, NumberColor, NumberStyle } from 'constants/styles';
-import { PercentChangeBox, SnxTooltip } from './common';
+import { PercentChangeBox } from './common';
 import InfoPopover from './InfoPopover';
 import { UseQueryResult } from 'react-query';
-import { IconButton, withStyles } from '@material-ui/core';
 
-import ErrorIcon from 'assets/svg/error';
-import RefetchIcon from 'assets/svg/refetch.svg';
-import { useTranslation } from 'react-i18next';
+import StatsTools from './StatsTools';
 
 interface StatsBoxProps {
 	title: string;
@@ -37,12 +34,7 @@ const StatsBox: FC<StatsBoxProps> = ({
 	numBoxes,
 	infoData,
 }) => {
-	const { t } = useTranslation();
-
 	const allQueriesLoaded = !queries.find((q) => q.isLoading);
-	const hasQueryError = !!queries.find((q) => q.isError);
-
-	const refetch = () => queries.forEach((q) => q.refetch());
 
 	const formattedNumber =
 		allQueriesLoaded && num != null
@@ -66,14 +58,7 @@ const StatsBox: FC<StatsBoxProps> = ({
 							<StatsBoxTitle>{title}</StatsBoxTitle>
 							{infoData != null ? <InfoPopover infoData={infoData} /> : null}
 						</TitleWrapper>
-						<InfoWrapper>
-							{hasQueryError && <WarningIcon />}
-							<SnxTooltip arrow title={t('refresh-tooltip') as string} placement="top">
-								<RefetchIconButton aria-label="refetch" onClick={refetch}>
-									<RefetchIcon />
-								</RefetchIconButton>
-							</SnxTooltip>
-						</InfoWrapper>
+						<StatsTools queries={queries} />
 					</HeaderWrapper>
 					<StatsBoxNumber color={color}>{formattedNumber}</StatsBoxNumber>
 					{percentChange != null ? (
@@ -149,25 +134,6 @@ const HeaderWrapper = styled.div`
 	margin-bottom: 15px;
 	margin-right: 10px;
 `;
-
-const InfoWrapper = styled.div`
-	display: flex;
-	justify-content: flex-end;
-	align-items: center;
-	margin-right: -10px;
-`;
-
-const WarningIcon = styled(ErrorIcon)`
-	fill: ${(props) => `${props.theme.colors.red}`};
-	margin-right: 10px;
-`;
-
-const RefetchIconButton = withStyles(() => ({
-	root: {
-		backgroundColor: '#312065',
-		padding: '6px',
-	},
-}))(IconButton);
 
 const TitleWrapper = styled.div`
 	display: flex;

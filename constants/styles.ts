@@ -1,3 +1,5 @@
+import { keyframes } from 'styled-components';
+
 export type NumberColor = 'green' | 'pink';
 export type NumberStyle =
 	| 'percent0'
@@ -19,3 +21,12 @@ export const COLORS: { [color: string]: NumberColor } = {
 	green: 'green',
 	pink: 'pink',
 };
+
+export const SPIN360 = keyframes`
+  from {
+    transform: rotate(360deg);
+  }
+  to {
+    transform: rotate(0deg);
+  }
+`;

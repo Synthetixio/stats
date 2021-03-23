@@ -5,11 +5,7 @@ import { COLORS, NumberColor, MAX_PAGE_WIDTH, NumberStyle } from 'constants/styl
 import { getFormattedNumber } from 'utils/formatter';
 import { UseQueryResult } from 'react-query';
 
-import { SnxTooltip } from './common';
-import ErrorIcon from 'assets/svg/error';
-import RefetchIcon from 'assets/svg/refetch.svg';
-import { useTranslation } from 'react-i18next';
-import { IconButton, withStyles } from '@material-ui/core';
+import StatsTools from './StatsTools';
 
 type SingleStatRowProps = {
 	text: string;
@@ -28,12 +24,7 @@ const SingleStatRow: FC<SingleStatRowProps> = ({
 	queries = [],
 	numberStyle,
 }) => {
-	const { t } = useTranslation();
-
 	const allQueriesLoaded = !queries.find((q) => q.isLoading);
-	const hasQueryError = !!queries.find((q) => q.isError);
-
-	const refetch = () => queries.forEach((q) => q.refetch());
 
 	const formattedNumber =
 		allQueriesLoaded && num != null ? getFormattedNumber(num, numberStyle) : '-';
@@ -45,14 +36,7 @@ const SingleStatRow: FC<SingleStatRowProps> = ({
 			</SingleStatsLeft>
 			<SingleStatsRight>
 				<SingleStatsNumber color={color}>{formattedNumber}</SingleStatsNumber>
-				<InfoWrapper>
-					{hasQueryError && <WarningIcon />}
-					<SnxTooltip arrow title={t('refresh-tooltip') as string} placement="top">
-						<RefetchIconButton aria-label="refetch" onClick={refetch}>
-							<RefetchIcon />
-						</RefetchIconButton>
-					</SnxTooltip>
-				</InfoWrapper>
+				<StatsTools queries={queries} />
 			</SingleStatsRight>
 		</SingleStatRowContainer>
 	);
@@ -113,26 +97,7 @@ const SingleStatsNumber = styled.div<{ color: string }>`
 	font-weight: bold;
 	font-size: 28px;
 	line-height: 24px;
+	margin-right: 30px;
 	color: ${(props) =>
 		props.color === COLORS.green ? props.theme.colors.brightGreen : props.theme.colors.brightPink};
 `;
-
-const InfoWrapper = styled.div`
-	display: flex;
-	justify-content: flex-end;
-	align-items: center;
-	margin-right: -10px;
-	width: 80px;
-`;
-
-const WarningIcon = styled(ErrorIcon)`
-	fill: ${(props) => `${props.theme.colors.red}`};
-	margin-right: 10px;
-`;
-
-const RefetchIconButton = withStyles(() => ({
-	root: {
-		backgroundColor: '#312065',
-		padding: '6px',
-	},
-}))(IconButton);
