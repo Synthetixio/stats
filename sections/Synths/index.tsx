@@ -86,7 +86,6 @@ const SynthsSection: FC<{}> = () => {
 			const totalSupply = Number(formatEther(synthTotalSupplies[1][i]));
 
 			let combinedWithShortsValue = value;
-			const assetPrice = value / totalSupply;
 			if (name === 'iETH') {
 				combinedWithShortsValue += ethShorts * ethPrice;
 			} else if (name === 'iBTC') {

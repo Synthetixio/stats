@@ -43,7 +43,7 @@ const StatsBox: FC<StatsBoxProps> = ({
 
 	return (
 		<StatsBoxContainer num={100} numBoxes={numBoxes}>
-			{false ? (
+			{!allQueriesLoaded ? (
 				<Skeleton
 					className="stats-box-skeleton"
 					variant="rect"
@@ -158,6 +158,8 @@ const StatsBoxNumber = styled.div<{ color: NumberColor }>`
 	width: 69px;
 	height: 24px;
 	margin-bottom: 15px;
+
+	white-space: nowrap;
 
 	font-family: ${(props) => `${props.theme.fonts.mono}, ${props.theme.fonts.regular}`};
 	font-style: normal;

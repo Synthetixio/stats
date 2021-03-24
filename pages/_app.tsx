@@ -15,11 +15,14 @@ import 'styles/index.css';
 import '../i18n';
 
 import Layout from 'sections/shared/Layout';
-import { Snackbar, withStyles } from '@material-ui/core';
+import { IconButton, Snackbar, withStyles } from '@material-ui/core';
+import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
-import { debounce } from 'lodash';
 import { Alert } from '@material-ui/lab';
 import colors from 'styles/colors';
+import { SPIN360 } from 'constants/styles';
+
+import RefetchIcon from 'assets/svg/refetch';
 
 export const headersAndScrollRef: { [key: string]: RefObject<unknown> } = {
 	NETWORK: createRef(),
@@ -48,6 +51,8 @@ const queryClient = new QueryClient({
 	},
 });
 
+let checkInterval: any = null;
+
 const snxjs = synthetix({ network: Network.Mainnet, provider });
 
 export const SNXJSContext = createContext(snxjs);
@@ -57,30 +62,35 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
 
 	const [failedQueries, setFailedQueries] = useState<Query[]>([]);
 
+	const [hadFailure, setHadFailure] = useState<boolean>(false);
+	const [isLoadingFailed, setLoadingFailed] = useState<boolean>(false);
+
 	const qc = queryClient.getQueryCache();
 
-	let unsub: any = null;
+	const recheckQueries = () => {
+		const allQueries = qc.findAll();
 
-	const refreshQueries = debounce(
-		() => {
-			unsub();
-			setFailedQueries(
-				qc.findAll(undefined, {
-					predicate: (q) => {
-						return !q.isFetching && q.state.status === 'error';
-					},
-				})
-			);
-		},
-		3000,
-		{ leading: false, trailing: true }
-	);
+		const foundFailed = allQueries.filter((q) => {
+			return q.state.status === 'error';
+		});
 
-	unsub = qc.subscribe(refreshQueries);
+		const currentLoadingFailed = !!failedQueries.find((q) => q.isFetching());
+
+		// failed query objects are different so help react tell the difference
+		if (failedQueries.length !== foundFailed.length) {
+			setFailedQueries(foundFailed);
+			setHadFailure(true);
+		}
+
+		setLoadingFailed(currentLoadingFailed);
+	};
+
+	if (checkInterval) clearInterval(checkInterval);
+	checkInterval = setInterval(recheckQueries, 1000);
 
 	const refetchFailedQueries = () => {
+		setLoadingFailed(true);
 		failedQueries.forEach((q) => q.fetch());
-		setFailedQueries([]);
 	};
 
 	return (
@@ -172,14 +182,28 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
 						</HeadersContext.Provider>
 						<Snackbar
 							anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-							open={failedQueries.length > 0}
+							open={hadFailure}
+							onClose={() => !failedQueries.length && setHadFailure(false)}
 							key="load-failed"
 						>
-							<SynthetixAlert severity="error" onClick={refetchFailedQueries}>
-								<b>{t('uh-oh')}</b>
-								<br />
-								{t('load-failed')}
-							</SynthetixAlert>
+							{failedQueries.length ? (
+								<SynthetixAlert severity="error" onClick={refetchFailedQueries}>
+									<RefetchAlertContainer>
+										<div>
+											<b>{t('uh-oh')}</b>
+											<br />
+											{t('load-failed')}
+										</div>
+										<RefetchIconButton>
+											{isLoadingFailed ? <SpinningRefetchIcon /> : <RefetchIcon />}
+										</RefetchIconButton>
+									</RefetchAlertContainer>
+								</SynthetixAlert>
+							) : (
+								<SynthetixAlert severity="success" onClick={() => setHadFailure(false)}>
+									{t('load-success')}
+								</SynthetixAlert>
+							)}
 						</Snackbar>
 						<ReactQueryDevtools />
 					</QueryClientProvider>
@@ -194,9 +218,11 @@ export default App;
 const SynthetixAlert = withStyles(() => ({
 	root: {
 		color: colors.white,
-		backgroundColor: colors.mutedBrightPink,
+		backgroundColor: (props: any) =>
+			props.severity === 'error' ? colors.mutedBrightPink : colors.mutedBrightGreen,
 		borderRadius: 0,
-		borderColor: colors.brightPink,
+		borderColor: (props: any) =>
+			props.severity === 'error' ? colors.brightPink : colors.brightGreen,
 		borderWidth: '2px',
 		borderStyle: 'solid',
 		cursor: 'pointer',
@@ -213,3 +239,22 @@ const SynthetixAlert = withStyles(() => ({
 		margin: '0',
 	},
 }))(Alert);
+
+const RefetchAlertContainer = styled.div`
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+`;
+
+const SpinningRefetchIcon = styled(RefetchIcon)`
+	animation: ${SPIN360} 1s linear infinite;
+`;
+
+const RefetchIconButton = withStyles(() => ({
+	root: {
+		backgroundColor: colors.brightPink,
+		padding: '6px',
+		//width: '24px',
+		//height: '24px'
+	},
+}))(IconButton);

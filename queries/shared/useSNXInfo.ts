@@ -9,7 +9,7 @@ export const useSNXInfo = (snxjs: SynthetixJS) => {
 	const snxPriceQuery = useSnxjsContractQuery<ethers.BigNumber>(
 		snxjs,
 		'ExchangeRates',
-		'rateForCurrencyy', // intentionally broken for testing
+		'rateForCurrency',
 		[snxjs.toBytes32('SNX')]
 	);
 	const snxTotalSupplyQuery = useSnxjsContractQuery<ethers.BigNumber>(

@@ -5,7 +5,6 @@ import { SnxTooltip } from './common';
 import { UseQueryResult } from 'react-query';
 import { IconButton, withStyles } from '@material-ui/core';
 
-import ErrorIcon from 'assets/svg/error';
 import RefetchIcon from 'assets/svg/refetch';
 import { useTranslation } from 'react-i18next';
 
@@ -25,12 +24,13 @@ const StatsTools: FC<{ queries: UseQueryResult[] }> = ({ queries = [] }) => {
 
 	return (
 		<InfoWrapper>
-			{hasQueryError && <WarningIcon />}
-			<SnxTooltip arrow title={t('refresh-tooltip') as string} placement="top">
-				<RefetchIconButton aria-label="refetch" onClick={refetch}>
-					{allQueriesFetched ? <RefetchIcon /> : <SpinningRefetchIcon />}
-				</RefetchIconButton>
-			</SnxTooltip>
+			{hasQueryError && (
+				<SnxTooltip arrow title={t('refresh-tooltip') as string} placement="top">
+					<RefetchIconButton aria-label="refetch" onClick={refetch}>
+						{allQueriesFetched ? <RefetchIcon /> : <SpinningRefetchIcon />}
+					</RefetchIconButton>
+				</SnxTooltip>
+			)}
 		</InfoWrapper>
 	);
 };
@@ -42,11 +42,6 @@ const InfoWrapper = styled.div`
 	justify-content: flex-end;
 	align-items: center;
 	margin-right: -10px;
-`;
-
-const WarningIcon = styled(ErrorIcon)`
-	fill: ${(props) => `${props.theme.colors.red}`};
-	margin-right: 10px;
 `;
 
 const SpinningRefetchIcon = styled(RefetchIcon)`

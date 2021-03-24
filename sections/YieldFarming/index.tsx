@@ -8,7 +8,6 @@ import DoubleStatsBox from 'components/DoubleStatsBox';
 
 import { COLORS } from 'constants/styles';
 import { SNXJSContext, ProviderContext } from 'pages/_app';
-import { useSNXInfo } from 'queries/shared/useSNXInfo';
 
 import { useRewardsContractInfo, RewardsData } from 'queries/yield-farming';
 import { curvepoolRewards } from 'contracts';
