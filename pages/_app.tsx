@@ -226,7 +226,7 @@ const SynthetixAlert = withStyles(() => ({
 		borderWidth: '2px',
 		borderStyle: 'solid',
 		cursor: 'pointer',
-		maxWidth: '200px',
+		maxWidth: '250px',
 		paddingTop: '10px',
 		paddingBottom: '10px',
 		paddingRight: '10px',
