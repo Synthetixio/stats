@@ -94,7 +94,7 @@ export const useRewardsContractInfo = (
 		const curveContractInfo = useCurveContractInfoQuery(provider);
 		const crvPriceInfo = useCMCQuery('CRV');
 		const curveApy = useQuery<any, string>(QUERY_KEYS.YieldFarming.CurveApy, async () => {
-			return (await axios.get('https://stats.curve.fi/raw-stats/apys.json')).data; // temp broken for testing
+			return (await axios.get('https://stats.curve.fi/raw-stats/apys.json')).data;
 		});
 
 		if (curveContractInfo.isSuccess) {
