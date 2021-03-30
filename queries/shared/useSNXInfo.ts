@@ -6,38 +6,38 @@ import { usePageResults } from './usePageResults';
 import { synthetixSnx } from 'constants/graph-urls';
 
 export const useSNXInfo = (snxjs: SynthetixJS) => {
-	const unformattedSnxPrice = useSnxjsContractQuery<ethers.BigNumber>(
+	const snxPriceQuery = useSnxjsContractQuery<ethers.BigNumber>(
 		snxjs,
 		'ExchangeRates',
 		'rateForCurrency',
 		[snxjs.toBytes32('SNX')]
 	);
-	const unformattedSnxTotalSupply = useSnxjsContractQuery<ethers.BigNumber>(
+	const snxTotalSupplyQuery = useSnxjsContractQuery<ethers.BigNumber>(
 		snxjs,
 		'Synthetix',
 		'totalSupply',
 		[]
 	);
-	const unformattedLastDebtLedgerEntry = useSnxjsContractQuery<ethers.BigNumber>(
+	const lastDebtLedgerEntryQuery = useSnxjsContractQuery<ethers.BigNumber>(
 		snxjs,
 		'SynthetixState',
 		'lastDebtLedgerEntry',
 		[]
 	);
-	const unformattedTotalIssuedSynths = useSnxjsContractQuery<ethers.BigNumber>(
+	const totalIssuedSynthsQuery = useSnxjsContractQuery<ethers.BigNumber>(
 		snxjs,
 		'Synthetix',
 		'totalIssuedSynthsExcludeEtherCollateral',
 		[snxjs.toBytes32('sUSD')]
 	);
-	const unformattedIssuanceRatio = useSnxjsContractQuery<ethers.BigNumber>(
+	const issuanceRatioQuery = useSnxjsContractQuery<ethers.BigNumber>(
 		snxjs,
 		'SystemSettings',
 		'issuanceRatio',
 		[]
 	);
 
-	const holders = usePageResults<any[]>({
+	const holdersQuery = usePageResults<any[]>({
 		api: synthetixSnx,
 		query: {
 			entity: 'snxholders',
@@ -53,29 +53,21 @@ export const useSNXInfo = (snxjs: SynthetixJS) => {
 		max: 1000,
 	});
 
-	/*const holders = useQuery<any, string>(QUERY_KEYS.SnxHolders, async () => {
-		return 
-		
-		snxData.snx.holders({ max: 1000 });
-	});*/
-
-	const lastDebtLedgerEntry = unformattedLastDebtLedgerEntry.isSuccess
-		? Number(formatUnits(unformattedLastDebtLedgerEntry.data!, 27))
+	const lastDebtLedgerEntry = lastDebtLedgerEntryQuery.isSuccess
+		? Number(formatUnits(lastDebtLedgerEntryQuery.data!, 27))
 		: null;
 
-	const SNXTotalSupply = unformattedSnxTotalSupply.isSuccess
-		? Number(formatEther(unformattedSnxTotalSupply.data!))
+	const SNXTotalSupply = snxTotalSupplyQuery.isSuccess
+		? Number(formatEther(snxTotalSupplyQuery.data!))
 		: null;
 
-	const totalIssuedSynths = unformattedTotalIssuedSynths.isSuccess
-		? Number(formatEther(unformattedTotalIssuedSynths.data!))
+	const totalIssuedSynths = totalIssuedSynthsQuery.isSuccess
+		? Number(formatEther(totalIssuedSynthsQuery.data!))
 		: null;
-	const tempIssuanceRatio = unformattedIssuanceRatio.isSuccess
-		? Number(formatEther(unformattedIssuanceRatio.data!))
+	const tempIssuanceRatio = issuanceRatioQuery.isSuccess
+		? Number(formatEther(issuanceRatioQuery.data!))
 		: null;
-	const usdToSnxPrice = unformattedSnxPrice.isSuccess
-		? Number(formatEther(unformattedSnxPrice.data!))
-		: null;
+	const usdToSnxPrice = snxPriceQuery.isSuccess ? Number(formatEther(snxPriceQuery.data!)) : null;
 
 	let snxTotal = 0;
 	let snxLocked = 0;
@@ -87,9 +79,9 @@ export const useSNXInfo = (snxjs: SynthetixJS) => {
 		usdToSnxPrice &&
 		tempIssuanceRatio &&
 		lastDebtLedgerEntry &&
-		holders.isSuccess
+		holdersQuery.isSuccess
 	) {
-		for (const { collateral, debtEntryAtIndex, initialDebtOwnership } of holders.data!) {
+		for (const { collateral, debtEntryAtIndex, initialDebtOwnership } of holdersQuery.data!) {
 			//console.log(collateral, debtEntryAtIndex, initialDebtOwnership)
 			if (!collateral || !debtEntryAtIndex || !initialDebtOwnership) continue;
 
@@ -120,9 +112,7 @@ export const useSNXInfo = (snxjs: SynthetixJS) => {
 		}
 	}
 
-	const SNXPrice = unformattedSnxPrice.isSuccess
-		? Number(formatEther(unformattedSnxPrice.data!))
-		: null;
+	const SNXPrice = snxPriceQuery.isSuccess ? Number(formatEther(snxPriceQuery.data!)) : null;
 
 	return {
 		SNXPrice,
@@ -135,5 +125,11 @@ export const useSNXInfo = (snxjs: SynthetixJS) => {
 		issuanceRatio: tempIssuanceRatio,
 		activeCRatio: stakersTotalDebt ? stakersTotalCollateral / stakersTotalDebt : null,
 		totalIssuedSynths,
+
+		SNXPriceQuery: snxPriceQuery,
+		SNXTotalSupplyQuery: snxTotalSupplyQuery,
+		SNXHoldersQuery: holdersQuery,
+		totalIssuedSynthsQuery,
+		issuanceRatioQuery,
 	};
 };

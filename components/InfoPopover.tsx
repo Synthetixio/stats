@@ -2,7 +2,7 @@ import { FC, useState, MouseEvent } from 'react';
 import styled from 'styled-components';
 import Popover from '@material-ui/core/Popover';
 
-import InfoIcon from 'assets/svg/info.svg';
+import InfoIcon from 'assets/svg/info';
 
 interface InfoPopoverProps {
 	infoData: React.ReactNode;

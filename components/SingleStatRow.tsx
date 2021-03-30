@@ -3,17 +3,31 @@ import styled from 'styled-components';
 
 import { COLORS, NumberColor, MAX_PAGE_WIDTH, NumberStyle } from 'constants/styles';
 import { getFormattedNumber } from 'utils/formatter';
+import { UseQueryResult } from 'react-query';
+
+import StatsTools from './StatsTools';
 
 type SingleStatRowProps = {
 	text: string;
 	subtext: string;
 	num: number | null;
+	queries?: UseQueryResult[];
 	color: NumberColor;
 	numberStyle: NumberStyle;
 };
 
-const SingleStatRow: FC<SingleStatRowProps> = ({ text, subtext, color, num, numberStyle }) => {
-	const formattedNumber = getFormattedNumber(num, numberStyle);
+const SingleStatRow: FC<SingleStatRowProps> = ({
+	text,
+	subtext,
+	color,
+	num,
+	queries = [],
+	numberStyle,
+}) => {
+	const allQueriesLoaded = !queries.find((q) => q.isLoading);
+
+	const formattedNumber =
+		allQueriesLoaded && num != null ? getFormattedNumber(num, numberStyle) : '-';
 	return (
 		<SingleStatRowContainer>
 			<SingleStatsLeft>
@@ -22,6 +36,7 @@ const SingleStatRow: FC<SingleStatRowProps> = ({ text, subtext, color, num, numb
 			</SingleStatsLeft>
 			<SingleStatsRight>
 				<SingleStatsNumber color={color}>{formattedNumber}</SingleStatsNumber>
+				<StatsTools queries={queries} />
 			</SingleStatsRight>
 		</SingleStatRowContainer>
 	);
@@ -51,6 +66,10 @@ const SingleStatsLeft = styled(SingleStats)`
 `;
 
 const SingleStatsRight = styled(SingleStats)`
+	display: flex;
+	flex-direction: row;
+	align-items: right;
+	justify-content: flex-end;
 	text-align: right;
 	padding-right: 30px;
 `;
@@ -78,7 +97,7 @@ const SingleStatsNumber = styled.div<{ color: string }>`
 	font-weight: bold;
 	font-size: 28px;
 	line-height: 24px;
-	padding-bottom: 32px;
+	margin-right: 30px;
 	color: ${(props) =>
 		props.color === COLORS.green ? props.theme.colors.brightGreen : props.theme.colors.brightPink};
 `;

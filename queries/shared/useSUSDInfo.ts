@@ -16,7 +16,7 @@ export const useSUSDInfo = (provider: ethers.providers.Provider) => {
 	const susdContractNumber = 3;
 	const susdAmount = 1;
 	const susdAmountWei = ethers.utils.parseUnits(susdAmount.toString(), 18);
-	const unformattedsUSDExchangeAmount = useQuery<ethers.BigNumber, string>(
+	const sUSDPriceQuery = useQuery<ethers.BigNumber, string>(
 		QUERY_KEYS.CurveExchangeAmount,
 		async () => {
 			return curveContract.get_dy_underlying(susdContractNumber, usdcContractNumber, susdAmountWei);
@@ -24,8 +24,8 @@ export const useSUSDInfo = (provider: ethers.providers.Provider) => {
 	);
 
 	return {
-		sUSDPrice: unformattedsUSDExchangeAmount.isSuccess
-			? Number(formatUnits(unformattedsUSDExchangeAmount.data!, 6))
-			: null,
+		sUSDPrice: sUSDPriceQuery.isSuccess ? Number(formatUnits(sUSDPriceQuery.data!, 6)) : null,
+
+		sUSDPriceQuery,
 	};
 };

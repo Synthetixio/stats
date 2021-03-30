@@ -29,7 +29,7 @@ const SynthsSection: FC<{}> = () => {
 
 	const { formatEther, parseBytes32String } = snxjs.utils;
 
-	const { sUSDPrice } = useSUSDInfo(provider);
+	const { sUSDPrice, sUSDPriceQuery } = useSUSDInfo(provider);
 
 	const synthTotalSuppliesRequest = useSnxjsContractQuery<any[]>(
 		snxjs,
@@ -86,7 +86,6 @@ const SynthsSection: FC<{}> = () => {
 			const totalSupply = Number(formatEther(synthTotalSupplies[1][i]));
 
 			let combinedWithShortsValue = value;
-			const assetPrice = value / totalSupply;
 			if (name === 'iETH') {
 				combinedWithShortsValue += ethShorts * ethPrice;
 			} else if (name === 'iBTC') {
@@ -182,6 +181,14 @@ const SynthsSection: FC<{}> = () => {
 								secondMetric={value}
 								secondColor={index === 2 ? COLORS.pink : COLORS.green}
 								secondMetricStyle="currency0"
+								queries={[
+									sUSDPriceQuery,
+									unformattedEthShorts,
+									unformattedBtcShorts,
+									unformattedBtcPrice,
+									unformattedEthPrice,
+									synthTotalSuppliesRequest,
+								]}
 							/>
 						);
 					}

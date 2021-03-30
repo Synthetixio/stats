@@ -37,6 +37,8 @@ export default {
 	brightYellow: '#FFD75C',
 	brightOrange: '#FC8738',
 	brightPurple: '#4834E4',
+	// dark
+	darkGrayish: '#312065',
 	// gradient
 	tooltipGradient: 'linear-gradient(180deg, #ED1EFF 0%, #00D1FF 100%)',
 };

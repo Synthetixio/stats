@@ -2,6 +2,8 @@ import styled, { css } from 'styled-components';
 import Link from '@material-ui/core/Link';
 
 import { COLORS, NumberColor, MAX_PAGE_WIDTH } from 'constants/styles';
+import { Tooltip, withStyles } from '@material-ui/core';
+import colors from 'styles/colors';
 
 export const PercentChangeBox = styled.div<{ color: NumberColor }>`
 	width: 52px;
@@ -153,3 +155,16 @@ export const SectionWrap = styled.div`
 	margin: 20px auto;
 	padding: 20px;
 `;
+
+export const SnxTooltip = withStyles(() => ({
+	arrow: {
+		color: colors.tooltipBlue,
+	},
+	tooltip: {
+		backgroundColor: colors.tooltipBlue,
+		padding: '10px',
+		fontSize: '8pt',
+		maxWidth: '100px',
+		textAlign: 'center',
+	},
+}))(Tooltip);
