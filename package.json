@@ -33,6 +33,7 @@
 		"react-select": "3.1.0",
 		"react-table": "7.5.0",
 		"react-timer-hook": "2.0.3",
+		"react-toastify": "^7.0.3",
 		"recharts": "1.8.5",
 		"styled-components": "5.1.1",
 		"synthetix-data": "2.1.36",
