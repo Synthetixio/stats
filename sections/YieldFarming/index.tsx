@@ -8,7 +8,6 @@ import DoubleStatsBox from 'components/DoubleStatsBox';
 
 import { COLORS } from 'constants/styles';
 import { SNXJSContext, ProviderContext } from 'pages/_app';
-import { useSNXInfo } from 'queries/shared/useSNXInfo';
 
 import { useRewardsContractInfo, RewardsData } from 'queries/yield-farming';
 import { curvepoolRewards } from 'contracts';
@@ -36,8 +35,6 @@ const YieldFarming: FC = () => {
 	const { t } = useTranslation();
 
 	const snxjs = useContext(SNXJSContext);
-
-	const { SNXPrice } = useSNXInfo(snxjs);
 
 	const provider = useContext(ProviderContext);
 
@@ -98,6 +95,7 @@ const YieldFarming: FC = () => {
 				text={t('lending-apy.title')}
 				subtext={t('lending-apy.subtext')}
 				num={aaveDepositRate}
+				queries={[aaveDepositInfo]}
 				color={COLORS.green}
 				numberStyle="percent2"
 			/>
@@ -115,6 +113,7 @@ const YieldFarming: FC = () => {
 						secondMetric={d[1].apy}
 						secondColor={COLORS.green}
 						secondMetricStyle="percent2"
+						queries={d[1].queries}
 					/>
 				))}
 			</StatsRow>

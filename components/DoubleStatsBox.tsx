@@ -4,6 +4,9 @@ import styled from 'styled-components';
 import { NumberColor, COLORS, NumberStyle } from 'constants/styles';
 import { getFormattedNumber } from 'utils/formatter';
 import InfoPopover from './InfoPopover';
+import { UseQueryResult } from 'react-query';
+
+import StatsTools from './StatsTools';
 
 type DoubleStatsBoxProps = {
 	title: string;
@@ -16,6 +19,7 @@ type DoubleStatsBoxProps = {
 	secondMetric: number | null;
 	secondColor: NumberColor;
 	secondMetricStyle: NumberStyle;
+	queries?: UseQueryResult[];
 	infoData?: ReactNode;
 };
 
@@ -30,16 +34,30 @@ const DoubleStatsBox: FC<DoubleStatsBoxProps> = ({
 	secondMetric,
 	secondMetricTitle,
 	secondMetricStyle,
+	queries = [],
 	infoData,
 }) => {
-	const formattedFirstMetric = getFormattedNumber(firstMetric, firstMetricStyle);
-	const formattedSecondMetric = getFormattedNumber(secondMetric, secondMetricStyle);
+	const allQueriesLoaded = !queries.find((q) => q.isLoading);
+
+	const formattedFirstMetric =
+		allQueriesLoaded && firstMetric != null
+			? getFormattedNumber(firstMetric, firstMetricStyle)
+			: getFormattedNumber(0, firstMetricStyle)!.replace(/0/g, '-');
+
+	const formattedSecondMetric =
+		allQueriesLoaded && secondMetric != null
+			? getFormattedNumber(secondMetric, secondMetricStyle)
+			: getFormattedNumber(0, secondMetricStyle)!.replace(/0/g, '-');
+
 	return (
 		<DoubleStatsBoxContainer>
-			<TitleWrapper>
-				<DoubleStatsBoxTitle>{title}</DoubleStatsBoxTitle>
-				{infoData != null ? <InfoPopover infoData={infoData} /> : null}
-			</TitleWrapper>
+			<HeaderWrapper>
+				<TitleWrapper>
+					<DoubleStatsBoxTitle>{title}</DoubleStatsBoxTitle>
+					{infoData != null ? <InfoPopover infoData={infoData} /> : null}
+				</TitleWrapper>
+				<StatsTools queries={queries} />
+			</HeaderWrapper>
 			<DoubleStatsBoxSubtitle>{subtitle}</DoubleStatsBoxSubtitle>
 			<DoubleStatsBoxMetricTitle>{firstMetricTitle}</DoubleStatsBoxMetricTitle>
 			<DoubleStatsBoxMetric color={firstColor}>{formattedFirstMetric}</DoubleStatsBoxMetric>
@@ -63,6 +81,15 @@ const DoubleStatsBoxContainer = styled.div`
 	@media only screen and (max-width: 854px) {
 		width: 100%;
 	}
+`;
+
+const HeaderWrapper = styled.div`
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-top: 20px;
+	margin-bottom: 15px;
+	margin-right: 10px;
 `;
 
 export const TitleWrapper = styled.div`
