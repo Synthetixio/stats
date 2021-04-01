@@ -194,6 +194,19 @@
 		"title": "TRADING VOLUME",
 		"infoData": "Each day we capture trading volume in the Synthetix protocol via the <linkText>Synthetix exchanges subgraph</linkText> using the \"DailyTotal\" entity. <newParagraph>The annual chart includes data from before the Archernar release on <linkText2 href={etherscanArchernarBlock}>block 9,518,914 (Feb 20, 2020).</linkText2> Prior to this release significant volume was generated via <linkText3 href={frontRunningWiki}>front running</linkText3> attempts.</newParagraph>"
 	},
+	"volume-sources": {
+		"title": "VOLUME SOURCES",
+		"columns": {
+			"partner": "PARTNER",
+			"usdVolume": "USD VOLUME",
+			"usdFees": "USD FEES",
+			"trades": "TRADES"
+		},
+		"labels": {
+			"category": "CATEGORY",
+			"period": "PERIOD"
+		}
+	},
 	"total-number-unique-traders": {
 		"title": "TOTAL NUMBER OF UNIQUE TRADERS",
 		"subtext": "Ethereum addresses that have traded Synths"
@@ -254,5 +267,10 @@
 	"uh-oh": "UH OH.",
 	"load-failed": "Some data failed to load. Click here to try again.",
 	"load-success": "All queries successfully loaded!",
-	"refresh-tooltip": "Click the button to reload data."
+	"refresh-tooltip": "Click the button to reload data.",
+	"time-periods": {
+		"week": "WEEK",
+		"month": "MONTH",
+		"year": "YEAR"
+	}
 }

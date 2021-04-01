@@ -228,7 +228,6 @@ const ReactTable = styled.div`
 	height: 100%;
 	overflow-x: auto;
 	position: relative;
-	min-width: 1050px !important;
 `;
 
 export default Table;
