@@ -415,7 +415,8 @@ const VolumeSourcesRow = styled.div`
 `;
 
 const VolumeSourcesContainer = styled.div`
-	width: calc(50% - 10px);
+	width: calc(50% - 30px);
+	padding: 20px;
 	margin-right: 20px;
 	background: ${(props) => props.theme.colors.mediumBlue};
 
@@ -426,7 +427,7 @@ const VolumeSourcesContainer = styled.div`
 `;
 
 const TradersCountContainer = styled.div`
-	width: calc(50% - 10px);
+	width: calc(50% - 30px);
 
 	> * {
 		width: 100%;
