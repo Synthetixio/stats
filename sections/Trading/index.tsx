@@ -409,21 +409,24 @@ export default Trading;
 
 const VolumeSourcesRow = styled.div`
 	display: flex;
+	flex-wrap: wrap;
 	margin: 0px auto;
 	max-width: ${MAX_PAGE_WIDTH}px;
 `;
 
 const VolumeSourcesContainer = styled.div`
-	flex-basis: 50%;
-	background: ${(props) => props.theme.colors.mediumBlue};
+	width: calc(50% - 10px);
 	margin-right: 20px;
-	padding: 20px;
+	background: ${(props) => props.theme.colors.mediumBlue};
+
+	@media only screen and (max-width: 854px) {
+		margin-right: 0;
+		width: 100%;
+	}
 `;
 
 const TradersCountContainer = styled.div`
-	flex-basis: 50%;
-
-	min-width: 400px;
+	width: calc(50% - 10px);
 
 	> * {
 		width: 100%;
@@ -435,6 +438,11 @@ const TradersCountContainer = styled.div`
 
 	> *:first-child {
 		margin-bottom: 20px;
+	}
+
+	@media only screen and (max-width: 854px) {
+		margin-top: 20px;
+		width: 100%;
 	}
 `;
 
