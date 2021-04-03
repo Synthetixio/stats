@@ -156,8 +156,6 @@ const Trading: FC = () => {
 		? reducePartnerData(partnerData.data, periodToDays(partnerTablePeriod.value))
 		: [];
 
-	console.log('reduced part data', reducedPartnerData);
-
 	return (
 		<>
 			<SectionHeader title={t('section-header.trading')} />
