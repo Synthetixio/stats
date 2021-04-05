@@ -8,6 +8,7 @@ import StatsRow from 'components/StatsRow';
 import StatsBox from 'components/StatsBox';
 import AreaChart from 'components/Charts/AreaChart';
 import { COLORS, MAX_PAGE_WIDTH } from 'constants/styles';
+import { partnerNameMap } from 'constants/partner';
 import { ChartPeriod, AreaChartData, TradesRequestData } from 'types/data';
 import { formatCurrency, formatIdToIsoString } from 'utils/formatter';
 import { LinkText, FullLineLink, NewParagraph, SectionWrap, SectionTitle } from 'components/common';
@@ -58,6 +59,10 @@ function reducePartnerData(partnerData: ExchangePartnerData[], limitDays: number
 
 	for (const vd of partnerData) {
 		if (oldestDayId >= Number(vd.dayID)) break;
+
+		if (partnerNameMap[vd.partner]) {
+			vd.partner = partnerNameMap[vd.partner];
+		}
 
 		if (groupedPartnerData[vd.partner]) {
 			groupedPartnerData[vd.partner].usdFees += Number(vd.usdFees);
