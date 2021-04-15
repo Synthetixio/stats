@@ -32,7 +32,7 @@ export default {
 	},
 	Trading: {
 		TradesOverPeriod: (args: any) => ['trading', 'tradesOverPeriod', args],
-		GeneralTradingInfo: ['trading', 'generalTradingInfo'],
+		GeneralTradingInfo: (minTimestamp: number) => ['trading', 'generalTradingInfo', minTimestamp],
 	},
 	YieldFarming: {
 		CurveApy: ['yieldFarming', 'curveApy'],

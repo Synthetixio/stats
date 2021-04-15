@@ -18,9 +18,9 @@ import SynthsPieChart from './SynthsPieChart';
 import { useSnxjsContractQuery } from 'queries/shared/useSnxjsContractQuery';
 import { useSUSDInfo } from 'queries/shared/useSUSDInfo';
 import SynthsVolumeMatrix, { SynthVolumeStatus } from './SynthsVolumeMatrix';
-import { usePageResults } from 'queries/shared/usePageResults';
-import { synthetixExchanges } from 'constants/graph-urls';
 import _ from 'lodash';
+
+import { useGeneralTradingInfoQuery } from 'queries/trading';
 
 const MIN_PERCENT_FOR_PIE_CHART = 0.03;
 const NUMBER_OF_TOP_SYNTHS = 3;
@@ -30,12 +30,10 @@ function aggregateSynthTradeVolume(trades: any[]) {
 	const synthVolumes: { [currencyKey: string]: number } = {};
 
 	for (const trade of trades) {
-		synthVolumes[_.padEnd(trade.fromCurrencyKey, 66, '0')] =
-			(synthVolumes[trade.fromCurrencyKey] || 0) +
-			Number(ethers.utils.formatEther(ethers.utils.parseUnits(trade.fromAmountInUSD, 0)));
-		synthVolumes[_.padEnd(trade.toCurrencyKey, 66, '0')] =
-			(synthVolumes[trade.toCurrencyKey] || 0) +
-			Number(ethers.utils.formatEther(ethers.utils.parseUnits(trade.toAmountInUSD, 0)));
+		synthVolumes[_.padEnd(trade.fromCurrencyKeyBytes, 66, '0')] =
+			(synthVolumes[trade.fromCurrencyKeyBytes] || 0) + trade.fromAmountInUSD;
+		synthVolumes[_.padEnd(trade.toCurrencyKeyBytes, 66, '0')] =
+			(synthVolumes[trade.toCurrencyKeyBytes] || 0) + trade.toAmountInUSD;
 	}
 
 	return synthVolumes;
@@ -46,7 +44,7 @@ const SynthsSection: FC<{}> = () => {
 	const snxjs = useContext(SNXJSContext);
 	const provider = useContext(ProviderContext);
 
-	const [tradeStartTime] = useState(Math.floor(Date.now() / 1000 - 86400).toString());
+	const [tradeStartTime] = useState(Math.floor(Date.now() / 1000 - 86400));
 
 	const { formatEther, parseBytes32String } = snxjs.utils;
 
@@ -96,19 +94,7 @@ const SynthsSection: FC<{}> = () => {
 
 	const synthFrozenRequest = useSnxjsContractQuery<any>(snxjs, 'SynthUtil', 'frozenSynths', []);
 
-	const synthTradesRequest = usePageResults<any>({
-		api: synthetixExchanges,
-		max: 5000,
-		query: {
-			entity: 'synthExchanges',
-			selection: {
-				where: {
-					timestamp_gt: tradeStartTime,
-				},
-			},
-			properties: ['fromCurrencyKey', 'toCurrencyKey', 'fromAmountInUSD', 'toAmountInUSD'],
-		},
-	});
+	const synthTradesRequest = useGeneralTradingInfoQuery(tradeStartTime);
 
 	const [ethShorts, btcShorts, btcPrice, ethPrice] = [
 		unformattedEthShorts,
@@ -202,7 +188,7 @@ const SynthsSection: FC<{}> = () => {
 		synthFrozenRequest.isSuccess &&
 		synthTradesRequest.isSuccess
 	) {
-		const aggregatedSynthVolume = aggregateSynthTradeVolume(synthTradesRequest.data!);
+		const aggregatedSynthVolume = aggregateSynthTradeVolume(synthTradesRequest.data!.exchanges);
 
 		const suspendedSynths = synthStatusesRequest.data!;
 		const frozenSynthKeys = synthFrozenRequest.data!;

@@ -55,7 +55,7 @@ const SynthsVolumeMatrix: FC<SynthsVolumeMatrixProps> = ({ data }) => {
 			</VolumeMatrixHeader>
 			<VolumeMatrix>
 				{data.map((info) => (
-					<SynthInfoContainer>
+					<SynthInfoContainer key={info.key}>
 						{tokenList.isSuccess && (
 							<Image
 								src={tokenList.data!.tokensMap[info.key].logoURI}
@@ -69,6 +69,7 @@ const SynthsVolumeMatrix: FC<SynthsVolumeMatrixProps> = ({ data }) => {
 						{info.suspensionReason && info.suspensionReason > 0 ? (
 							<SnxTooltip
 								arrow
+								placement="top"
 								title={
 									snxjs.suspensionReasons[info.suspensionReason]
 										? (t('synths-status.suspension-with-reason', {

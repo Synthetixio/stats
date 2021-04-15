@@ -13,6 +13,7 @@
 	"dependencies": {
 		"@material-ui/core": "4.11.0",
 		"@material-ui/lab": "4.0.0-alpha.56",
+		"@synthetixio/data": "0.0.12",
 		"@synthetixio/js": "2.41.0",
 		"axios": "0.21.1",
 		"bignumber.js": "9.0.0",
