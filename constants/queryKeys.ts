@@ -16,6 +16,8 @@ export default {
 	sUSDHolders: 'sUSDHolders',
 	SnxTotals: 'snxTotals',
 
+	SynthetixTokenList: 'synthetixTokenList',
+
 	Staking: {
 		Liquidations: ['staking', 'liquidations'],
 		FeePeriod: (period: number) => ['staking', 'feePeriod', period],

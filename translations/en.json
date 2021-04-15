@@ -272,5 +272,13 @@
 		"week": "WEEK",
 		"month": "MONTH",
 		"year": "YEAR"
+	},
+	"synth-volume-matrix": {
+		"title": "24HR VOLUME ($USD)",
+		"status": {
+			"live": "LIVE",
+			"paused": "PAUSED",
+			"frozen": "FROZEN"
+		}
 	}
 }
