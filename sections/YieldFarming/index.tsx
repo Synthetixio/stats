@@ -60,13 +60,6 @@ const YieldFarming: FC = () => {
 			snxjs.contracts.ShortingRewardssBTC.address,
 			'shorting'
 		),
-		iETH: useRewardsContractInfo(
-			snxjs,
-			provider,
-			'iETH',
-			snxjs.contracts.StakingRewardsiETH.address,
-			'staking'
-		),
 	};
 
 	const aaveDepositInfo = usePageResults<any[]>({
