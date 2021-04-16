@@ -1,4 +1,4 @@
-import { FC, useContext } from 'react';
+import { FC, useContext, useState } from 'react';
 import styled from 'styled-components';
 import ethers from 'ethers';
 import orderBy from 'lodash/orderBy';
@@ -17,15 +17,34 @@ import SynthsBarChart from './SynthsBarChart';
 import SynthsPieChart from './SynthsPieChart';
 import { useSnxjsContractQuery } from 'queries/shared/useSnxjsContractQuery';
 import { useSUSDInfo } from 'queries/shared/useSUSDInfo';
+import SynthsVolumeMatrix, { SynthVolumeStatus } from './SynthsVolumeMatrix';
+import _ from 'lodash';
+
+import { useGeneralTradingInfoQuery } from 'queries/trading';
 
 const MIN_PERCENT_FOR_PIE_CHART = 0.03;
 const NUMBER_OF_TOP_SYNTHS = 3;
 const subtitleText = (name: string) => `Price and market cap for ${name}`;
 
+function aggregateSynthTradeVolume(trades: any[]) {
+	const synthVolumes: { [currencyKey: string]: number } = {};
+
+	for (const trade of trades) {
+		synthVolumes[_.padEnd(trade.fromCurrencyKeyBytes, 66, '0')] =
+			(synthVolumes[trade.fromCurrencyKeyBytes] || 0) + trade.fromAmountInUSD;
+		synthVolumes[_.padEnd(trade.toCurrencyKeyBytes, 66, '0')] =
+			(synthVolumes[trade.toCurrencyKeyBytes] || 0) + trade.toAmountInUSD;
+	}
+
+	return synthVolumes;
+}
+
 const SynthsSection: FC<{}> = () => {
 	const { t } = useTranslation();
 	const snxjs = useContext(SNXJSContext);
 	const provider = useContext(ProviderContext);
+
+	const [tradeStartTime] = useState(Math.floor(Date.now() / 1000 - 86400));
 
 	const { formatEther, parseBytes32String } = snxjs.utils;
 
@@ -62,16 +81,27 @@ const SynthsSection: FC<{}> = () => {
 		[snxjs.toBytes32('sBTC')]
 	);
 
+	const synthTotalSupplies = synthTotalSuppliesRequest.isSuccess
+		? synthTotalSuppliesRequest.data!
+		: null;
+
+	const synthStatusesRequest = useSnxjsContractQuery<any>(
+		snxjs,
+		'SystemStatus',
+		'getSynthSuspensions',
+		[synthTotalSupplies ? synthTotalSupplies[0] : []]
+	);
+
+	const synthFrozenRequest = useSnxjsContractQuery<any>(snxjs, 'SynthUtil', 'frozenSynths', []);
+
+	const synthTradesRequest = useGeneralTradingInfoQuery(tradeStartTime);
+
 	const [ethShorts, btcShorts, btcPrice, ethPrice] = [
 		unformattedEthShorts,
 		unformattedBtcShorts,
 		unformattedBtcPrice,
 		unformattedEthPrice,
 	].map((val) => (val.isSuccess ? Number(formatEther(val.data!)) : null));
-
-	const synthTotalSupplies = synthTotalSuppliesRequest.isSuccess
-		? synthTotalSuppliesRequest.data!
-		: null;
 
 	let barChartData: OpenInterest = {};
 	let pieChartData: SynthTotalSupply[] = [];
@@ -150,6 +180,29 @@ const SynthsSection: FC<{}> = () => {
 		totalValue = pieChartData.reduce((acc, { value }) => acc + value, 0);
 	}
 
+	let synthsVolumeData: SynthVolumeStatus[] = [];
+
+	if (
+		synthTotalSupplies &&
+		synthStatusesRequest.isSuccess &&
+		synthFrozenRequest.isSuccess &&
+		synthTradesRequest.isSuccess
+	) {
+		const aggregatedSynthVolume = aggregateSynthTradeVolume(synthTradesRequest.data!.exchanges);
+
+		const suspendedSynths = synthStatusesRequest.data!;
+		const frozenSynthKeys = synthFrozenRequest.data!;
+
+		synthsVolumeData = synthTotalSupplies[0].map((currencyKey: string, idx: number) => ({
+			key: snxjs.utils.parseBytes32String(currencyKey),
+			lastDayVolume: aggregatedSynthVolume[currencyKey] || 0,
+			suspensionReason:
+				suspendedSynths[1][idx].toNumber() || (frozenSynthKeys.indexOf(currencyKey) !== -1 ? 4 : 0),
+		}));
+	}
+
+	synthsVolumeData = _.sortBy(synthsVolumeData, 'lastDayVolume').reverse();
+
 	return (
 		<>
 			<SectionHeader title={t('section-header.synths')} />
@@ -195,6 +248,7 @@ const SynthsSection: FC<{}> = () => {
 					return null;
 				})}
 			</StatsRow>
+			<SynthsVolumeMatrix data={synthsVolumeData} />
 		</>
 	);
 };

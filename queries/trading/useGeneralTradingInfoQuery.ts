@@ -5,29 +5,31 @@ import QUERY_KEYS from 'constants/queryKeys';
 import snxData from 'synthetix-data';
 
 export interface GeneralTradingInfo {
+	exchanges: any[];
 	totalDailyTradingVolume: number;
 	totalUsers: number;
 }
 
-export const useGeneralTradingInfoQuery = () => {
-	return useQuery<GeneralTradingInfo, string>(QUERY_KEYS.Trading.GeneralTradingInfo, async () => {
-		const ts = Math.floor(Date.now() / 1e3);
-		const oneDayAgo = ts - 3600 * 24;
+export const useGeneralTradingInfoQuery = (minTimestamp: number) => {
+	return useQuery<GeneralTradingInfo, string>(
+		QUERY_KEYS.Trading.GeneralTradingInfo(minTimestamp),
+		async () => {
+			const [exchanges, allTimeData] = await Promise.all([
+				snxData.exchanges.since({ minTimestamp }),
+				snxData.exchanges.total(),
+			]);
 
-		const [exchanges, allTimeData] = await Promise.all([
-			snxData.exchanges.since({ minTimestamp: oneDayAgo }),
-			snxData.exchanges.total(),
-		]);
+			// @ts-ignore
+			const totalDailyTradingVolume = exchanges.reduce(
+				(acc: number, { fromAmountInUSD }: any) => acc + fromAmountInUSD,
+				0
+			);
 
-		// @ts-ignore
-		const totalDailyTradingVolume = exchanges.reduce(
-			(acc: number, { fromAmountInUSD }: any) => acc + fromAmountInUSD,
-			0
-		);
-
-		return {
-			totalDailyTradingVolume,
-			totalUsers: allTimeData.exchangers,
-		};
-	});
+			return {
+				exchanges,
+				totalDailyTradingVolume,
+				totalUsers: allTimeData.exchangers,
+			};
+		}
+	);
 };

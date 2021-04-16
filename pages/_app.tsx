@@ -22,6 +22,7 @@ import { Alert } from '@material-ui/lab';
 import colors from 'styles/colors';
 import { SPIN360 } from 'constants/styles';
 
+import MenuCloseIcon from 'assets/svg/menu-close';
 import RefetchIcon from 'assets/svg/refetch';
 
 export const headersAndScrollRef: { [key: string]: RefObject<unknown> } = {
@@ -189,6 +190,11 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
 							{failedQueries.length ? (
 								<SynthetixAlert severity="error" onClick={refetchFailedQueries}>
 									<RefetchAlertContainer>
+										<AlertCloseContainer>
+											<RefetchIconButton onClick={() => setHadFailure(false)}>
+												<MenuCloseIcon fill={colors.white} width={12} height={12} />
+											</RefetchIconButton>
+										</AlertCloseContainer>
 										<div>
 											<b>{t('uh-oh')}</b>
 											<br />
@@ -235,15 +241,18 @@ const SynthetixAlert = withStyles(() => ({
 	icon: {
 		display: 'none',
 	},
-	title: {
-		margin: '0',
-	},
 }))(Alert);
 
 const RefetchAlertContainer = styled.div`
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
+`;
+
+const AlertCloseContainer = styled.div`
+	align-self: flex-start;
+	margin-right: 20px;
+	margin-top: -10px;
 `;
 
 const SpinningRefetchIcon = styled(RefetchIcon)`
