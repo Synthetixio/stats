@@ -16,6 +16,8 @@ export default {
 	sUSDHolders: 'sUSDHolders',
 	SnxTotals: 'snxTotals',
 
+	SynthetixTokenList: 'synthetixTokenList',
+
 	Staking: {
 		Liquidations: ['staking', 'liquidations'],
 		FeePeriod: (period: number) => ['staking', 'feePeriod', period],
@@ -30,7 +32,7 @@ export default {
 	},
 	Trading: {
 		TradesOverPeriod: (args: any) => ['trading', 'tradesOverPeriod', args],
-		GeneralTradingInfo: ['trading', 'generalTradingInfo'],
+		GeneralTradingInfo: (minTimestamp: number) => ['trading', 'generalTradingInfo', minTimestamp],
 	},
 	YieldFarming: {
 		CurveApy: ['yieldFarming', 'curveApy'],

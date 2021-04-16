@@ -84,6 +84,8 @@ function reducePartnerData(partnerData: ExchangePartnerData[], limitDays: number
 const Trading: FC = () => {
 	const { t } = useTranslation();
 
+	const [tradeStartTime] = useState(Math.floor(Date.now() / 1000 - 86400));
+
 	const [tradesChartPeriod, setTradesChartPeriod] = useState<ChartPeriod>('M');
 	const [volumeChartPeriod, setVolumeChartPeriod] = useState<ChartPeriod>('M');
 
@@ -99,7 +101,7 @@ const Trading: FC = () => {
 	const tradesChartPeriodDays = periodToDays(tradesChartPeriod);
 	const volumeChartPeriodDays = periodToDays(volumeChartPeriod);
 
-	const generalTradingInfo = useGeneralTradingInfoQuery();
+	const generalTradingInfo = useGeneralTradingInfoQuery(tradeStartTime);
 
 	const exchangeVolumeData = usePageResults<any>({
 		api: synthetixExchanges,
