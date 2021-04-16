@@ -45,11 +45,14 @@ export const useCurveContractInfoQuery = (provider: ethers.providers.Provider) =
 
 	return useQuery<CurveContractInfo, string>(QUERY_KEYS.YieldFarming.CurveInfo, async () => {
 		const rawCurveContractInfo = await Promise.all([
-			curveSusdPoolTokenContract.balanceOf(curvepoolRewards.address),
-			curveSusdPoolContract.get_virtual_price(),
-			curveSusdGaugeContract.inflation_rate(),
-			curveSusdGaugeContract.working_supply(),
-			curveGaugeControllerContract.gauge_relative_weight(curveSusdGauge.address),
+			// note: gasLimit added here due to temp Berlin upgrade bug https://github.com/ethers-io/ethers.js/issues/1474#event-4602342665
+			curveSusdPoolTokenContract.balanceOf(curvepoolRewards.address, { gasLimit: 1000000 }),
+			curveSusdPoolContract.get_virtual_price({ gasLimit: 1000000 }),
+			curveSusdGaugeContract.inflation_rate({ gasLimit: 1000000 }),
+			curveSusdGaugeContract.working_supply({ gasLimit: 1000000 }),
+			curveGaugeControllerContract.gauge_relative_weight(curveSusdGauge.address, {
+				gasLimit: 1000000,
+			}),
 		]);
 
 		const [
