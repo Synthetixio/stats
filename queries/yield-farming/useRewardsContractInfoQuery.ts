@@ -4,7 +4,7 @@ import QUERY_KEYS from 'constants/queryKeys';
 import { ethers } from 'ethers';
 import { curvepoolRewards, snxRewards } from 'contracts';
 import { useSnxjsContractQuery } from 'queries/shared/useSnxjsContractQuery';
-import { SynthetixJS } from '@synthetixio/js';
+import { SynthetixJS } from '@synthetixio/contracts-interface';
 import { useCMCQuery } from 'queries/shared/useCMCQuery';
 import axios from 'axios';
 import { useCurveContractInfoQuery } from './useCurveContractInfoQuery';
