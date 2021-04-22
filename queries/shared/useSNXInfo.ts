@@ -1,4 +1,4 @@
-import { SynthetixJS } from '@synthetixio/js';
+import { SynthetixJS } from '@synthetixio/contracts-interface';
 import { ethers } from 'ethers';
 import { useSnxjsContractQuery } from 'queries/shared/useSnxjsContractQuery';
 import { formatEther, formatUnits } from 'ethers/lib/utils';

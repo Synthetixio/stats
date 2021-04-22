@@ -5,7 +5,7 @@ import { ethers } from 'ethers';
 import { QueryClientProvider, QueryClient, Query } from 'react-query';
 import { ReactQueryDevtools } from 'react-query/devtools';
 
-import { synthetix, Network } from '@synthetixio/js';
+import { synthetix, Network } from '@synthetixio/contracts-interface';
 import { ThemeProvider as SCThemeProvider } from 'styled-components';
 import { ThemeProvider as MuiThemeProvider } from '@material-ui/core/styles';
 
