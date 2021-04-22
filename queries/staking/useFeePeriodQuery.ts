@@ -3,7 +3,7 @@ import { BigNumber } from 'ethers';
 
 import QUERY_KEYS from 'constants/queryKeys';
 import { FeePeriod } from 'types/data';
-import { SynthetixJS } from '@synthetixio/js';
+import { SynthetixJS } from '@synthetixio/contracts-interface';
 
 export const useFeePeriodQuery = (snxjs: SynthetixJS, period: number) => {
 	return useQuery<FeePeriod, string>(QUERY_KEYS.Staking.FeePeriod(period), async () => {

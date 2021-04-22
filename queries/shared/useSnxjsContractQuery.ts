@@ -1,7 +1,7 @@
 import { useQuery } from 'react-query';
 
 import QUERY_KEYS from 'constants/queryKeys';
-import { SynthetixJS } from '@synthetixio/js';
+import { SynthetixJS } from '@synthetixio/contracts-interface';
 
 export const useSnxjsContractQuery = <T>(
 	snxjs: SynthetixJS,
