@@ -96,9 +96,10 @@ const Liquidations: FC<LiquidationsProps> = ({
 								cellProps.row.original.currentCollateral
 							) {
 								const stakerTargetDebt =
-									(issuanceRatio / snxPrice) * cellProps.row.original.currentCollateral;
+									issuanceRatio * snxPrice * cellProps.row.original.currentCollateral;
 								const stakerCurrentDebt =
-									(cellProps.row.original.currentRatio / snxPrice) *
+									cellProps.row.original.currentRatio *
+									snxPrice *
 									cellProps.row.original.currentCollateral;
 								return (
 									<InterSpan>{`${formatNumber(stakerCurrentDebt - stakerTargetDebt)} ${
