@@ -6,7 +6,7 @@ import { formatCurrency, formatNumber } from 'utils/formatter';
 import { OpenInterest } from 'types/data';
 import colors from 'styles/colors';
 import { shortingLink } from 'constants/links';
-import { LinkText } from 'components/common';
+import { FlexDivCol, FlexDivRow, LinkText } from 'components/common';
 
 import InfoPopover from '../InfoPopover';
 interface SidewaysBarChartProps {
@@ -44,45 +44,52 @@ const SidewaysBarChart: FC<SidewaysBarChartProps> = ({ data }) => {
 							<SynthContainer key={`synth-${key}`}>
 								<SynthLabels>
 									<SynthInfo>
-										<SynthLabel>
-											{inverseName === 'iBTC' || inverseName === 'iETH'
-												? `${inverseName} + ${t('synth-bar-chart.shorts')}`
-												: inverseName}
-										</SynthLabel>
-										<LabelSmall>
-											{inverseName === 'iBTC' || inverseName === 'iETH'
-												? `(${formatNumber(inverseTotalSupply)} + ${shortSupply}) (${formatCurrency(
-														inverseValue,
-														0
-												  )})`
-												: `(${formatNumber(inverseTotalSupply)}) (${formatCurrency(
-														inverseValue,
-														0
-												  )})`}
-										</LabelSmall>
-										{isShort ? (
-											<InfoPopover
-												noPaddingTop={true}
-												infoData={
-													<Trans
-														i18nKey="synth-bar-chart.info-data"
-														values={{
-															link: t('synth-bar-chart.shortLinkText'),
-														}}
-														components={{
-															linkText: <LinkText href={shortingLink} />,
-														}}
+										<FlexDivCol>
+											<FlexDivRow>
+												<SynthLabel>
+													{inverseName === 'iBTC' || inverseName === 'iETH'
+														? `${inverseName} + ${t('synth-bar-chart.shorts', {
+																asset: inverseName,
+														  })}`
+														: inverseName}
+												</SynthLabel>
+												{isShort ? (
+													<InfoPopover
+														noPaddingTop={true}
+														infoData={
+															<Trans
+																i18nKey="synth-bar-chart.info-data"
+																values={{
+																	link: t('synth-bar-chart.shortLinkText'),
+																}}
+																components={{
+																	linkText: <LinkText href={shortingLink} />,
+																}}
+															/>
+														}
 													/>
-												}
-											/>
-										) : null}
+												) : null}
+											</FlexDivRow>
+											<LabelSmall>
+												{inverseName === 'iBTC' || inverseName === 'iETH'
+													? `${formatNumber(inverseTotalSupply)} ${inverseName} + ${formatNumber(
+															shortSupply
+													  )} ${inverseName}/${formatCurrency(inverseValue, 0)}`
+													: `${formatNumber(inverseTotalSupply)} ${inverseName}/${formatCurrency(
+															inverseValue,
+															0
+													  )}`}
+											</LabelSmall>
+										</FlexDivCol>
 									</SynthInfo>
 									<SynthInfo>
-										<SynthLabel>{synthName}</SynthLabel>
-										<LabelSmall>{`(${formatNumber(synthTotalSupply)}) (${formatCurrency(
-											synthValue,
-											0
-										)})`}</LabelSmall>
+										<FlexDivCol>
+											<SynthLabel>{synthName}</SynthLabel>
+											<LabelSmall>{`${formatNumber(synthTotalSupply)} ${synthName}/${formatCurrency(
+												synthValue,
+												0
+											)}`}</LabelSmall>
+										</FlexDivCol>
 									</SynthInfo>
 								</SynthLabels>
 								<BarContainer>
@@ -119,7 +126,7 @@ const HeaderRow = styled.div`
 `;
 
 const SynthContainer = styled.div`
-	height: 64px;
+	height: 100px;
 	display: flex;
 	flex-direction: column;
 	width: 100%;
@@ -132,12 +139,11 @@ const SynthContainer = styled.div`
 export const SynthLabels = styled.div`
 	display: flex;
 	width: 100%;
-	justify-content: space-between;
 	font-family: 'Inter', sans-serif;
 `;
 
 const BarContainer = styled.div`
-	height: 20px;
+	height: 60px;
 	width: 100%;
 	display: flex;
 	justify-content: center;
@@ -147,6 +153,7 @@ const BarContainer = styled.div`
 const SynthInfo = styled.div`
 	display: flex;
 	padding: 13px 10px;
+	width: 50%;
 `;
 
 const slideToLeft = (value: string) => keyframes`
