@@ -92,6 +92,13 @@ const SynthsSection: FC<{}> = () => {
 		[synthTotalSupplies ? synthTotalSupplies[0] : []]
 	);
 
+	const sETHIssued = useSnxjsContractQuery<ethers.BigNumber>(
+		snxjs,
+		'EtherWrapper',
+		'sETHIssued',
+		[]
+	);
+
 	const synthFrozenRequest = useSnxjsContractQuery<any>(snxjs, 'SynthUtil', 'frozenSynths', []);
 
 	const synthTradesRequest = useGeneralTradingInfoQuery(tradeStartTime);
@@ -111,10 +118,15 @@ const SynthsSection: FC<{}> = () => {
 		let totalSynthValue = 0;
 		const unsortedOpenInterest: SynthTotalSupply[] = [];
 		for (let i = 0; i < synthTotalSupplies[0].length; i++) {
-			const value = Number(formatEther(synthTotalSupplies[2][i]));
+			let value = Number(formatEther(synthTotalSupplies[2][i]));
 			const name = parseBytes32String(synthTotalSupplies[0][i]);
-			const totalSupply = Number(formatEther(synthTotalSupplies[1][i]));
+			let totalSupply = Number(formatEther(synthTotalSupplies[1][i]));
 
+			/* @notice accounts for ETH-WRAPPER sETH value (https://contracts.synthetix.io/EtherWrapper) */
+			if (name === 'sETH') {
+				totalSupply = totalSupply - Number(formatEther(sETHIssued.data ?? 0));
+				value = totalSupply * ethPrice;
+			}
 			let combinedWithShortsValue = value;
 			if (name === 'iETH') {
 				combinedWithShortsValue += ethShorts * ethPrice;
