@@ -5,6 +5,7 @@ export type OpenInterest = {
 			totalSupply: number;
 			isShort: boolean;
 			shortSupply: number | null;
+			wrapperAmount: number | null;
 		};
 	};
 };
@@ -13,6 +14,7 @@ export type SynthTotalSupply = {
 	name: string;
 	totalSupply?: number;
 	value: number;
+	wrapperAmount: number | null;
 };
 
 export type SNXPriceData = {

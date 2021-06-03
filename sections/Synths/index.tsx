@@ -137,6 +137,7 @@ const SynthsSection: FC<{}> = () => {
 				name,
 				totalSupply,
 				value: combinedWithShortsValue,
+				wrapperAmount: sETHIssued?.data ? Number(formatEther(sETHIssued.data)) : null,
 			});
 			totalSynthValue += value;
 		}
@@ -159,6 +160,7 @@ const SynthsSection: FC<{}> = () => {
 						totalSupply: curr.totalSupply ?? 0,
 						isShort,
 						shortSupply: isEthShort ? ethShorts : isBtcShort ? btcShorts : null,
+						wrapperAmount: curr.wrapperAmount ?? null,
 					},
 				};
 				if (acc[name]) {

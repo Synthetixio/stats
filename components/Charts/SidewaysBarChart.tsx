@@ -28,6 +28,7 @@ const SidewaysBarChart: FC<SidewaysBarChartProps> = ({ data }) => {
 						const inverseName = `i${key}`;
 
 						const synthValue = data[key][synthName].value;
+						const wrapperAmount = data[key][synthName].wrapperAmount;
 						const inverseValue =
 							(data[key] && data[key][inverseName] && data[key][inverseName].value) || 0;
 						const synthTotalSupply = data[key][synthName].totalSupply;
@@ -49,7 +50,7 @@ const SidewaysBarChart: FC<SidewaysBarChartProps> = ({ data }) => {
 												<SynthLabel>
 													{inverseName === 'iBTC' || inverseName === 'iETH'
 														? `${inverseName} + ${t('synth-bar-chart.shorts', {
-																asset: inverseName,
+																asset: key,
 														  })}`
 														: inverseName}
 												</SynthLabel>
@@ -74,7 +75,9 @@ const SidewaysBarChart: FC<SidewaysBarChartProps> = ({ data }) => {
 												{inverseName === 'iBTC' || inverseName === 'iETH'
 													? `${formatNumber(inverseTotalSupply)} ${inverseName} + ${formatNumber(
 															shortSupply
-													  )} ${inverseName}/${formatCurrency(inverseValue, 0)}`
+													  )} ${t('synth-bar-chart.shorts', {
+															asset: key,
+													  })}/${formatCurrency(inverseValue, 0)}`
 													: `${formatNumber(inverseTotalSupply)} ${inverseName}/${formatCurrency(
 															inverseValue,
 															0
@@ -84,11 +87,30 @@ const SidewaysBarChart: FC<SidewaysBarChartProps> = ({ data }) => {
 									</SynthInfo>
 									<SynthInfo>
 										<FlexDivCol>
-											<SynthLabel>{synthName}</SynthLabel>
-											<LabelSmall>{`${formatNumber(synthTotalSupply)} ${synthName}/${formatCurrency(
-												synthValue,
-												0
-											)}`}</LabelSmall>
+											<SynthLabel>
+												{synthName}
+												{wrapperAmount != null
+													? `+ ${t('synth-bar-chart.wrapper', {
+															asset: key,
+													  })}`
+													: ''}
+											</SynthLabel>
+											<LabelSmall>
+												<span>{`${formatNumber(synthTotalSupply)} ${synthName}/${formatCurrency(
+													synthValue,
+													0
+												)}`}</span>
+												<span>
+													{wrapperAmount != null
+														? ` + ${formatNumber(wrapperAmount)} ${t('synth-bar-chart.wrapper', {
+																asset: key,
+														  })}/${formatCurrency(
+																wrapperAmount * (synthValue / synthTotalSupply),
+																0
+														  )}`
+														: ''}
+												</span>
+											</LabelSmall>
 										</FlexDivCol>
 									</SynthInfo>
 								</SynthLabels>
