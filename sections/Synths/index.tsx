@@ -138,7 +138,7 @@ const SynthsSection: FC<{}> = () => {
 				totalSupply,
 				value: combinedWithShortsValue,
 			};
-			if (sETHIssued?.data) {
+			if (name === 'sETH' && sETHIssued?.data) {
 				obj.wrapperAmount = Number(formatEther(sETHIssued.data));
 			}
 			unsortedOpenInterest.push(obj);
