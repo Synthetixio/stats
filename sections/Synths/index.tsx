@@ -133,11 +133,15 @@ const SynthsSection: FC<{}> = () => {
 			} else if (name === 'iBTC') {
 				combinedWithShortsValue += btcShorts * btcPrice;
 			}
-			unsortedOpenInterest.push({
+			const obj: SynthTotalSupply = {
 				name,
 				totalSupply,
 				value: combinedWithShortsValue,
-			});
+			};
+			if (name === 'sETH' && sETHIssued?.data) {
+				obj.wrapperAmount = Number(formatEther(sETHIssued.data));
+			}
+			unsortedOpenInterest.push(obj);
 			totalSynthValue += value;
 		}
 
@@ -159,6 +163,7 @@ const SynthsSection: FC<{}> = () => {
 						totalSupply: curr.totalSupply ?? 0,
 						isShort,
 						shortSupply: isEthShort ? ethShorts : isBtcShort ? btcShorts : null,
+						wrapperAmount: curr.wrapperAmount ?? null,
 					},
 				};
 				if (acc[name]) {
