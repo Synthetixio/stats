@@ -14,7 +14,7 @@ export type SynthTotalSupply = {
 	name: string;
 	totalSupply?: number;
 	value: number;
-	wrapperAmount: number | null;
+	wrapperAmount?: number;
 };
 
 export type SNXPriceData = {
