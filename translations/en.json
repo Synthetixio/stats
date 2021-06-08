@@ -155,14 +155,21 @@
 		"title": "TOTAL DEBT",
 		"subtext": "The total value of all Synth Debt denominated in USD"
 	},
+	"wrapped-synths": {
+		"title": "WRAPPED SYNTHS",
+		"subtitle": "Wrapped {{asset}}",
+		"subtext": "Total wrapped {{asset}} issued and the max-issuance limit",
+		"issued": "AMOUNT ISSUED",
+		"cap": "ISSUANCE LIMIT"
+	},
 	"top-synths": {
-		"title": "CURRENT TOP 3 SYNTHS:",
+		"title": "CURRENT TOP 3 SYNTHS",
 		"price": "PRICE",
 		"marketCap": "MARKET CAP"
 	},
 	"synth-bar-chart": {
 		"title": "TOTAL DEBT",
-		"subtext": "A breakdown of the synth debt composition denominated in USD",
+		"subtext": "A breakdown of the Synth Debt composition denominated in USD",
 		"shorts": "{{asset}} Shorts",
 		"wrapper": "{{asset}} Wrapper",
 		"shortLinkText": "Synthetix Surge",
@@ -170,7 +177,7 @@
 	},
 	"synth-pie-chart": {
 		"title": "SYNTH DOMINANCE",
-		"subtext": "Distribution of Synths within the Synthetix protocol"
+		"subtext": "Distribution of Synth Debt within the Synthetix protocol"
 	},
 	"total-trading-volume": {
 		"title": "TOTAL TRADING VOLUME",
