@@ -224,8 +224,8 @@ const SynthsSection: FC<{}> = () => {
 		<>
 			<SectionHeader title={t('section-header.synths')} />
 			<SingleStatRow
-				text={t('total-synths.title')}
-				subtext={t('total-synths.subtext')}
+				text={t('total-debt.title')}
+				subtext={t('total-debt.subtext')}
 				num={totalValue}
 				color={COLORS.green}
 				numberStyle="currency0"
@@ -234,6 +234,14 @@ const SynthsSection: FC<{}> = () => {
 				<SynthsBarChart data={barChartData} />
 				<SynthsPieChart data={pieChartData} />
 			</SynthsCharts>
+			{/* Add ETHWRAPPER */}
+			{/* <SingleStatRow
+				text={t('total-debt.title')}
+				subtext={t('total-debt.subtext')}
+				num={totalValue}
+				color={COLORS.green}
+				numberStyle="currency0"
+			/> */}
 			<SubsectionHeader>{t('top-synths.title')}</SubsectionHeader>
 			<StatsRow>
 				{pieChartData.map(({ name, totalSupply, value }: SynthTotalSupply, index: number) => {

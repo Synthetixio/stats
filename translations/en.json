@@ -151,9 +151,9 @@
 		"title": "TOTAL ACTIVE STAKERS",
 		"infoData": "The number of total active stakers is obtained from the \"TotalActiveStaker\" entity from the <linkText>Synthetix subgraph.</linkText> The chart data shows the \"TotalDailyActiveStaker\" entity over time."
 	},
-	"total-synths": {
-		"title": "TOTAL SYNTHS",
-		"subtext": "The total value of all Synths in USD"
+	"total-debt": {
+		"title": "TOTAL DEBT",
+		"subtext": "The total value of all Synth Debt denominated in USD"
 	},
 	"top-synths": {
 		"title": "CURRENT TOP 3 SYNTHS:",
@@ -161,8 +161,8 @@
 		"marketCap": "MARKET CAP"
 	},
 	"synth-bar-chart": {
-		"title": "TOTAL SYNTHS",
-		"subtext": "The total value of all Synths in USD",
+		"title": "TOTAL DEBT",
+		"subtext": "A breakdown of the synth debt composition denominated in USD",
 		"shorts": "{{asset}} Shorts",
 		"wrapper": "{{asset}} Wrapper",
 		"shortLinkText": "Synthetix Surge",

@@ -28,7 +28,7 @@ const SidewaysBarChart: FC<SidewaysBarChartProps> = ({ data }) => {
 						const inverseName = `i${key}`;
 
 						const synthValue = data[key][synthName].value;
-						const wrapperAmount = data[key][synthName].wrapperAmount;
+						// const wrapperAmount = data[key][synthName].wrapperAmount;
 						const inverseValue =
 							(data[key] && data[key][inverseName] && data[key][inverseName].value) || 0;
 						const synthTotalSupply = data[key][synthName].totalSupply;
@@ -87,29 +87,12 @@ const SidewaysBarChart: FC<SidewaysBarChartProps> = ({ data }) => {
 									</SynthInfo>
 									<SynthInfo>
 										<FlexDivCol>
-											<SynthLabel>
-												{synthName}
-												{wrapperAmount != null
-													? `+ ${t('synth-bar-chart.wrapper', {
-															asset: key,
-													  })}`
-													: ''}
-											</SynthLabel>
+											<SynthLabel>{synthName}</SynthLabel>
 											<LabelSmall>
 												<span>{`${formatNumber(synthTotalSupply)} ${synthName}/${formatCurrency(
 													synthValue,
 													0
 												)}`}</span>
-												<span>
-													{wrapperAmount != null
-														? ` + ${formatNumber(wrapperAmount)} ${t('synth-bar-chart.wrapper', {
-																asset: key,
-														  })}/${formatCurrency(
-																wrapperAmount * (synthValue / synthTotalSupply),
-																0
-														  )}`
-														: ''}
-												</span>
 											</LabelSmall>
 										</FlexDivCol>
 									</SynthInfo>
