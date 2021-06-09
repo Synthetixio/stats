@@ -139,18 +139,18 @@ const SynthsSection: FC<{}> = () => {
 			} else if (name === 'iBTC') {
 				combinedWithShortsValue += btcShorts * btcPrice;
 			}
-			const obj: SynthTotalSupply = {
+			const synthObject: SynthTotalSupply = {
 				name,
 				totalSupply,
 				value: combinedWithShortsValue,
 			};
 			/* @notice accounts for ETH-WRAPPER sETH value (https://contracts.synthetix.io/EtherWrapper) */
 			if (name === 'sETH' && sETHIssued?.data && sETHMaxLimit?.data) {
-				obj.wrapperAmount = Number(formatEther(sETHIssued.data));
-				obj.maxLimit = Number(formatEther(sETHMaxLimit.data));
-				obj.wrapperAmountUSD = obj.wrapperAmount * ethPrice;
+				synthObject.wrapperAmount = Number(formatEther(sETHIssued.data));
+				synthObject.maxLimit = Number(formatEther(sETHMaxLimit.data));
+				synthObject.wrapperAmountUSD = synthObject.wrapperAmount * ethPrice;
 			}
-			unsortedOpenInterest.push(obj);
+			unsortedOpenInterest.push(synthObject);
 			totalSynthValue += value;
 		}
 

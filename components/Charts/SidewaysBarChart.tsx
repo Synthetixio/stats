@@ -28,7 +28,6 @@ const SidewaysBarChart: FC<SidewaysBarChartProps> = ({ data }) => {
 						const inverseName = `i${key}`;
 
 						const synthValue = data[key][synthName].value;
-						// const wrapperAmount = data[key][synthName].wrapperAmount;
 						const inverseValue =
 							(data[key] && data[key][inverseName] && data[key][inverseName].value) || 0;
 						const synthTotalSupply = data[key][synthName].totalSupply;
