@@ -15,6 +15,8 @@ export type SynthTotalSupply = {
 	totalSupply?: number;
 	value: number;
 	wrapperAmount?: number;
+	wrapperAmountUSD?: number;
+	maxLimit?: number;
 };
 
 export type SNXPriceData = {
