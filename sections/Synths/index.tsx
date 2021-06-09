@@ -99,6 +99,8 @@ const SynthsSection: FC<{}> = () => {
 		[]
 	);
 
+	const sETHMaxLimit = useSnxjsContractQuery<ethers.BigNumber>(snxjs, 'EtherWrapper', 'maxETH', []);
+
 	const synthFrozenRequest = useSnxjsContractQuery<any>(snxjs, 'SynthUtil', 'frozenSynths', []);
 
 	const synthTradesRequest = useGeneralTradingInfoQuery(tradeStartTime);
@@ -113,6 +115,10 @@ const SynthsSection: FC<{}> = () => {
 	let barChartData: OpenInterest = {};
 	let pieChartData: SynthTotalSupply[] = [];
 	let totalValue: number | null = null;
+	let wrappedSynthData: Pick<
+		SynthTotalSupply,
+		'name' | 'wrapperAmount' | 'wrapperAmountUSD' | 'maxLimit'
+	>[] = [];
 
 	if (synthTotalSupplies && ethShorts && btcShorts && ethPrice && btcPrice) {
 		let totalSynthValue = 0;
@@ -133,15 +139,18 @@ const SynthsSection: FC<{}> = () => {
 			} else if (name === 'iBTC') {
 				combinedWithShortsValue += btcShorts * btcPrice;
 			}
-			const obj: SynthTotalSupply = {
+			const synthObject: SynthTotalSupply = {
 				name,
 				totalSupply,
 				value: combinedWithShortsValue,
 			};
-			if (name === 'sETH' && sETHIssued?.data) {
-				obj.wrapperAmount = Number(formatEther(sETHIssued.data));
+			/* @notice accounts for ETH-WRAPPER sETH value (https://contracts.synthetix.io/EtherWrapper) */
+			if (name === 'sETH' && sETHIssued?.data && sETHMaxLimit?.data) {
+				synthObject.wrapperAmount = Number(formatEther(sETHIssued.data));
+				synthObject.maxLimit = Number(formatEther(sETHMaxLimit.data));
+				synthObject.wrapperAmountUSD = synthObject.wrapperAmount * ethPrice;
 			}
-			unsortedOpenInterest.push(obj);
+			unsortedOpenInterest.push(synthObject);
 			totalSynthValue += value;
 		}
 
@@ -156,6 +165,15 @@ const SynthsSection: FC<{}> = () => {
 				const isEthShort = curr.name === 'iETH';
 				const isBtcShort = curr.name === 'iBTC';
 				const isShort = isEthShort || isBtcShort;
+
+				if (curr.wrapperAmount) {
+					wrappedSynthData.push({
+						name: curr.name,
+						wrapperAmount: curr.wrapperAmount ?? undefined,
+						maxLimit: curr.maxLimit ?? undefined,
+						wrapperAmountUSD: curr.wrapperAmountUSD ?? undefined,
+					});
+				}
 
 				const subObject = {
 					[curr.name]: {
@@ -224,8 +242,8 @@ const SynthsSection: FC<{}> = () => {
 		<>
 			<SectionHeader title={t('section-header.synths')} />
 			<SingleStatRow
-				text={t('total-synths.title')}
-				subtext={t('total-synths.subtext')}
+				text={t('total-debt.title')}
+				subtext={t('total-debt.subtext')}
 				num={totalValue}
 				color={COLORS.green}
 				numberStyle="currency0"
@@ -234,6 +252,29 @@ const SynthsSection: FC<{}> = () => {
 				<SynthsBarChart data={barChartData} />
 				<SynthsPieChart data={pieChartData} />
 			</SynthsCharts>
+
+			<SubsectionHeader>{t('wrapped-synths.title')}</SubsectionHeader>
+			<StatsRow>
+				{wrappedSynthData.map(({ name, wrapperAmount, wrapperAmountUSD, maxLimit }) => {
+					return (
+						<DoubleStatsBox
+							key={name}
+							title={t('wrapped-synths.subtitle', { asset: name })}
+							subtitle={t('wrapped-synths.subtext', { asset: name })}
+							firstMetricTitle={t('wrapped-synths.issued')}
+							firstMetricStyle="number"
+							firstMetric={wrapperAmount ?? null}
+							firstColor={COLORS.green}
+							secondMetricTitle={t('wrapped-synths.cap')}
+							secondMetric={maxLimit ?? null}
+							secondColor={COLORS.pink}
+							secondMetricStyle="number"
+							queries={[synthTotalSuppliesRequest]}
+						/>
+					);
+				})}
+			</StatsRow>
+
 			<SubsectionHeader>{t('top-synths.title')}</SubsectionHeader>
 			<StatsRow>
 				{pieChartData.map(({ name, totalSupply, value }: SynthTotalSupply, index: number) => {
@@ -246,10 +287,10 @@ const SynthsSection: FC<{}> = () => {
 								firstMetricTitle={t('top-synths.price')}
 								firstMetricStyle="currency2"
 								firstMetric={name === 'sUSD' ? sUSDPrice : value / (totalSupply ?? 0)}
-								firstColor={index === 0 ? COLORS.pink : COLORS.green}
+								firstColor={COLORS.green}
 								secondMetricTitle={t('top-synths.marketCap')}
 								secondMetric={value}
-								secondColor={index === 2 ? COLORS.pink : COLORS.green}
+								secondColor={COLORS.pink}
 								secondMetricStyle="currency0"
 								queries={[
 									sUSDPriceQuery,
