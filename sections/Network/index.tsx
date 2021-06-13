@@ -30,6 +30,7 @@ import { useCMCQuery } from 'queries/shared/useCMCQuery';
 import { useQuery } from 'react-query';
 import { useSNXInfo } from 'queries/shared/useSNXInfo';
 import { useSUSDInfo } from 'queries/shared/useSUSDInfo';
+import SingleStatRow from 'components/SingleStatRow';
 
 const NetworkSection: FC = () => {
 	const { t } = useTranslation();
@@ -61,6 +62,13 @@ const NetworkSection: FC = () => {
 		snxjs,
 		'SynthsUSD',
 		'totalSupply',
+		[]
+	);
+
+	const unformattedWrapprLocked = useSnxjsContractQuery<ethers.BigNumber>(
+		snxjs,
+		'EtherWrapper',
+		'sETHIssued',
 		[]
 	);
 
@@ -125,6 +133,11 @@ const NetworkSection: FC = () => {
 		SNXTotalSupply && SNXPrice && totalIssuedSynths
 			? (SNXTotalSupply * SNXPrice) / totalIssuedSynths
 			: null;
+
+	const wrapprLocked = unformattedWrapprLocked.isSuccess
+		? Number(ethers.utils.formatEther(unformattedWrapprLocked.data!))
+		: null;
+
 	const priorSNXPrice = SNXChartPriceData.isSuccess ? SNXChartPriceData.data![0].value : null;
 
 	const pricePeriods: ChartPeriod[] = ['D', 'W', 'M', 'Y'];
@@ -328,6 +341,15 @@ const NetworkSection: FC = () => {
 				/>
 			</StatsRow>
 			<SUSDDistribution data={SUSDHolders.data || []} totalSupplySUSD={totalSupplySUSD} />
+			<SingleStatRow
+				key="WRAPPRETHLOCKED"
+				text={t('wrappr-locked.title')}
+				num={wrapprLocked}
+				queries={[unformattedWrapprLocked]}
+				subtext={t('wrappr-locked.subtext')}
+				color={COLORS.green}
+				numberStyle="number"
+			/>
 			<StatsRow>
 				<StatsBox
 					key="ETHLOCKED"

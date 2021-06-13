@@ -72,13 +72,17 @@
 		"title": "sUSD DISTRIBUTION",
 		"subtext": "Distribution of sUSD deposited/stored"
 	},
+	"wrappr-locked": {
+		"title": "ETH WRAPPR LOCKED",
+		"subtext": "Amount of Ether stored in wrappr, a 1:1 contract that anyone can use which issues sETH for ETH or WETH"
+	},
 	"eth-collateral": {
 		"title": "ETH COLLATERAL",
-		"subtext": "Total number of Ether locked as collateral"
+		"subtext": "Total number of Ether locked as collateral for loans"
 	},
 	"btc-collateral": {
 		"title": "BTC COLLATERAL",
-		"subtext": "Total number of renBTC locked as collateral"
+		"subtext": "Total number of renBTC locked as collateral for loans"
 	},
 	"short-collateral": {
 		"title": "sUSD BACKED SHORTS",
@@ -231,9 +235,13 @@
 		"sUSD": "Rewards for providing liquidity to the {{name}} stablecoin liquidity pool on Curve",
 		"default": "Rewards for holding {{name}} and staking it in the rewards contract"
 	},
-	"lending-apy": {
+	"lending-apy-v2": {
 		"title": "LENDING APY",
 		"subtext": "The current APY for lending SNX on AAVE"
+	},
+	"lending-apy": {
+		"title": "LENDING APY (V1)",
+		"subtext": "AAVE v1 lending APY"
 	},
 	"curve-susd": {
 		"title": "Curvepool sUSD",
