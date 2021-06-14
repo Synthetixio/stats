@@ -82,7 +82,6 @@ export const useSNXInfo = (snxjs: SynthetixJS) => {
 		holdersQuery.isSuccess
 	) {
 		for (const { collateral, debtEntryAtIndex, initialDebtOwnership } of holdersQuery.data!) {
-			//console.log(collateral, debtEntryAtIndex, initialDebtOwnership)
 			if (!collateral || !debtEntryAtIndex || !initialDebtOwnership) continue;
 
 			const collateralFmt = Number(ethers.utils.formatEther(ethers.BigNumber.from(collateral)));
@@ -125,6 +124,7 @@ export const useSNXInfo = (snxjs: SynthetixJS) => {
 		issuanceRatio: tempIssuanceRatio,
 		activeCRatio: stakersTotalDebt ? stakersTotalCollateral / stakersTotalDebt : null,
 		totalIssuedSynths,
+		lastDebtLedgerEntry,
 
 		SNXPriceQuery: snxPriceQuery,
 		SNXTotalSupplyQuery: snxTotalSupplyQuery,

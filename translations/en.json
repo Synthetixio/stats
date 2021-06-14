@@ -256,6 +256,18 @@
 		"firstMetricTitle": "WEEKLY REWARDS (SNX)",
 		"secondMetricTitle": "Annual Percentage Yield"
 	},
+	"liquidation-count": {
+		"title": "Liquidatable Accounts",
+		"subtext": "Number of accounts with open liquidation status"
+	},
+	"liquidation-amount-to-cover": {
+		"title": "Liquidation Amount to Cover",
+		"subtext": "Total sUSD needed to cover all pending liquidations"
+	},
+	"liquidation-snx-total": {
+		"title": "Liquidatable SNX",
+		"subtext": "10% will be sent to liquidators on liqudation"
+	},
 	"liquidations": {
 		"title": "LIQUIDATIONS",
 		"subtitle": "Active liquidations flagged within the past 30 days",
