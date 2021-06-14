@@ -97,7 +97,7 @@ const NetworkSection: FC = () => {
 		return snxData.snx.total();
 	});
 	const SUSDHolders = useQuery<TreeMapData[], string>(QUERY_KEYS.sUSDHolders, async () => {
-		const topSUSDHolders = await snxData.synths.holders({ max: 5, synth: 'sUSD' });
+		const topSUSDHolders = await snxData.synths.holders({ max: 10, synth: 'sUSD' });
 		return topSUSDHolders.map(({ balanceOf, address }: { balanceOf: number; address: string }) => ({
 			name: getSUSDHoldersName(address),
 			value: balanceOf,
