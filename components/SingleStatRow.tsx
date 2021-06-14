@@ -14,6 +14,7 @@ type SingleStatRowProps = {
 	queries?: UseQueryResult[];
 	color: NumberColor;
 	numberStyle: NumberStyle;
+	postfix?: string;
 };
 
 const SingleStatRow: FC<SingleStatRowProps> = ({
@@ -23,6 +24,7 @@ const SingleStatRow: FC<SingleStatRowProps> = ({
 	num,
 	queries = [],
 	numberStyle,
+	postfix = '',
 }) => {
 	const allQueriesLoaded = !queries.find((q) => q.isLoading);
 
@@ -35,7 +37,9 @@ const SingleStatRow: FC<SingleStatRowProps> = ({
 				<SingleStatsSubtext>{subtext}</SingleStatsSubtext>
 			</SingleStatsLeft>
 			<SingleStatsRight>
-				<SingleStatsNumber color={color}>{formattedNumber}</SingleStatsNumber>
+				<SingleStatsNumber color={color}>
+					{formattedNumber} {postfix}
+				</SingleStatsNumber>
 				<StatsTools queries={queries} />
 			</SingleStatsRight>
 		</SingleStatRowContainer>

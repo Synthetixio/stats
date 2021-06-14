@@ -349,6 +349,7 @@ const NetworkSection: FC = () => {
 				subtext={t('wrappr-locked.subtext')}
 				color={COLORS.green}
 				numberStyle="number"
+				postfix="ETH"
 			/>
 			<StatsRow>
 				<StatsBox
