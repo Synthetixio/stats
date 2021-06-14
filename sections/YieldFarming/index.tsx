@@ -2,7 +2,6 @@ import { FC, useContext } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
 
 import SectionHeader from 'components/SectionHeader';
-import SingleStatRow from 'components/SingleStatRow';
 import StatsRow from 'components/StatsRow';
 import DoubleStatsBox from 'components/DoubleStatsBox';
 
@@ -12,7 +11,8 @@ import { SNXJSContext, ProviderContext } from 'pages/_app';
 import { useRewardsContractInfo, RewardsData } from 'queries/yield-farming';
 import { curvepoolRewards } from 'contracts';
 import { usePageResults } from 'queries/shared/usePageResults';
-import { aave } from 'constants/graph-urls';
+import { aave, aavev2 } from 'constants/graph-urls';
+import StatsBox from 'components/StatsBox';
 
 const SubtitleText = ({ name }: { name: string }) =>
 	name === 'sUSD' ? (
@@ -77,21 +77,56 @@ const YieldFarming: FC = () => {
 		max: 1,
 	});
 
+	const aavev2DepositInfo = usePageResults<any[]>({
+		api: aavev2,
+		query: {
+			entity: 'reserves',
+			selection: {
+				where: {
+					usageAsCollateralEnabled: true,
+					name: `\\"Synthetix Network Token\\"`,
+				},
+			},
+			properties: ['liquidityRate'],
+		},
+		max: 1,
+	});
+
 	const aaveDepositRate = aaveDepositInfo.isSuccess
 		? Number(aaveDepositInfo.data![0].liquidityRate) / 1e27
+		: null;
+
+	const aavev2DepositRate = aavev2DepositInfo.isSuccess
+		? Number(aavev2DepositInfo.data![0].liquidityRate) / 1e27
 		: null;
 
 	return (
 		<>
 			<SectionHeader title={t('section-header.yieldFarming')} />
-			<SingleStatRow
-				text={t('lending-apy.title')}
-				subtext={t('lending-apy.subtext')}
-				num={aaveDepositRate}
-				queries={[aaveDepositInfo]}
-				color={COLORS.green}
-				numberStyle="percent2"
-			/>
+			<StatsRow>
+				<StatsBox
+					title={t('lending-apy-v2.title')}
+					subText={t('lending-apy-v2.subtext')}
+					num={aavev2DepositRate}
+					queries={[aavev2DepositInfo]}
+					color={COLORS.green}
+					numberStyle="percent2"
+					numBoxes={2}
+					infoData={null}
+					percentChange={null}
+				/>
+				<StatsBox
+					title={t('lending-apy.title')}
+					subText={t('lending-apy.subtext')}
+					num={aaveDepositRate}
+					queries={[aaveDepositInfo]}
+					color={COLORS.green}
+					numberStyle="percent2"
+					numBoxes={2}
+					infoData={null}
+					percentChange={null}
+				/>
+			</StatsRow>
 			<StatsRow>
 				{Object.entries(rewardsData).map((d: [string, RewardsData]) => (
 					<DoubleStatsBox

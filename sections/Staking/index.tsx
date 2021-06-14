@@ -24,6 +24,7 @@ import { useSNXInfo } from 'queries/shared/useSNXInfo';
 import { useSUSDInfo } from 'queries/shared/useSUSDInfo';
 import { formatIdToIsoString } from 'utils/formatter';
 import { periodToDays } from 'utils/dataMapping';
+import _ from 'lodash';
 
 const WEEK = 86400 * 7 * 1000;
 
@@ -72,10 +73,6 @@ const Staking: FC = () => {
 		stakersChartData = formatChartData(d);
 		totalActiveStakers = d[d.length - 1].count;
 	}
-
-	const formattedLiquidationsData = (liquidations.data ?? []).sort(
-		(a: LiquidationsData, b: LiquidationsData) => a.deadline - b.deadline
-	);
 
 	const stakingPeriods: ChartPeriod[] = ['W', 'M', 'Y'];
 	const SNXValueStaked = useMemo(() => (SNXPrice && SNXStaked ? SNXPrice * SNXStaked : null), [
@@ -277,8 +274,48 @@ const Staking: FC = () => {
 					/>
 				}
 			/>
+			<StatsRow>
+				<StatsBox
+					key="LIQUIDCOUNT"
+					title={t('liquidation-count.title')}
+					num={liquidations.isSuccess ? liquidations.data[0].liquidatableCount : null}
+					queries={[liquidations]}
+					percentChange={null}
+					subText={t('liquidation-count.subtext')}
+					color={COLORS.pink}
+					numberStyle="number"
+					numBoxes={3}
+					infoData={null}
+				/>
+				<StatsBox
+					key="LIQUIDAMOUNT"
+					title={t('liquidation-amount-to-cover.title')}
+					num={liquidations.isSuccess ? liquidations.data[0].amountToCover : null}
+					queries={[liquidations]}
+					percentChange={null}
+					subText={t('liquidation-amount-to-cover.subtext')}
+					color={COLORS.pink}
+					numberStyle="currency2"
+					numBoxes={3}
+					infoData={null}
+				/>
+				<StatsBox
+					key="LIQUIDABLE"
+					title={t('liquidation-snx-total.title')}
+					num={liquidations.isSuccess ? liquidations.data[0].totalLiquidatableSNX : null}
+					queries={[liquidations]}
+					percentChange={null}
+					subText={t('liquidation-snx-total.subtext')}
+					color={COLORS.pink}
+					numberStyle="number"
+					numBoxes={3}
+					infoData={null}
+				/>
+			</StatsRow>
 			<Liquidations
-				liquidationsData={formattedLiquidationsData}
+				liquidationsData={
+					liquidations.isSuccess ? _.reverse(_.sortBy(liquidations.data![1], 'amountToCover')) : []
+				}
 				isLoading={liquidations.isFetching}
 				issuanceRatio={issuanceRatio}
 				snxPrice={SNXPrice}

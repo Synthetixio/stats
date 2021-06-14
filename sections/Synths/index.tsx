@@ -92,15 +92,6 @@ const SynthsSection: FC<{}> = () => {
 		[synthTotalSupplies ? synthTotalSupplies[0] : []]
 	);
 
-	const sETHIssued = useSnxjsContractQuery<ethers.BigNumber>(
-		snxjs,
-		'EtherWrapper',
-		'sETHIssued',
-		[]
-	);
-
-	const sETHMaxLimit = useSnxjsContractQuery<ethers.BigNumber>(snxjs, 'EtherWrapper', 'maxETH', []);
-
 	const synthFrozenRequest = useSnxjsContractQuery<any>(snxjs, 'SynthUtil', 'frozenSynths', []);
 
 	const synthTradesRequest = useGeneralTradingInfoQuery(tradeStartTime);
@@ -115,10 +106,6 @@ const SynthsSection: FC<{}> = () => {
 	let barChartData: OpenInterest = {};
 	let pieChartData: SynthTotalSupply[] = [];
 	let totalValue: number | null = null;
-	let wrappedSynthData: Pick<
-		SynthTotalSupply,
-		'name' | 'wrapperAmount' | 'wrapperAmountUSD' | 'maxLimit'
-	>[] = [];
 
 	if (synthTotalSupplies && ethShorts && btcShorts && ethPrice && btcPrice) {
 		let totalSynthValue = 0;
@@ -128,9 +115,7 @@ const SynthsSection: FC<{}> = () => {
 			const name = parseBytes32String(synthTotalSupplies[0][i]);
 			let totalSupply = Number(formatEther(synthTotalSupplies[1][i]));
 
-			/* @notice accounts for ETH-WRAPPER sETH value (https://contracts.synthetix.io/EtherWrapper) */
 			if (name === 'sETH') {
-				totalSupply = totalSupply - Number(formatEther(sETHIssued.data ?? 0));
 				value = totalSupply * ethPrice;
 			}
 			let combinedWithShortsValue = value;
@@ -144,12 +129,7 @@ const SynthsSection: FC<{}> = () => {
 				totalSupply,
 				value: combinedWithShortsValue,
 			};
-			/* @notice accounts for ETH-WRAPPER sETH value (https://contracts.synthetix.io/EtherWrapper) */
-			if (name === 'sETH' && sETHIssued?.data && sETHMaxLimit?.data) {
-				synthObject.wrapperAmount = Number(formatEther(sETHIssued.data));
-				synthObject.maxLimit = Number(formatEther(sETHMaxLimit.data));
-				synthObject.wrapperAmountUSD = synthObject.wrapperAmount * ethPrice;
-			}
+
 			unsortedOpenInterest.push(synthObject);
 			totalSynthValue += value;
 		}
@@ -166,22 +146,12 @@ const SynthsSection: FC<{}> = () => {
 				const isBtcShort = curr.name === 'iBTC';
 				const isShort = isEthShort || isBtcShort;
 
-				if (curr.wrapperAmount) {
-					wrappedSynthData.push({
-						name: curr.name,
-						wrapperAmount: curr.wrapperAmount ?? undefined,
-						maxLimit: curr.maxLimit ?? undefined,
-						wrapperAmountUSD: curr.wrapperAmountUSD ?? undefined,
-					});
-				}
-
 				const subObject = {
 					[curr.name]: {
 						value: curr.value,
 						totalSupply: curr.totalSupply ?? 0,
 						isShort,
 						shortSupply: isEthShort ? ethShorts : isBtcShort ? btcShorts : null,
-						wrapperAmount: curr.wrapperAmount ?? null,
 					},
 				};
 				if (acc[name]) {
@@ -252,28 +222,6 @@ const SynthsSection: FC<{}> = () => {
 				<SynthsBarChart data={barChartData} />
 				<SynthsPieChart data={pieChartData} />
 			</SynthsCharts>
-
-			<SubsectionHeader>{t('wrapped-synths.title')}</SubsectionHeader>
-			<StatsRow>
-				{wrappedSynthData.map(({ name, wrapperAmount, wrapperAmountUSD, maxLimit }) => {
-					return (
-						<DoubleStatsBox
-							key={name}
-							title={t('wrapped-synths.subtitle', { asset: name })}
-							subtitle={t('wrapped-synths.subtext', { asset: name })}
-							firstMetricTitle={t('wrapped-synths.issued')}
-							firstMetricStyle="number"
-							firstMetric={wrapperAmount ?? null}
-							firstColor={COLORS.green}
-							secondMetricTitle={t('wrapped-synths.cap')}
-							secondMetric={maxLimit ?? null}
-							secondColor={COLORS.pink}
-							secondMetricStyle="number"
-							queries={[synthTotalSuppliesRequest]}
-						/>
-					);
-				})}
-			</StatsRow>
 
 			<SubsectionHeader>{t('top-synths.title')}</SubsectionHeader>
 			<StatsRow>

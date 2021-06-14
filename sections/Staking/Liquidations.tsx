@@ -45,7 +45,7 @@ const Liquidations: FC<LiquidationsProps> = ({
 							<InterSpan>{cellProps.row.original.account}</InterSpan>
 						),
 						width: 200,
-						sortable: false,
+						sortable: true,
 					},
 					{
 						Header: <StyledTableHeader>{t('liquidations.columns.deadline')}</StyledTableHeader>,
@@ -61,22 +61,22 @@ const Liquidations: FC<LiquidationsProps> = ({
 					},
 					{
 						Header: <StyledTableHeader>{t('liquidations.columns.c-ratio')}</StyledTableHeader>,
-						accessor: 'cyrrentRatio',
+						accessor: 'currentRatio',
 						sortType: 'basic',
 						Cell: (cellProps: CellProps<LiquidationsData>) => (
 							<InterSpan>{formatPercentage(1 / cellProps.row.original.currentRatio, 0)}</InterSpan>
 						),
 						width: 100,
-						sortable: false,
+						sortable: true,
 					},
 					{
 						Header: (
 							<StyledTableHeader>{t('liquidations.columns.liquidatable-amount')}</StyledTableHeader>
 						),
-						accessor: 'liquidatableNonEscrowSNX',
+						accessor: 'liquidatableAmount',
 						sortType: 'basic',
 						Cell: (cellProps: CellProps<LiquidationsData>) => (
-							<InterSpan>{`${formatNumber(cellProps.row.original.currentBalanceOf)} ${
+							<InterSpan>{`${formatNumber(cellProps.row.original.liquidatableAmount)} ${
 								CryptoCurrency.SNX
 							}`}</InterSpan>
 						),
@@ -87,28 +87,13 @@ const Liquidations: FC<LiquidationsProps> = ({
 						Header: (
 							<StyledTableHeader>{t('liquidations.columns.amount-to-cover')}</StyledTableHeader>
 						),
-						accessor: 'collateral',
+						accessor: 'amountToCover',
 						sortType: 'basic',
-						Cell: (cellProps: CellProps<LiquidationsData>) => {
-							if (
-								snxPrice != null &&
-								issuanceRatio != null &&
-								cellProps.row.original.currentCollateral
-							) {
-								const stakerTargetDebt =
-									issuanceRatio * snxPrice * cellProps.row.original.currentCollateral;
-								const stakerCurrentDebt =
-									cellProps.row.original.currentRatio *
-									snxPrice *
-									cellProps.row.original.currentCollateral;
-								return (
-									<InterSpan>{`${formatNumber(stakerCurrentDebt - stakerTargetDebt)} ${
-										CryptoCurrency.sUSD
-									}`}</InterSpan>
-								);
-							}
-							return <InterSpan>{NO_VALUE}</InterSpan>;
-						},
+						Cell: (cellProps: CellProps<LiquidationsData>) => (
+							<InterSpan>{`${formatNumber(cellProps.row.original.amountToCover)} ${
+								CryptoCurrency.sUSD
+							}`}</InterSpan>
+						),
 						width: 100,
 						sortable: true,
 					},
