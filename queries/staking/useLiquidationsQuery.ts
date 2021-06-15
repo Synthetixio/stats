@@ -1,6 +1,6 @@
 import { useContext } from 'react';
 import { useQuery } from 'react-query';
-import { BigNumber, ethers } from 'ethers';
+import { ethers } from 'ethers';
 import { SNXJSContext } from 'pages/_app';
 import snxData from 'synthetix-data';
 
@@ -24,6 +24,12 @@ export type LiquidationsData = {
 	liquidatableAmount: number;
 };
 
+// number of sUSD to cover before showing on page
+const MIN_LIQUIDATION_COVER_THRESHOLD = 10;
+
+// number of SNX which is *actually* liquidatable before showing on page (or else its dust)
+const MIN_LIQUIDATION_BALANCE = 1;
+
 export const useLiquidationsQuery = () => {
 	const snxjs = useContext(SNXJSContext);
 
@@ -45,7 +51,7 @@ export const useLiquidationsQuery = () => {
 							id_in: '[' + accountAddresses.map((v: string) => `\\"${v}\\"`).join(',') + ']',
 						},
 					},
-					properties: ['id', 'collateral', 'initialDebtOwnership', 'debtEntryAtIndex'],
+					properties: ['id', 'collateral', 'balanceOf', 'initialDebtOwnership', 'debtEntryAtIndex'],
 				},
 			});
 
@@ -75,21 +81,30 @@ export const useLiquidationsQuery = () => {
 					ethers.utils.formatEther(ethers.BigNumber.from(accountInfo.collateral))
 				);
 
+				let currentBalanceOf = Number(
+					ethers.utils.formatEther(ethers.BigNumber.from(accountInfo.balanceOf))
+				);
+
 				const amountToCover = currentDebt - issuanceRatio! * currentCollateral * SNXPrice!;
 				const liquidatableAmount = amountToCover / SNXPrice!;
 
-				liquidations.push({
-					deadline: l.deadline,
-					account: l.account,
-					currentRatio: currentDebt / (currentCollateral * SNXPrice!),
-					currentCollateral,
-					currentDebt,
-					amountToCover,
-					liquidatableAmount,
-				});
+				if (
+					amountToCover > MIN_LIQUIDATION_COVER_THRESHOLD &&
+					currentBalanceOf > MIN_LIQUIDATION_BALANCE
+				) {
+					liquidations.push({
+						deadline: l.deadline,
+						account: l.account,
+						currentRatio: currentDebt / (currentCollateral * SNXPrice!),
+						currentCollateral,
+						currentDebt,
+						amountToCover,
+						liquidatableAmount,
+					});
 
-				summary.amountToCover += amountToCover;
-				summary.totalLiquidatableSNX += liquidatableAmount;
+					summary.amountToCover += amountToCover;
+					summary.totalLiquidatableSNX += liquidatableAmount;
+				}
 			}
 			return [summary, liquidations];
 		},
