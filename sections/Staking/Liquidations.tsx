@@ -3,7 +3,6 @@ import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 import { CellProps } from 'react-table';
 
-import { NO_VALUE } from 'constants/placeholder';
 import { CryptoCurrency } from 'constants/currency';
 import { LiquidationsData } from 'queries/staking';
 

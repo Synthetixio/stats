@@ -1,6 +1,6 @@
 import { FC, useContext, useState } from 'react';
 import styled from 'styled-components';
-import ethers from 'ethers';
+import { ethers } from 'ethers';
 import orderBy from 'lodash/orderBy';
 import findIndex from 'lodash/findIndex';
 import { useTranslation } from 'react-i18next';
@@ -21,6 +21,8 @@ import SynthsVolumeMatrix, { SynthVolumeStatus } from './SynthsVolumeMatrix';
 import _ from 'lodash';
 
 import { useGeneralTradingInfoQuery } from 'queries/trading';
+import { useTokenBalanceQuery } from 'queries/shared/useTokenBalanceQuery';
+import { renBTC } from 'contracts';
 
 const MIN_PERCENT_FOR_PIE_CHART = 0.03;
 const NUMBER_OF_TOP_SYNTHS = 3;
@@ -81,6 +83,45 @@ const SynthsSection: FC<{}> = () => {
 		[snxjs.toBytes32('sBTC')]
 	);
 
+	const bitcoinLocked = useTokenBalanceQuery(
+		provider,
+		renBTC.address,
+		snxjs.contracts.CollateralErc20.address,
+		{ decimals: 8 }
+	);
+
+	const ethSusdCollateralBalance = useTokenBalanceQuery(
+		provider,
+		ethers.constants.AddressZero,
+		snxjs.contracts.EtherCollateralsUSD.address
+	);
+	const ethCollateralBalance = useTokenBalanceQuery(
+		provider,
+		ethers.constants.AddressZero,
+		snxjs.contracts.EtherCollateral.address
+	);
+	const multiCollateralEtherBalance = useTokenBalanceQuery(
+		provider,
+		ethers.constants.AddressZero,
+		snxjs.contracts.CollateralEth.address
+	);
+
+	const etherLocked =
+		ethCollateralBalance.isSuccess &&
+		ethSusdCollateralBalance.isSuccess &&
+		multiCollateralEtherBalance.isSuccess
+			? Number(ethCollateralBalance.data!) +
+			  Number(ethSusdCollateralBalance.data!) +
+			  Number(multiCollateralEtherBalance.data!)
+			: null;
+
+	const unformattedWrapprLocked = useSnxjsContractQuery<ethers.BigNumber>(
+		snxjs,
+		'EtherWrapper',
+		'sETHIssued',
+		[]
+	);
+
 	const synthTotalSupplies = synthTotalSuppliesRequest.isSuccess
 		? synthTotalSuppliesRequest.data!
 		: null;
@@ -96,18 +137,28 @@ const SynthsSection: FC<{}> = () => {
 
 	const synthTradesRequest = useGeneralTradingInfoQuery(tradeStartTime);
 
-	const [ethShorts, btcShorts, btcPrice, ethPrice] = [
+	const [ethShorts, btcShorts, btcPrice, ethPrice, wrapprLocked] = [
 		unformattedEthShorts,
 		unformattedBtcShorts,
 		unformattedBtcPrice,
 		unformattedEthPrice,
+		unformattedWrapprLocked,
 	].map((val) => (val.isSuccess ? Number(formatEther(val.data!)) : null));
 
 	let barChartData: OpenInterest = {};
 	let pieChartData: SynthTotalSupply[] = [];
 	let totalValue: number | null = null;
 
-	if (synthTotalSupplies && ethShorts && btcShorts && ethPrice && btcPrice) {
+	if (
+		synthTotalSupplies &&
+		ethShorts &&
+		btcShorts &&
+		ethPrice &&
+		btcPrice &&
+		etherLocked &&
+		bitcoinLocked.isSuccess &&
+		wrapprLocked
+	) {
 		let totalSynthValue = 0;
 		const unsortedOpenInterest: SynthTotalSupply[] = [];
 		for (let i = 0; i < synthTotalSupplies[0].length; i++) {
@@ -118,16 +169,19 @@ const SynthsSection: FC<{}> = () => {
 			if (name === 'sETH') {
 				value = totalSupply * ethPrice;
 			}
-			let combinedWithShortsValue = value;
+			let combinedWithExtrasValue = value;
 			if (name === 'iETH') {
-				combinedWithShortsValue += ethShorts * ethPrice;
+				combinedWithExtrasValue += ethShorts * ethPrice;
+				combinedWithExtrasValue += etherLocked * ethPrice;
+				combinedWithExtrasValue += wrapprLocked * ethPrice;
 			} else if (name === 'iBTC') {
-				combinedWithShortsValue += btcShorts * btcPrice;
+				combinedWithExtrasValue += btcShorts * btcPrice;
+				combinedWithExtrasValue += Number(bitcoinLocked.data!) * btcPrice;
 			}
 			const synthObject: SynthTotalSupply = {
 				name,
 				totalSupply,
-				value: combinedWithShortsValue,
+				value: combinedWithExtrasValue,
 			};
 
 			unsortedOpenInterest.push(synthObject);

@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, useMemo } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
 import styled, { css, keyframes } from 'styled-components';
 
@@ -9,12 +9,18 @@ import { shortingLink } from 'constants/links';
 import { FlexDivCol, FlexDivRow, LinkText } from 'components/common';
 
 import InfoPopover from '../InfoPopover';
+import _ from 'lodash';
 interface SidewaysBarChartProps {
 	data: OpenInterest;
 }
 
 const SidewaysBarChart: FC<SidewaysBarChartProps> = ({ data }) => {
 	const { t } = useTranslation();
+
+	const totalValue = useMemo(() => {
+		return _.chain(data).values().map(_.values).flatten().map('value').max().value();
+	}, [data]);
+
 	return (
 		<ChartContainer>
 			<VerticalBar />
@@ -38,8 +44,6 @@ const SidewaysBarChart: FC<SidewaysBarChartProps> = ({ data }) => {
 						const shortSupply =
 							(data[key] && data[key][inverseName] && data[key][inverseName].shortSupply) || 0;
 
-						const totalValue = synthValue + inverseValue;
-
 						return (
 							<SynthContainer key={`synth-${key}`}>
 								<SynthLabels>
@@ -48,9 +52,9 @@ const SidewaysBarChart: FC<SidewaysBarChartProps> = ({ data }) => {
 											<FlexDivRow>
 												<SynthLabel>
 													{inverseName === 'iBTC' || inverseName === 'iETH'
-														? `${inverseName} + ${t('synth-bar-chart.shorts', {
+														? `${inverseName}, ${t('synth-bar-chart.shorts', {
 																asset: key,
-														  })}`
+														  })}, other collateral`
 														: inverseName}
 												</SynthLabel>
 												{isShort ? (

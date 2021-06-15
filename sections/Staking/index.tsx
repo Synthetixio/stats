@@ -11,7 +11,6 @@ import { NewParagraph, LinkText } from 'components/common';
 import {
 	useFeePeriodQuery,
 	useLiquidationsQuery,
-	LiquidationsData,
 	useAggregateActiveStakersQuery,
 } from 'queries/staking';
 import { COLORS } from 'constants/styles';
