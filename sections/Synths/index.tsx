@@ -181,7 +181,8 @@ const SynthsSection: FC<{}> = () => {
 			const synthObject: SynthTotalSupply = {
 				name,
 				totalSupply,
-				value: combinedWithExtrasValue,
+				value,
+				valueWithAdjust: combinedWithExtrasValue,
 			};
 
 			unsortedOpenInterest.push(synthObject);
@@ -202,7 +203,7 @@ const SynthsSection: FC<{}> = () => {
 
 				const subObject = {
 					[curr.name]: {
-						value: curr.value,
+						value: curr.valueWithAdjust,
 						totalSupply: curr.totalSupply ?? 0,
 						isShort,
 						shortSupply: isEthShort ? ethShorts : isBtcShort ? btcShorts : null,

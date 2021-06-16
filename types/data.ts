@@ -13,8 +13,7 @@ export type SynthTotalSupply = {
 	name: string;
 	totalSupply?: number;
 	value: number;
-	wrapperAmount?: number;
-	wrapperAmountUSD?: number;
+	valueWithAdjust: number;
 	maxLimit?: number;
 };
 

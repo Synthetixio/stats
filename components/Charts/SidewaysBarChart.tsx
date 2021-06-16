@@ -5,8 +5,7 @@ import styled, { css, keyframes } from 'styled-components';
 import { formatCurrency, formatNumber } from 'utils/formatter';
 import { OpenInterest } from 'types/data';
 import colors from 'styles/colors';
-import { shortingLink } from 'constants/links';
-import { FlexDivCol, FlexDivRow, LinkText } from 'components/common';
+import { FlexDivCol, FlexDivRow } from 'components/common';
 
 import InfoPopover from '../InfoPopover';
 import _ from 'lodash';
@@ -64,10 +63,7 @@ const SidewaysBarChart: FC<SidewaysBarChartProps> = ({ data }) => {
 															<Trans
 																i18nKey="synth-bar-chart.info-data"
 																values={{
-																	link: t('synth-bar-chart.shortLinkText'),
-																}}
-																components={{
-																	linkText: <LinkText href={shortingLink} />,
+																	asset: inverseName.slice(1),
 																}}
 															/>
 														}

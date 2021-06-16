@@ -177,7 +177,7 @@
 		"shorts": "{{asset}} Shorts",
 		"wrapper": "{{asset}} Wrapper",
 		"shortLinkText": "Synthetix Surge",
-		"info-data": "It is possible to short {{asset}} without buying an inverse synth. You borrow a loan in s{{asset}} terms, but receive the equivalent value in sUSD instead, thereby going short. The UI for this mechanism is available at the <linkText>{{link}}</linkText> site.\n\nAdditionally, debt pool corrections for wrappr or collateral loans bay be included here."
+		"info-data": "It is possible to short {{asset}} without buying an inverse synth. A loan is borrowed in s{{asset}} terms, but receive the equivalent value in sUSD instead, thereby going short.\n\nAdditionally, debt pool corrections for wrappr or collateral loans bay be included here."
 	},
 	"synth-pie-chart": {
 		"title": "SYNTH DOMINANCE",
