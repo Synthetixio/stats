@@ -35,11 +35,10 @@ export default CustomLegend;
 const CustomLegendContainer = styled.div<{ isShortLegend: boolean }>`
 	display: flex;
 	flex-direction: column;
-	border: 1px solid ${colors.linedBlue};
 	width: 80%;
 	margin: 0 auto;
 	font-family: 'Inter', sans-serif;
-	height: ${(props) => (props.isShortLegend ? '100px' : '225px')};
+	height: ${(props) => (props.isShortLegend ? '125px' : '225px')};
 	overflow-y: scroll;
 `;
 

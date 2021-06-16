@@ -4,11 +4,13 @@ import { ethers } from 'ethers';
 import { Trans, useTranslation } from 'react-i18next';
 
 import { ChartPeriod, TreeMapData } from 'types/data';
+import { ChartTitle } from 'components/common';
 import StatsBox from 'components/StatsBox';
 import StatsRow from 'components/StatsRow';
 import AreaChart from 'components/Charts/AreaChart';
+import PieChart from 'components/Charts/PieChart';
 import SectionHeader from 'components/SectionHeader';
-import { COLORS } from 'constants/styles';
+import { COLORS, MAX_PAGE_WIDTH } from 'constants/styles';
 import QUERY_KEYS from 'constants/queryKeys';
 import {
 	synthetixSubgraph,
@@ -31,6 +33,7 @@ import { useQuery } from 'react-query';
 import { useSNXInfo } from 'queries/shared/useSNXInfo';
 import { useSUSDInfo } from 'queries/shared/useSUSDInfo';
 import SingleStatRow from 'components/SingleStatRow';
+import styled from 'styled-components';
 
 const NetworkSection: FC = () => {
 	const { t } = useTranslation();
@@ -70,6 +73,18 @@ const NetworkSection: FC = () => {
 		'EtherWrapper',
 		'sETHIssued',
 		[]
+	);
+	const unformattedEthPrice = useSnxjsContractQuery<ethers.BigNumber>(
+		snxjs,
+		'ExchangeRates',
+		'rateForCurrency',
+		[snxjs.toBytes32('sETH')]
+	);
+	const unformattedBtcPrice = useSnxjsContractQuery<ethers.BigNumber>(
+		snxjs,
+		'ExchangeRates',
+		'rateForCurrency',
+		[snxjs.toBytes32('sBTC')]
 	);
 
 	const ethSusdCollateralBalance = useTokenBalanceQuery(
@@ -112,6 +127,10 @@ const NetworkSection: FC = () => {
 		}));
 	});
 
+	const [btcPrice, ethPrice] = [unformattedBtcPrice, unformattedEthPrice].map((val) =>
+		val.isSuccess ? Number(formatEther(val.data!)) : null
+	);
+
 	const etherLocked =
 		ethCollateralBalance.isSuccess &&
 		ethSusdCollateralBalance.isSuccess &&
@@ -141,6 +160,39 @@ const NetworkSection: FC = () => {
 	const priorSNXPrice = SNXChartPriceData.isSuccess ? SNXChartPriceData.data![0].value : null;
 
 	const pricePeriods: ChartPeriod[] = ['D', 'W', 'M', 'Y'];
+
+	// there are 4 sources of debt for the debt pool right now
+	const debtResponsibilityChartData = [];
+
+	if (
+		wrapprLocked &&
+		etherLocked &&
+		bitcoinLocked.isSuccess &&
+		totalIssuedSynths &&
+		ethPrice &&
+		btcPrice
+	) {
+		debtResponsibilityChartData.push(
+			{
+				name: 'ETH Wrapper',
+				value: wrapprLocked * ethPrice,
+			},
+			{
+				name: 'ETH Collateral Loan',
+				value: etherLocked * ethPrice,
+			},
+			{
+				name: 'BTC Collateral Loan',
+				value: Number(bitcoinLocked.data!) * btcPrice,
+			}
+		);
+
+		// snx stakers are responsible for all the debt that is not covered by the previous sources
+		debtResponsibilityChartData.unshift({
+			name: 'SNX Stakers',
+			value: totalIssuedSynths, // this is actually issued synths not associated with above categories
+		});
+	}
 
 	return (
 		<>
@@ -351,46 +403,93 @@ const NetworkSection: FC = () => {
 				numberStyle="number"
 				postfix="ETH"
 			/>
-			<StatsRow>
-				<StatsBox
-					key="ETHLOCKED"
-					title={t('eth-collateral.title')}
-					num={etherLocked}
-					queries={[ethCollateralBalance, ethSusdCollateralBalance, multiCollateralEtherBalance]}
-					percentChange={null}
-					subText={t('eth-collateral.subtext')}
-					color={COLORS.green}
-					numberStyle="number4"
-					numBoxes={3}
-					infoData={null}
-				/>
-				<StatsBox
-					key="BTCLOCKED"
-					title={t('btc-collateral.title')}
-					num={parseFloat(bitcoinLocked.data || '0')}
-					queries={[bitcoinLocked]}
-					percentChange={null}
-					subText={t('btc-collateral.subtext')}
-					color={COLORS.green}
-					numberStyle="number4"
-					numBoxes={3}
-					infoData={null}
-				/>
-				<StatsBox
-					key="USDLOCKEDSHORT"
-					title={t('short-collateral.title')}
-					num={parseFloat(sUSDShortLocked.data || '0')}
-					queries={[sUSDShortLocked]}
-					percentChange={null}
-					subText={t('short-collateral.subtext')}
-					color={COLORS.pink}
-					numberStyle="currency0"
-					numBoxes={3}
-					infoData={null}
-				/>
-			</StatsRow>
+			<DebtInfoRow>
+				<DebtChartContainer>
+					<ChartTitle>{t('debt-pie-chart.title')}</ChartTitle>
+					<PieChart data={debtResponsibilityChartData} isShortLegend={true} />
+				</DebtChartContainer>
+				<DebtBoxesContainer>
+					<StatsBox
+						key="ETHLOCKED"
+						title={t('eth-collateral.title')}
+						num={etherLocked}
+						queries={[ethCollateralBalance, ethSusdCollateralBalance, multiCollateralEtherBalance]}
+						percentChange={null}
+						subText={t('eth-collateral.subtext')}
+						color={COLORS.green}
+						numberStyle="number4"
+						numBoxes={3}
+						infoData={null}
+					/>
+					<StatsBox
+						key="BTCLOCKED"
+						title={t('btc-collateral.title')}
+						num={parseFloat(bitcoinLocked.data || '0')}
+						queries={[bitcoinLocked]}
+						percentChange={null}
+						subText={t('btc-collateral.subtext')}
+						color={COLORS.green}
+						numberStyle="number4"
+						numBoxes={3}
+						infoData={null}
+					/>
+					<StatsBox
+						key="USDLOCKEDSHORT"
+						title={t('short-collateral.title')}
+						num={parseFloat(sUSDShortLocked.data || '0')}
+						queries={[sUSDShortLocked]}
+						percentChange={null}
+						subText={t('short-collateral.subtext')}
+						color={COLORS.pink}
+						numberStyle="currency0"
+						numBoxes={3}
+						infoData={null}
+					/>
+				</DebtBoxesContainer>
+			</DebtInfoRow>
 		</>
 	);
 };
+
+const DebtInfoRow = styled.div`
+	display: flex;
+	flex-wrap: wrap;
+	margin: 0px auto;
+	margin-top: 20px;
+	max-width: ${MAX_PAGE_WIDTH}px;
+`;
+
+const DebtChartContainer = styled.div`
+	width: calc(50% - 30px);
+	padding: 20px;
+	margin-right: 20px;
+	background: ${(props) => props.theme.colors.mediumBlue};
+
+	@media only screen and (max-width: 854px) {
+		margin-right: 0;
+		width: 100%;
+	}
+`;
+
+const DebtBoxesContainer = styled.div`
+	width: calc(50% - 30px);
+
+	> * {
+		width: 100%;
+		box-sizing: border-box;
+		margin-top: 0;
+		padding-top: 20px;
+		height: auto;
+	}
+
+	> *:not(:last-child) {
+		margin-bottom: 20px;
+	}
+
+	@media only screen and (max-width: 854px) {
+		margin-top: 20px;
+		width: 100%;
+	}
+`;
 
 export default NetworkSection;

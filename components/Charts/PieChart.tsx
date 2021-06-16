@@ -2,11 +2,13 @@ import { FC } from 'react';
 import { PieChart, Pie, Cell, Legend, ResponsiveContainer } from 'recharts';
 
 import colors from '../../styles/colors';
-import { SynthTotalSupply } from '../../types/data';
 import CustomLegend from './CustomLegend';
 
 interface BasicPieChartProps {
-	data: SynthTotalSupply[];
+	data: {
+		name: string;
+		value: number;
+	}[];
 	isShortLegend: boolean;
 }
 
@@ -38,7 +40,7 @@ export const BRIGHT_COLORS = [
 ];
 
 const BasicPieChart: FC<BasicPieChartProps> = ({ data, isShortLegend }) => (
-	<ResponsiveContainer width="100%" height={isShortLegend ? '75%' : '100%'}>
+	<ResponsiveContainer width="100%" height={isShortLegend ? '80%' : '100%'}>
 		<PieChart height={380}>
 			<Pie
 				data={data}
@@ -50,7 +52,7 @@ const BasicPieChart: FC<BasicPieChartProps> = ({ data, isShortLegend }) => (
 				dataKey="value"
 				strokeWidth={1.5}
 			>
-				{data.map((entry: SynthTotalSupply, index: number) => (
+				{data.map((_, index: number) => (
 					<Cell
 						key={`cell-${index}`}
 						fill={MUTED_COLORS[index % MUTED_COLORS.length]}

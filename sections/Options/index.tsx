@@ -52,25 +52,28 @@ const Options: FC = () => {
 
 		[numMarkets, totalPoolSizes] = marketsData;
 
-		pieChartData = sortedMarkets.data!.reduce((acc: SynthTotalSupply[], curr: OptionsMarket) => {
-			if (Number(curr.poolSize) / totalPoolSizes! < MIN_PERCENT_FOR_PIE_CHART) {
-				const othersIndex = findIndex(acc, (o) => o.name === 'others');
-				if (othersIndex === -1) {
-					acc.push({ name: 'others', value: curr?.value ?? 0 });
+		pieChartData = sortedMarkets.data!.reduce(
+			(acc: { name: string; value: number }[], curr: OptionsMarket) => {
+				if (Number(curr.poolSize) / totalPoolSizes! < MIN_PERCENT_FOR_PIE_CHART) {
+					const othersIndex = findIndex(acc, (o) => o.name === 'others');
+					if (othersIndex === -1) {
+						acc.push({ name: 'others', value: curr?.value ?? 0 });
+					} else {
+						acc[othersIndex].value = acc[othersIndex].value + Number(curr.poolSize);
+					}
 				} else {
-					acc[othersIndex].value = acc[othersIndex].value + Number(curr.poolSize);
+					acc.push({
+						name: `${curr.currencyKey} > ${formatCurrency(curr.strikePrice)} @${format(
+							new Date(curr.maturityDate),
+							'MM/dd/yyyy'
+						)}`,
+						value: Number(curr.poolSize),
+					});
 				}
-			} else {
-				acc.push({
-					name: `${curr.currencyKey} > ${formatCurrency(curr.strikePrice)} @${format(
-						new Date(curr.maturityDate),
-						'MM/dd/yyyy'
-					)}`,
-					value: Number(curr.poolSize),
-				});
-			}
-			return acc;
-		}, []);
+				return acc;
+			},
+			[]
+		);
 	}
 
 	const yesterday = new Date();
