@@ -46,20 +46,6 @@ const YieldFarming: FC = () => {
 			curvepoolRewards.address,
 			'curve'
 		),
-		ShortsETH: useRewardsContractInfo(
-			snxjs,
-			provider,
-			'sETH',
-			snxjs.contracts.ShortingRewardssETH.address,
-			'shorting'
-		),
-		ShortsBTC: useRewardsContractInfo(
-			snxjs,
-			provider,
-			'sBTC',
-			snxjs.contracts.ShortingRewardssBTC.address,
-			'shorting'
-		),
 	};
 
 	const aaveDepositInfo = usePageResults<any[]>({
