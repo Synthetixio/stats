@@ -89,8 +89,6 @@ function formatLiquidationsChart(
 		}
 	}
 
-	console.log('chart data', chartData.length, data.length);
-
 	return chartData;
 }
 
@@ -491,7 +489,6 @@ const Staking: FC = () => {
 							},
 						]}
 						data={recentLiquidationsQuery.data.slice(100)}
-						//data={[{time: '164', account: '0x00000', liquidator: '0x0000', amountLiquidated: '12341234123412341234'}]}
 						isLoading={recentLiquidationsQuery.isLoading}
 						noResultsMessage={
 							!recentLiquidationsQuery.isLoading && recentLiquidationsQuery.data?.length === 0 ? (

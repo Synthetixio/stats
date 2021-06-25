@@ -4,6 +4,7 @@
 	"rules": {
 		"react/react-in-jsx-scope": "off",
 		"prettier/prettier": "error",
+                "no-console": "error",
 		"no-mixed-spaces-and-tabs": ["warn", "smart-tabs"],
 		"comma-dangle": [
 			"error",
