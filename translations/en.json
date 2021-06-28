@@ -292,6 +292,20 @@
 			"page-of-total-pages": "{{page}} of {{totalPages}}"
 		}
 	},
+	"recent-liquidations-chart": {
+		"title": "RECENT LIQUIDATIONS",
+		"infoData": "Volume of sUSD liquidated over time."
+	},
+	"recent-liquidations": {
+		"title": "",
+		"subtitle": "sUSD liquidated in recent hours",
+		"columns": {
+			"time": "TIME",
+			"account": "WALLET ADDRESS",
+			"liquidator": "LIQUIDATOR",
+			"amount": "sUSD AMOUNT"
+		}
+	},
 	"uh-oh": "UH OH.",
 	"load-failed": "Some data failed to load. Click here to try again.",
 	"load-success": "All queries successfully loaded!",

@@ -6,25 +6,45 @@ import SectionHeader from 'components/SectionHeader';
 import StatsRow from 'components/StatsRow';
 import StatsBox from 'components/StatsBox';
 import AreaChart from 'components/Charts/AreaChart';
-import { NewParagraph, LinkText } from 'components/common';
+import {
+	NewParagraph,
+	LinkText,
+	SectionTitle,
+	SectionSubtitle,
+	FlexDiv,
+	SectionWrap,
+} from 'components/common';
+
+import snxData from 'synthetix-data';
 
 import {
 	useFeePeriodQuery,
 	useLiquidationsQuery,
-	LiquidationsData,
 	useAggregateActiveStakersQuery,
 } from 'queries/staking';
-import { COLORS } from 'constants/styles';
+import { COLORS, MAX_PAGE_WIDTH } from 'constants/styles';
 import { ProviderContext, SNXJSContext } from 'pages/_app';
 import { ActiveStakersData, AreaChartData, ChartPeriod } from 'types/data';
 import { synthetixSubgraph } from 'constants/links';
 
+import NoNotificationIcon from 'assets/svg/no-notifications.svg';
+
 import Liquidations from './Liquidations';
 import { useSNXInfo } from 'queries/shared/useSNXInfo';
 import { useSUSDInfo } from 'queries/shared/useSUSDInfo';
-import { formatIdToIsoString } from 'utils/formatter';
+import {
+	formatCurrency,
+	formatIdToIsoString,
+	getTimeLength,
+	TimeSeriesType,
+} from 'utils/formatter';
 import { periodToDays } from 'utils/dataMapping';
 import _ from 'lodash';
+import { usePageResults } from 'queries/shared/usePageResults';
+import Table from 'components/Table';
+import { CellProps } from 'react-table';
+import styled from 'styled-components';
+import { ethers } from 'ethers';
 
 const WEEK = 86400 * 7 * 1000;
 
@@ -37,10 +57,55 @@ function formatChartData(data: ActiveStakersData[]) {
 	});
 }
 
+function formatLiquidationsChart(
+	data: RawRecentLiquidation[],
+	period: ChartPeriod,
+	precision: TimeSeriesType
+) {
+	const chartData: AreaChartData[] = [];
+
+	const curTime = Date.now() / 1000;
+	const periodLength = periodToDays(period) * 86400;
+	const precisionLength = getTimeLength(precision);
+
+	for (const liquidation of data) {
+		const time = parseInt(liquidation.time);
+
+		if (time < curTime - periodLength) {
+			continue;
+		}
+
+		const value = Number(
+			ethers.utils.formatEther(ethers.BigNumber.from(liquidation.amountLiquidated))
+		);
+		const timeBucket = new Date((time - (time % precisionLength)) * 1000).toISOString();
+		if (_.last(chartData)?.created === timeBucket) {
+			_.last(chartData)!.value += value;
+		} else {
+			chartData.push({
+				created: timeBucket,
+				value,
+			});
+		}
+	}
+
+	return chartData;
+}
+
+interface RawRecentLiquidation {
+	account: string;
+	liquidator: string;
+	amountLiquidated: string;
+	time: string;
+}
+
 const Staking: FC = () => {
 	const { t } = useTranslation();
 
 	const [stakersChartPeriod, setStakersChartPeriod] = useState<ChartPeriod>('Y');
+	const [liquidationsChartPeriod, setLiquidationsChartPeriod] = useState<ChartPeriod>('M');
+
+	const liquidationsChartPrecision = liquidationsChartPeriod === 'W' ? '15m' : '1d';
 
 	const snxjs = useContext(SNXJSContext);
 	const provider = useContext(ProviderContext);
@@ -66,6 +131,19 @@ const Staking: FC = () => {
 
 	const liquidations = useLiquidationsQuery();
 
+	const recentLiquidationsQuery = usePageResults<RawRecentLiquidation[]>({
+		api: snxData.graphAPIEndpoints.liquidations,
+		query: {
+			entity: 'accountLiquidateds',
+			selection: {
+				orderBy: 'time',
+				orderDirection: 'desc',
+				first: 1000,
+			},
+			properties: ['account', 'liquidator', 'amountLiquidated', 'time'],
+		},
+	});
+
 	let stakersChartData: AreaChartData[] = [];
 	let totalActiveStakers: number | null = null;
 	if (activeStakersData.isSuccess) {
@@ -79,6 +157,23 @@ const Staking: FC = () => {
 		SNXPrice,
 		SNXStaked,
 	]);
+
+	const recentLiquidatedChartData = useMemo<AreaChartData[]>(
+		() =>
+			recentLiquidationsQuery.isSuccess
+				? formatLiquidationsChart(
+						recentLiquidationsQuery.data!,
+						liquidationsChartPeriod,
+						liquidationsChartPrecision
+				  )
+				: [],
+		[
+			recentLiquidationsQuery.isSuccess,
+			recentLiquidationsQuery.data,
+			liquidationsChartPeriod,
+			liquidationsChartPrecision,
+		]
+	);
 
 	let stakeApySnx: number | null = null;
 	let stakeApyFees: number | null = null;
@@ -320,8 +415,122 @@ const Staking: FC = () => {
 				issuanceRatio={issuanceRatio}
 				snxPrice={SNXPrice}
 			/>
+			<AreaChart
+				periods={stakingPeriods}
+				activePeriod={liquidationsChartPeriod}
+				onPeriodSelect={(period: ChartPeriod) => {
+					setLiquidationsChartPeriod(period);
+				}}
+				data={recentLiquidatedChartData}
+				title={t('recent-liquidations-chart.title')}
+				numFormat="currency0"
+				num={null}
+				percentChange={null}
+				timeSeries={liquidationsChartPrecision}
+				infoData={<Trans i18nKey="recent-liquidations.infoData" />}
+			/>
+			{recentLiquidationsQuery.isSuccess /* have to do this because our table is broken */ && (
+				<SectionWrap>
+					<SectionTitle>{t('recent-liquidations.title')}</SectionTitle>
+					<SectionSubtitle>{t('recent-liquidations.subtitle')}</SectionSubtitle>
+					<Table
+						columns={[
+							{
+								Header: (
+									<StyledTableHeader>{t('recent-liquidations.columns.time')}</StyledTableHeader>
+								),
+								accessor: 'time',
+								Cell: (cellProps: CellProps<RawRecentLiquidation>) => (
+									<InterSpan>
+										{new Date(1000 * parseInt(cellProps.row.original.time)).toISOString()}
+									</InterSpan>
+								),
+								width: 100,
+							},
+							{
+								Header: (
+									<StyledTableHeader>{t('recent-liquidations.columns.account')}</StyledTableHeader>
+								),
+								accessor: 'account',
+								Cell: (cellProps: CellProps<RawRecentLiquidation>) => (
+									<InterSpan>{cellProps.row.original.account}</InterSpan>
+								),
+							},
+							{
+								Header: (
+									<StyledTableHeader>
+										{t('recent-liquidations.columns.liquidator')}
+									</StyledTableHeader>
+								),
+								accessor: 'liquidator',
+								Cell: (cellProps: CellProps<RawRecentLiquidation>) => (
+									<InterSpan>{cellProps.row.original.liquidator}</InterSpan>
+								),
+							},
+							{
+								Header: (
+									<StyledTableHeader>{t('recent-liquidations.columns.amount')}</StyledTableHeader>
+								),
+								accessor: 'amountLiquidated',
+								Cell: (cellProps: CellProps<RawRecentLiquidation>) => (
+									<InterSpan>
+										$
+										{formatCurrency(
+											Number(
+												ethers.utils.formatEther(
+													ethers.BigNumber.from(cellProps.row.original.amountLiquidated)
+												)
+											),
+											0
+										)}
+									</InterSpan>
+								),
+								width: 50,
+							},
+						]}
+						data={recentLiquidationsQuery.data.slice(100)}
+						isLoading={recentLiquidationsQuery.isLoading}
+						noResultsMessage={
+							!recentLiquidationsQuery.isLoading && recentLiquidationsQuery.data?.length === 0 ? (
+								<TableNoResults>
+									<NoNotificationIcon />
+									<NoResults>{t('recent-liquidations.no-results')}</NoResults>
+								</TableNoResults>
+							) : undefined
+						}
+						showPagination={true}
+					/>
+				</SectionWrap>
+			)}
 		</>
 	);
 };
+
+const StyledTableHeader = styled.div`
+	font-family: ${(props) => props.theme.fonts.condensedMedium};
+	font-size: 13px;
+	line-height: 18px;
+	color: ${(props) => props.theme.colors.white};
+`;
+
+const InterSpan = styled.span`
+	font-family: 'Inter', sans-serif;
+`;
+
+const TableNoResults = styled(FlexDiv)`
+	padding: 70px 0;
+	justify-content: center;
+	background-color: ${(props) => props.theme.colors.mediumBlue};
+	color: ${(props) => props.theme.colors.white};
+	margin-top: -2px;
+	align-items: center;
+	display: flex;
+	max-width: ${MAX_PAGE_WIDTH}px;
+	margin: 0px auto;
+`;
+
+const NoResults = styled.span`
+	margin-left: 10px;
+`;
 
 export default Staking;

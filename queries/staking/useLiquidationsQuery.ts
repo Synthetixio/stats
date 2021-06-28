@@ -1,6 +1,6 @@
 import { useContext } from 'react';
 import { useQuery } from 'react-query';
-import { BigNumber, ethers } from 'ethers';
+import { ethers } from 'ethers';
 import { SNXJSContext } from 'pages/_app';
 import snxData from 'synthetix-data';
 
