@@ -474,7 +474,6 @@ const Staking: FC = () => {
 								accessor: 'amountLiquidated',
 								Cell: (cellProps: CellProps<RawRecentLiquidation>) => (
 									<InterSpan>
-										$
 										{formatCurrency(
 											Number(
 												ethers.utils.formatEther(
