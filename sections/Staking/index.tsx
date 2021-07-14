@@ -89,7 +89,7 @@ function formatLiquidationsChart(
 		}
 	}
 
-	return chartData;
+	return _.reverse(chartData);
 }
 
 interface RawRecentLiquidation {
@@ -137,6 +137,7 @@ const Staking: FC = () => {
 			entity: 'accountLiquidateds',
 			selection: {
 				orderBy: 'time',
+				orderDirection: 'desc',
 				first: 1000,
 			},
 			properties: ['account', 'liquidator', 'amountLiquidated', 'time'],
