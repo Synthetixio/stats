@@ -89,7 +89,7 @@ function formatLiquidationsChart(
 		}
 	}
 
-	return chartData;
+	return _.reverse(chartData);
 }
 
 interface RawRecentLiquidation {
