@@ -74,6 +74,9 @@
 		"svg-react-loader": "0.4.6",
 		"typescript": "3.9.7"
 	},
+	"resolutions": {
+		"webpack": "^5.0.0-beta.30"
+	},
 	"husky": {
 		"hooks": {
 			"pre-commit": "lint-staged"
