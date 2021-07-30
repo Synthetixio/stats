@@ -30,7 +30,7 @@ const BasicAreaChart: FC<BasicAreaChartProps> = ({
 		return (
 			<Skeleton
 				className="chart-skeleton"
-				variant="rect"
+				variant="rectangular"
 				animation="wave"
 				width="100%"
 				height={400}

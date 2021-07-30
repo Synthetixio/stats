@@ -46,7 +46,7 @@ const StatsBox: FC<StatsBoxProps> = ({
 			{!allQueriesLoaded ? (
 				<Skeleton
 					className="stats-box-skeleton"
-					variant="rect"
+					variant="rectangular"
 					animation="wave"
 					width="100%"
 					height="100%"

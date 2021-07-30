@@ -119,7 +119,7 @@ export const Table: FC<TableProps> = ({
 					{isLoading ? (
 						<Skeleton
 							className="liquidations-skeleton"
-							variant="rect"
+							variant="rectangular"
 							animation="wave"
 							width="100%"
 							height="200px"
