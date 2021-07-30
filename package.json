@@ -46,6 +46,7 @@
 		"use-immer": "0.6.0"
 	},
 	"devDependencies": {
+		"@babel/core": "^7.14.8",
 		"@types/date-fns": "2.6.0",
 		"@types/lodash": "4.14.159",
 		"@types/node": "14.0.13",
