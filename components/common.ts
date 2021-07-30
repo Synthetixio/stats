@@ -2,7 +2,8 @@ import styled, { css } from 'styled-components';
 import Link from '@material-ui/core/Link';
 
 import { COLORS, NumberColor, MAX_PAGE_WIDTH } from 'constants/styles';
-import { Tooltip, withStyles } from '@material-ui/core';
+import { Tooltip } from '@material-ui/core';
+import { withStyles } from '@material-ui/styles';
 import colors from 'styles/colors';
 
 export const PercentChangeBox = styled.div<{ color: NumberColor }>`

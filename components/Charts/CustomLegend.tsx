@@ -1,16 +1,17 @@
 import { FC } from 'react';
 import styled from 'styled-components';
 
-import colors from '../../styles/colors';
-import { formatCurrency, formatPercentage } from '../../utils/formatter';
+import colors from 'styles/colors';
+import { formatCurrency, formatPercentage } from 'utils/formatter';
 import { BRIGHT_COLORS } from './PieChart';
 
 interface CustomLegendProps {
 	isShortLegend: boolean;
-	payload?: { value: number; payload: { value: number } }[];
+	payload?: any[];
+	formatter?: FC<{ payload: any }>;
 }
 
-const CustomLegend: FC<CustomLegendProps> = ({ payload, isShortLegend }) => {
+const CustomLegend: FC<CustomLegendProps> = ({ payload, isShortLegend, formatter }) => {
 	if (payload == null) {
 		return null;
 	}
@@ -20,10 +21,14 @@ const CustomLegend: FC<CustomLegendProps> = ({ payload, isShortLegend }) => {
 			{payload.map((entry, index) => (
 				<CustomLegendItemWrapper key={`item-${index}`}>
 					<CustomLegendItemKey index={index}>{entry.value}</CustomLegendItemKey>
-					<CustomLegendItemValue>{`${formatCurrency(entry.payload.value, 0)} (${formatPercentage(
-						entry.payload.value / total || 0,
-						0
-					)})`}</CustomLegendItemValue>
+					<CustomLegendItemValue>
+						{formatter
+							? formatter({ payload: entry.payload })
+							: `${formatCurrency(entry.payload.value, 0)} (${formatPercentage(
+									entry.payload.value / total || 0,
+									0
+							  )})`}
+					</CustomLegendItemValue>
 				</CustomLegendItemWrapper>
 			))}
 		</CustomLegendContainer>

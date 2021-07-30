@@ -1,7 +1,7 @@
 import { useQuery } from 'react-query';
 
 import QUERY_KEYS from 'constants/queryKeys';
-import ethers from 'ethers';
+import { ethers } from 'ethers';
 import { erc20, renBTC } from 'contracts';
 import { formatUnits } from 'ethers/lib/utils';
 

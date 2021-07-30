@@ -6,6 +6,8 @@ import { QueryClientProvider, QueryClient, Query } from 'react-query';
 import { ReactQueryDevtools } from 'react-query/devtools';
 
 import { synthetix, Network } from '@synthetixio/contracts-interface';
+import { createQueryContext, SynthetixQueryContextProvider } from '@synthetixio/queries';
+
 import { ThemeProvider as SCThemeProvider } from 'styled-components';
 import { ThemeProvider as MuiThemeProvider } from '@material-ui/core/styles';
 
@@ -15,7 +17,8 @@ import 'styles/index.css';
 import '../i18n';
 
 import Layout from 'sections/shared/Layout';
-import { IconButton, Snackbar, withStyles } from '@material-ui/core';
+import { IconButton, Snackbar } from '@material-ui/core';
+import { withStyles } from '@material-ui/styles';
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 import { Alert } from '@material-ui/lab';
@@ -38,6 +41,7 @@ const provider = new ethers.providers.InfuraProvider(
 	'homestead',
 	process.env.NEXT_PUBLIC_INFURA_KEY
 );
+
 export const ProviderContext = createContext(provider);
 
 export const HeadersContext = createContext(headersAndScrollRef);
@@ -175,9 +179,18 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
 						<HeadersContext.Provider value={headersAndScrollRef}>
 							<SNXJSContext.Provider value={snxjs}>
 								<ProviderContext.Provider value={provider}>
-									<Layout>
-										<Component {...pageProps} />
-									</Layout>
+									<QueryClientProvider client={new QueryClient()}>
+										<SynthetixQueryContextProvider
+											value={createQueryContext({
+												provider,
+												networkId: 1,
+											})}
+										>
+											<Layout>
+												<Component {...pageProps} />
+											</Layout>
+										</SynthetixQueryContextProvider>
+									</QueryClientProvider>
 								</ProviderContext.Provider>
 							</SNXJSContext.Provider>
 						</HeadersContext.Provider>

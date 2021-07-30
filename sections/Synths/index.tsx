@@ -4,6 +4,8 @@ import { ethers } from 'ethers';
 import orderBy from 'lodash/orderBy';
 import findIndex from 'lodash/findIndex';
 import { useTranslation } from 'react-i18next';
+import _ from 'lodash';
+import useSynthetixQueries from '@synthetixio/queries';
 
 import SectionHeader from 'components/SectionHeader';
 import { MAX_PAGE_WIDTH, COLORS } from 'constants/styles';
@@ -13,16 +15,16 @@ import SingleStatRow from 'components/SingleStatRow';
 import DoubleStatsBox from 'components/DoubleStatsBox';
 import StatsRow from 'components/StatsRow';
 
-import SynthsBarChart from './SynthsBarChart';
-import SynthsPieChart from './SynthsPieChart';
 import { useSnxjsContractQuery } from 'queries/shared/useSnxjsContractQuery';
 import { useSUSDInfo } from 'queries/shared/useSUSDInfo';
-import SynthsVolumeMatrix, { SynthVolumeStatus } from './SynthsVolumeMatrix';
-import _ from 'lodash';
-
 import { useGeneralTradingInfoQuery } from 'queries/trading';
 import { useTokenBalanceQuery } from 'queries/shared/useTokenBalanceQuery';
+
 import { renBTC } from 'contracts';
+
+import SynthsBarChart from './SynthsBarChart';
+import SynthsPieChart from './SynthsPieChart';
+import SynthsVolumeMatrix, { SynthVolumeStatus } from './SynthsVolumeMatrix';
 
 const MIN_PERCENT_FOR_PIE_CHART = 0.03;
 const NUMBER_OF_TOP_SYNTHS = 3;
@@ -45,6 +47,10 @@ const SynthsSection: FC<{}> = () => {
 	const { t } = useTranslation();
 	const snxjs = useContext(SNXJSContext);
 	const provider = useContext(ProviderContext);
+
+	const { useSynthsTotalSupplyQuery } = useSynthetixQueries();
+	const synthsTotalSupplyQuery = useSynthsTotalSupplyQuery();
+	const totalSupply = synthsTotalSupplyQuery?.data!;
 
 	const [tradeStartTime] = useState(Math.floor(Date.now() / 1000 - 86400));
 
@@ -189,7 +195,7 @@ const SynthsSection: FC<{}> = () => {
 			totalSynthValue += value;
 		}
 
-		const openInterestSynths = snxjs.synths
+		const openInterestSynths: string[] = snxjs.synths
 			.filter((synth) => ['crypto', 'index'].includes(synth.category))
 			.map(({ name }) => name);
 
@@ -275,7 +281,7 @@ const SynthsSection: FC<{}> = () => {
 			/>
 			<SynthsCharts>
 				<SynthsBarChart data={barChartData} />
-				<SynthsPieChart data={pieChartData} />
+				<SynthsPieChart {...{ totalSupply }} />
 			</SynthsCharts>
 
 			<SubsectionHeader>{t('top-synths.title')}</SubsectionHeader>
