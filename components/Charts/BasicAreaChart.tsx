@@ -75,8 +75,8 @@ const BasicAreaChart: FC<BasicAreaChartProps> = ({
 					type="number"
 					domain={
 						Math.abs(percentChange || 0) < 0.5
-							? [(dataMin) => 2.5 - Math.abs(dataMin), (dataMax) => dataMax * 1]
-							: [(dataMin) => 0 - Math.abs(dataMin), (dataMax) => dataMax * 1]
+							? [(dataMin: number) => 2.5 - Math.abs(dataMin), (dataMax: number) => dataMax * 1]
+							: [(dataMin: number) => 0 - Math.abs(dataMin), (dataMax: number) => dataMax * 1]
 					}
 				/>
 				<Tooltip
@@ -84,10 +84,10 @@ const BasicAreaChart: FC<BasicAreaChartProps> = ({
 						return formatDate(created as string);
 					}}
 					separator=""
-					formatter={(value) =>
+					formatter={(value: number) =>
 						valueType === 'currency2'
-							? [formatCurrency(value as number, 2), '']
-							: [formatNumber(value as number, 0), '']
+							? [formatCurrency(value, 2), '']
+							: [formatNumber(value, 0), '']
 					}
 					contentStyle={{
 						backgroundColor: colors.tooltipBlue,
