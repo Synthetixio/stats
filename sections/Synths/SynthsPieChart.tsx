@@ -2,6 +2,7 @@ import { FC, useMemo } from 'react';
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 import { SynthsTotalSupplyData, SynthTotalSupply } from '@synthetixio/queries';
+import _orderBy from 'lodash/orderBy';
 
 import PieChart, {
 	MIN_PERCENT_FOR_PIE_CHART,
@@ -12,14 +13,14 @@ import { ChartTitle, ChartSubtitle } from 'components/common';
 import { formatCurrency, formatPercentage } from 'utils/formatter';
 
 type SynthsPieChartProps = {
-	totalSupply: SynthsTotalSupplyData;
+	synthsTotalSupply: SynthsTotalSupplyData;
 };
 
-const SynthsPieChart: FC<SynthsPieChartProps> = ({ totalSupply }) => {
+const SynthsPieChart: FC<SynthsPieChartProps> = ({ synthsTotalSupply }) => {
 	const { t } = useTranslation();
 
 	const data = useMemo(() => {
-		const supplyData = totalSupply?.supplyData;
+		const supplyData = synthsTotalSupply?.supplyData;
 		if (!supplyData) return;
 		const sortedData = Object.values(supplyData).sort(synthDataSortFn);
 
@@ -36,7 +37,9 @@ const SynthsPieChart: FC<SynthsPieChartProps> = ({ totalSupply }) => {
 			for (const data of remaining.slice(1)) {
 				remainingSupply.value = remainingSupply.value.add(data.value);
 			}
-			remainingSupply.poolProportion = remainingSupply.value.div(totalSupply?.totalValue ?? 0);
+			remainingSupply.poolProportion = remainingSupply.value.div(
+				synthsTotalSupply?.totalValue ?? 0
+			);
 			topNSynths.push(remainingSupply);
 		}
 		return topNSynths
@@ -48,7 +51,7 @@ const SynthsPieChart: FC<SynthsPieChartProps> = ({ totalSupply }) => {
 				fillColor: MUTED_COLORS[index % MUTED_COLORS.length],
 				strokeColor: BRIGHT_COLORS[index % BRIGHT_COLORS.length],
 			}));
-	}, [totalSupply?.supplyData, totalSupply?.totalValue]);
+	}, [synthsTotalSupply.supplyData, synthsTotalSupply.totalValue]);
 
 	return !data ? null : (
 		<SynthsPieChartContainer>

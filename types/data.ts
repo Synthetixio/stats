@@ -1,14 +1,3 @@
-export type OpenInterest = {
-	[name: string]: {
-		[subName: string]: {
-			value: number;
-			totalSupply: number;
-			isShort: boolean;
-			shortSupply: number | null;
-		};
-	};
-};
-
 export type SynthTotalSupply = {
 	name: string;
 	totalSupply?: number;

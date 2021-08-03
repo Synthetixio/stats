@@ -3,22 +3,30 @@ import { useTranslation, Trans } from 'react-i18next';
 import styled, { css, keyframes } from 'styled-components';
 
 import { formatCurrency, formatNumber } from 'utils/formatter';
-import { OpenInterest } from 'types/data';
 import colors from 'styles/colors';
 import { FlexDivCol, FlexDivRow } from 'components/common';
 
 import InfoPopover from '../InfoPopover';
-import _ from 'lodash';
+
+export type OpenInterest = {
+	name: string;
+
+	value: number;
+	totalSupply: number;
+
+	isShort: boolean;
+	inverseTotalSupply: number;
+	shortSupply: number;
+	shortValue: number;
+};
+
 interface SidewaysBarChartProps {
-	data: OpenInterest;
+	data: OpenInterest[];
+	totalValue: number;
 }
 
-const SidewaysBarChart: FC<SidewaysBarChartProps> = ({ data }) => {
+const SidewaysBarChart: FC<SidewaysBarChartProps> = ({ data, totalValue }) => {
 	const { t } = useTranslation();
-
-	const totalValue = useMemo(() => {
-		return _.chain(data).values().map(_.values).flatten().map('value').max().value();
-	}, [data]);
 
 	return (
 		<ChartContainer>
@@ -28,81 +36,81 @@ const SidewaysBarChart: FC<SidewaysBarChartProps> = ({ data }) => {
 				<StyledLabel>Longs</StyledLabel>
 			</HeaderRow>
 			{data
-				? Object.keys(data).map((key) => {
-						const synthName = `s${key}`;
-						const inverseName = `i${key}`;
+				? data.map(
+						({
+							name,
 
-						const synthValue = data[key][synthName].value;
-						const inverseValue =
-							(data[key] && data[key][inverseName] && data[key][inverseName].value) || 0;
-						const synthTotalSupply = data[key][synthName].totalSupply;
-						const inverseTotalSupply =
-							(data[key] && data[key][inverseName] && data[key][inverseName].totalSupply) || 0;
-						const isShort =
-							(data[key] && data[key][inverseName] && data[key][inverseName].isShort) || false;
-						const shortSupply =
-							(data[key] && data[key][inverseName] && data[key][inverseName].shortSupply) || 0;
+							value,
+							totalSupply,
 
-						return (
-							<SynthContainer key={`synth-${key}`}>
-								<SynthLabels>
-									<SynthInfo>
-										<FlexDivCol>
-											<FlexDivRow>
-												<SynthLabel>
+							isShort,
+							inverseTotalSupply,
+							shortSupply,
+							shortValue,
+						}) => {
+							const synthName = `s${name}`;
+							const inverseName = `i${name}`;
+							return (
+								<SynthContainer key={`synth-${name}`}>
+									<SynthLabels>
+										<SynthInfo>
+											<FlexDivCol>
+												<FlexDivRow>
+													<SynthLabel>
+														{inverseName === 'iBTC' || inverseName === 'iETH'
+															? `${inverseName}, ${t('synth-bar-chart.shorts', {
+																	asset: name,
+															  })}, other collateral`
+															: inverseName}
+													</SynthLabel>
+													{isShort ? (
+														<InfoPopover
+															noPaddingTop={true}
+															infoData={
+																<Trans
+																	i18nKey="synth-bar-chart.info-data"
+																	values={{
+																		asset: inverseName.slice(1),
+																	}}
+																/>
+															}
+														/>
+													) : null}
+												</FlexDivRow>
+												<LabelSmall>
 													{inverseName === 'iBTC' || inverseName === 'iETH'
-														? `${inverseName}, ${t('synth-bar-chart.shorts', {
-																asset: key,
-														  })}, other collateral`
-														: inverseName}
-												</SynthLabel>
-												{isShort ? (
-													<InfoPopover
-														noPaddingTop={true}
-														infoData={
-															<Trans
-																i18nKey="synth-bar-chart.info-data"
-																values={{
-																	asset: inverseName.slice(1),
-																}}
-															/>
-														}
-													/>
-												) : null}
-											</FlexDivRow>
-											<LabelSmall>
-												{inverseName === 'iBTC' || inverseName === 'iETH'
-													? `${formatNumber(inverseTotalSupply)} ${inverseName} + ${formatNumber(
-															shortSupply
-													  )} ${t('synth-bar-chart.shorts', {
-															asset: key,
-													  })}/${formatCurrency(inverseValue, 0)}`
-													: `${formatNumber(inverseTotalSupply)} ${inverseName}/${formatCurrency(
-															inverseValue,
-															0
-													  )}`}
-											</LabelSmall>
-										</FlexDivCol>
-									</SynthInfo>
-									<SynthInfo>
-										<FlexDivCol>
-											<SynthLabel>{synthName}</SynthLabel>
-											<LabelSmall>
-												<span>{`${formatNumber(synthTotalSupply)} ${synthName}/${formatCurrency(
-													synthValue,
-													0
-												)}`}</span>
-											</LabelSmall>
-										</FlexDivCol>
-									</SynthInfo>
-								</SynthLabels>
-								<BarContainer>
-									<ShortBar value={inverseValue / totalValue}></ShortBar>
-									<LongBar value={synthValue / totalValue}></LongBar>
-								</BarContainer>
-							</SynthContainer>
-						);
-				  })
+														? `${formatNumber(inverseTotalSupply)} ${inverseName} + ${formatNumber(
+																shortSupply
+														  )} ${t('synth-bar-chart.shorts', {
+																asset: name,
+														  })}/${formatCurrency(shortValue, 0)}`
+														: `${formatNumber(inverseTotalSupply)} ${inverseName}/${formatCurrency(
+																shortValue,
+																0
+														  )}`}
+												</LabelSmall>
+											</FlexDivCol>
+										</SynthInfo>
+										<SynthInfo>
+											<FlexDivCol>
+												<SynthLabel>{synthName}</SynthLabel>
+												<LabelSmall>
+													<span>{`${formatNumber(totalSupply)} ${synthName}/${formatCurrency(
+														value,
+														0
+													)}`}</span>
+												</LabelSmall>
+											</FlexDivCol>
+										</SynthInfo>
+									</SynthLabels>
+									<BarContainer>
+										<ShortBar value={shortValue / totalValue}></ShortBar>
+										<LongBar value={value / totalValue}></LongBar>
+									</BarContainer>
+								</SynthContainer>
+							);
+						}
+				  )
 				: null}
 		</ChartContainer>
 	);

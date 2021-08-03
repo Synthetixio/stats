@@ -1,6 +1,9 @@
-import React, { FC, useContext } from 'react';
+import React, { FC, useContext, useState } from 'react';
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
+import { SynthsTotalSupplyData } from '@synthetixio/queries';
+import _padEnd from 'lodash/padEnd';
+import _orderBy from 'lodash/orderBy';
 
 import { ChartTitle, SnxTooltip } from 'components/common';
 import colors from 'styles/colors';
@@ -12,6 +15,8 @@ import CircleIcon from 'assets/svg/circle';
 import { SNXJSContext } from 'pages/_app';
 import { MAX_PAGE_WIDTH } from 'constants/styles';
 import useSynthetixTokenList from 'queries/shared/useSynthetixTokenList';
+import { useGeneralTradingInfoQuery } from 'queries/trading';
+import { useSnxjsContractQuery } from 'queries/shared/useSnxjsContractQuery';
 
 export type SynthVolumeStatus = {
 	key: string;
@@ -20,15 +25,49 @@ export type SynthVolumeStatus = {
 };
 
 export type SynthsVolumeMatrixProps = {
-	data: SynthVolumeStatus[];
+	synthsTotalSupply: SynthsTotalSupplyData;
 };
 
-const SynthsVolumeMatrix: FC<SynthsVolumeMatrixProps> = ({ data }) => {
+const SynthsVolumeMatrix: FC<SynthsVolumeMatrixProps> = ({ synthsTotalSupply }) => {
 	const { t } = useTranslation();
-
 	const snxjs = useContext(SNXJSContext);
-
 	const tokenList = useSynthetixTokenList();
+	const [tradeStartTime] = useState(Math.floor(Date.now() / 1000 - 86400));
+	const synthTradesRequest = useGeneralTradingInfoQuery(tradeStartTime);
+	const synthFrozenRequest = useSnxjsContractQuery<any>(snxjs, 'SynthUtil', 'frozenSynths', []);
+	const synthTotalSupplies: string[] = synthsTotalSupply?.synthTotalSupplies[0];
+	const synthStatusesRequest = useSnxjsContractQuery<any>(
+		snxjs,
+		'SystemStatus',
+		'getSynthSuspensions',
+		[synthTotalSupplies ?? []]
+	);
+	const supplyData = _orderBy(
+		Array.from(Object.values(synthsTotalSupply.supplyData)),
+		'value',
+		'desc'
+	);
+
+	let synthsVolumeData: SynthVolumeStatus[] = [];
+
+	if (
+		synthStatusesRequest.isSuccess &&
+		synthFrozenRequest.isSuccess &&
+		synthTradesRequest.isSuccess
+	) {
+		const aggregatedSynthVolume = aggregateSynthTradeVolume(synthTradesRequest.data!.exchanges);
+		const suspendedSynths = synthStatusesRequest.data!;
+		const frozenSynthKeys = synthFrozenRequest.data!;
+
+		synthsVolumeData = synthTotalSupplies.map((currencyKey: string, idx: number) => ({
+			key: snxjs.utils.parseBytes32String(currencyKey),
+			lastDayVolume: aggregatedSynthVolume[currencyKey] || 0,
+			suspensionReason:
+				suspendedSynths[1][idx].toNumber() || (frozenSynthKeys.indexOf(currencyKey) !== -1 ? 4 : 0),
+		}));
+	}
+
+	synthsVolumeData = _orderBy(synthsVolumeData, 'lastDayVolume', 'desc');
 
 	const GreenLight = () => <CircleIcon fill={colors.brightGreen} width={10} height={10} />;
 	const PinkLight = () => <CircleIcon fill={colors.brightPink} width={10} height={10} />;
@@ -54,7 +93,7 @@ const SynthsVolumeMatrix: FC<SynthsVolumeMatrixProps> = ({ data }) => {
 				</VolumeMatrixLegend>
 			</VolumeMatrixHeader>
 			<VolumeMatrix>
-				{data.map((info) => (
+				{synthsVolumeData.map((info) => (
 					<SynthInfoContainer key={info.key}>
 						{tokenList.isSuccess && (
 							<Image
@@ -89,6 +128,20 @@ const SynthsVolumeMatrix: FC<SynthsVolumeMatrixProps> = ({ data }) => {
 		</SynthsVolumeMatrixContainer>
 	);
 };
+
+function aggregateSynthTradeVolume(trades: any[]) {
+	const synthVolumes: { [currencyKey: string]: number } = {};
+
+	for (const trade of trades) {
+		synthVolumes[_padEnd(trade.fromCurrencyKeyBytes, 66, '0')] =
+			(synthVolumes[trade.fromCurrencyKeyBytes] || 0) + trade.fromAmountInUSD;
+		synthVolumes[_padEnd(trade.toCurrencyKeyBytes, 66, '0')] =
+			(synthVolumes[trade.toCurrencyKeyBytes] || 0) + trade.toAmountInUSD;
+	}
+
+	return synthVolumes;
+}
+
 const SynthsVolumeMatrixContainer = styled.div`
 	background: ${(props) => props.theme.colors.mediumBlue};
 	width: 100%;
