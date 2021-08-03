@@ -1,7 +1,9 @@
 import { FC } from 'react';
 import styled from 'styled-components';
+import * as ethers from 'ethers';
 import { useTranslation } from 'react-i18next';
-import { SynthsTotalSupplyData, SynthTotalSupply } from '@synthetixio/queries';
+import { SynthsTotalSupplyData } from '@synthetixio/queries';
+import Wei, { wei } from '@synthetixio/wei';
 import _orderBy from 'lodash/orderBy';
 
 import { MAX_PAGE_WIDTH, COLORS } from 'constants/styles';
@@ -9,18 +11,28 @@ import DoubleStatsBox from 'components/DoubleStatsBox';
 import StatsRow from 'components/StatsRow';
 
 const NUMBER_OF_TOP_SYNTHS = 3;
+const { parseBytes32String, formatEther } = ethers.utils;
+
+type SynthTotalSupply = {
+	name: string;
+	value: Wei;
+	totalSupply: Wei;
+};
 
 const TopSynthsSection: FC<{
 	synthsTotalSupply: SynthsTotalSupplyData;
-	synthsTotalSupplyQuery: any;
-}> = ({ synthsTotalSupply, synthsTotalSupplyQuery }) => {
+}> = ({ synthsTotalSupply }) => {
 	const { t } = useTranslation();
-
+	const [names, totalSupplies, values] = synthsTotalSupply.synthTotalSupplies;
 	const supplyData = _orderBy(
-		Array.from(Object.values(synthsTotalSupply.supplyData)),
-		'value',
+		names.map((name, i) => ({
+			name: parseBytes32String(name),
+			totalSupply: wei(formatEther(totalSupplies[i])),
+			value: wei(formatEther(values[i])),
+		})),
+		(o) => o.value.toNumber(),
 		'desc'
-	).slice(NUMBER_OF_TOP_SYNTHS);
+	).slice(0, NUMBER_OF_TOP_SYNTHS);
 
 	return (
 		<>
@@ -41,7 +53,7 @@ const TopSynthsSection: FC<{
 						secondMetric={value.toNumber()}
 						secondColor={COLORS.pink}
 						secondMetricStyle="currency0"
-						queries={[synthsTotalSupplyQuery]}
+						queries={[]}
 					/>
 				))}
 			</StatsRow>

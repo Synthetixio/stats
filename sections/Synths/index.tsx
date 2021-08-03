@@ -36,7 +36,7 @@ const SynthsSection: FC<{}> = () => {
 						<SynthsBarChart {...{ synthsTotalSupply }} />
 						<SynthsPieChart {...{ synthsTotalSupply }} />
 					</SynthsCharts>
-					<TopSynths {...{ synthsTotalSupplyQuery, synthsTotalSupply }} />
+					<TopSynths {...{ synthsTotalSupply }} />
 					<SynthsVolumeMatrix {...{ synthsTotalSupply }} />
 				</>
 			)}
