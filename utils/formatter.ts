@@ -74,6 +74,15 @@ export const formatIdToIsoString = (id: string, timeSeries: TimeSeries) => {
 
 export type TimeSeriesType = '15m' | '1d';
 
+export const getTimeLength = (tst: TimeSeriesType): number => {
+	switch (tst) {
+		case '1d':
+			return 86400;
+		case '15m':
+			return 900;
+	}
+};
+
 export const formatTime = (created: string | number, type: TimeSeriesType) => {
 	if (type === '15m') {
 		return format(new Date(created), 'HH:00');

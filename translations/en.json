@@ -177,7 +177,7 @@
 		"shorts": "{{asset}} Shorts",
 		"wrapper": "{{asset}} Wrapper",
 		"shortLinkText": "Synthetix Surge",
-		"info-data": "It is possible to short {{asset}} without buying an inverse synth. A loan is borrowed in s{{asset}} terms, but receive the equivalent value in sUSD instead, thereby going short.\n\nAdditionally, debt pool corrections for wrappr or collateral loans bay be included here."
+		"info-data": "It is possible to short {{asset}} without buying an inverse synth. A loan is borrowed in s{{asset}} terms, but receive the equivalent value in sUSD instead, thereby going short.\n\nAdditionally, debt pool corrections for wrappr or collateral loans may be included here."
 	},
 	"synth-pie-chart": {
 		"title": "SYNTH DOMINANCE",
@@ -293,6 +293,20 @@
 		"pagination": {
 			"page": "Page",
 			"page-of-total-pages": "{{page}} of {{totalPages}}"
+		}
+	},
+	"recent-liquidations-chart": {
+		"title": "RECENT LIQUIDATIONS",
+		"infoData": "Volume of sUSD liquidated over time."
+	},
+	"recent-liquidations": {
+		"title": "",
+		"subtitle": "sUSD liquidated in recent hours",
+		"columns": {
+			"time": "TIME",
+			"account": "WALLET ADDRESS",
+			"liquidator": "LIQUIDATOR",
+			"amount": "sUSD AMOUNT"
 		}
 	},
 	"uh-oh": "UH OH.",
