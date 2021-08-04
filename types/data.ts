@@ -2,8 +2,8 @@ export type SynthTotalSupply = {
 	name: string;
 	totalSupply?: number;
 	value: number;
-	// valueWithAdjust: number;
-	// maxLimit?: number;
+	valueWithAdjust: number;
+	maxLimit?: number;
 };
 
 export type SNXPriceData = {

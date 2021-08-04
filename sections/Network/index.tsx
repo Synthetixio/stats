@@ -2,6 +2,7 @@ import { FC, useState, useContext } from 'react';
 import snxData from 'synthetix-data';
 import { ethers } from 'ethers';
 import { Trans, useTranslation } from 'react-i18next';
+import useSynthetixQueries from '@synthetixio/queries';
 
 import { ChartPeriod, TreeMapData } from 'types/data';
 import { ChartTitle } from 'components/common';
@@ -24,7 +25,6 @@ import { SNXJSContext, ProviderContext } from 'pages/_app';
 import { getSUSDHoldersName } from 'utils/dataMapping';
 import { LinkText, NewParagraph } from 'components/common';
 import { renBTC } from 'contracts';
-import { useSnxPriceChartQuery } from 'queries/network/useSnxPriceChartQuery';
 import { formatEther } from 'ethers/lib/utils';
 import { useSnxjsContractQuery } from 'queries/shared/useSnxjsContractQuery';
 import { useTokenBalanceQuery } from 'queries/shared/useTokenBalanceQuery';
@@ -39,7 +39,7 @@ const NetworkSection: FC = () => {
 	const { t } = useTranslation();
 
 	const [priceChartPeriod, setPriceChartPeriod] = useState<ChartPeriod>('D');
-
+	const { useSnxPriceChartQuery } = useSynthetixQueries();
 	const SNXChartPriceData = useSnxPriceChartQuery(priceChartPeriod);
 
 	const snxjs = useContext(SNXJSContext);
