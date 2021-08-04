@@ -3,6 +3,7 @@ import snxData from 'synthetix-data';
 import { ethers } from 'ethers';
 import { Trans, useTranslation } from 'react-i18next';
 import useSynthetixQueries from '@synthetixio/queries';
+import { wei } from '@synthetixio/wei';
 
 import { ChartPeriod, TreeMapData } from 'types/data';
 import { ChartTitle } from 'components/common';
@@ -27,7 +28,6 @@ import { LinkText, NewParagraph } from 'components/common';
 import { renBTC } from 'contracts';
 import { formatEther } from 'ethers/lib/utils';
 import { useSnxjsContractQuery } from 'queries/shared/useSnxjsContractQuery';
-import { useTokenBalanceQuery } from 'queries/shared/useTokenBalanceQuery';
 import { useCMCQuery } from 'queries/shared/useCMCQuery';
 import { useQuery } from 'react-query';
 import { useSNXInfo } from 'queries/shared/useSNXInfo';
@@ -39,7 +39,11 @@ const NetworkSection: FC = () => {
 	const { t } = useTranslation();
 
 	const [priceChartPeriod, setPriceChartPeriod] = useState<ChartPeriod>('D');
-	const { useSnxPriceChartQuery } = useSynthetixQueries();
+	const {
+		useSnxPriceChartQuery,
+		useTokensBalancesQuery,
+		useETHBalanceQuery,
+	} = useSynthetixQueries();
 	const SNXChartPriceData = useSnxPriceChartQuery(priceChartPeriod);
 
 	const snxjs = useContext(SNXJSContext);
@@ -87,32 +91,21 @@ const NetworkSection: FC = () => {
 		[snxjs.toBytes32('sBTC')]
 	);
 
-	const ethSusdCollateralBalance = useTokenBalanceQuery(
-		provider,
-		ethers.constants.AddressZero,
-		snxjs.contracts.EtherCollateralsUSD.address
+	const ethSusdCollateralBalance = useETHBalanceQuery(snxjs.contracts.EtherCollateralsUSD.address);
+	const ethCollateralBalance = useETHBalanceQuery(snxjs.contracts.EtherCollateral.address);
+	const multiCollateralEtherBalance = useETHBalanceQuery(snxjs.contracts.CollateralEth.address);
+
+	const bitcoinLockedQuery = useTokensBalancesQuery(
+		[renBTC],
+		snxjs.contracts.CollateralErc20.address
 	);
-	const ethCollateralBalance = useTokenBalanceQuery(
-		provider,
-		ethers.constants.AddressZero,
-		snxjs.contracts.EtherCollateral.address
-	);
-	const multiCollateralEtherBalance = useTokenBalanceQuery(
-		provider,
-		ethers.constants.AddressZero,
-		snxjs.contracts.CollateralEth.address
-	);
-	const bitcoinLocked = useTokenBalanceQuery(
-		provider,
-		renBTC.address,
-		snxjs.contracts.CollateralErc20.address,
-		{ decimals: 8 }
-	);
-	const sUSDShortLocked = useTokenBalanceQuery(
-		provider,
-		snxjs.contracts.SynthsUSD.address,
+	const bitcoinLocked = wei(bitcoinLockedQuery.data?.renBTC?.balance ?? 0).toNumber();
+
+	const sUSDShortLockedQuery = useTokensBalancesQuery(
+		[snxjs.contracts.SynthsUSD],
 		snxjs.contracts.CollateralShort.address
 	);
+	const sUSDShortLocked = wei(sUSDShortLockedQuery.data?.sUSD?.balance ?? 0).toNumber();
 
 	const cmcSNXData = useCMCQuery('SNX');
 
@@ -164,14 +157,7 @@ const NetworkSection: FC = () => {
 	// there are 4 sources of debt for the debt pool right now
 	const debtResponsibilityChartData = [];
 
-	if (
-		wrapprLocked &&
-		etherLocked &&
-		bitcoinLocked.isSuccess &&
-		totalIssuedSynths &&
-		ethPrice &&
-		btcPrice
-	) {
+	if (wrapprLocked && etherLocked && bitcoinLocked && totalIssuedSynths && ethPrice && btcPrice) {
 		debtResponsibilityChartData.push(
 			{
 				name: 'ETH Wrapper',
@@ -183,7 +169,7 @@ const NetworkSection: FC = () => {
 			},
 			{
 				name: 'BTC Collateral Loan',
-				value: Number(bitcoinLocked.data!) * btcPrice,
+				value: bitcoinLocked * btcPrice,
 			}
 		);
 
@@ -424,8 +410,8 @@ const NetworkSection: FC = () => {
 					<StatsBox
 						key="BTCLOCKED"
 						title={t('btc-collateral.title')}
-						num={parseFloat(bitcoinLocked.data || '0')}
-						queries={[bitcoinLocked]}
+						num={bitcoinLocked}
+						queries={[bitcoinLockedQuery]}
 						percentChange={null}
 						subText={t('btc-collateral.subtext')}
 						color={COLORS.green}
@@ -436,8 +422,8 @@ const NetworkSection: FC = () => {
 					<StatsBox
 						key="USDLOCKEDSHORT"
 						title={t('short-collateral.title')}
-						num={parseFloat(sUSDShortLocked.data || '0')}
-						queries={[sUSDShortLocked]}
+						num={sUSDShortLocked}
+						queries={[sUSDShortLockedQuery]}
 						percentChange={null}
 						subText={t('short-collateral.subtext')}
 						color={COLORS.pink}
