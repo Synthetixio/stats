@@ -1,7 +1,7 @@
 import React, { FC, useContext, useState } from 'react';
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
-import { SynthsTotalSupplyData } from '@synthetixio/queries';
+import useSynthetixQueries, { SynthsTotalSupplyData } from '@synthetixio/queries';
 import _padEnd from 'lodash/padEnd';
 import _orderBy from 'lodash/orderBy';
 
@@ -14,7 +14,6 @@ import Image from 'next/image';
 import CircleIcon from 'assets/svg/circle';
 import { SNXJSContext } from 'pages/_app';
 import { MAX_PAGE_WIDTH } from 'constants/styles';
-import useSynthetixTokenList from 'queries/shared/useSynthetixTokenList';
 import { useGeneralTradingInfoQuery } from 'queries/trading';
 import { useSnxjsContractQuery } from 'queries/shared/useSnxjsContractQuery';
 
@@ -31,7 +30,8 @@ export type SynthsVolumeMatrixProps = {
 const SynthsVolumeMatrix: FC<SynthsVolumeMatrixProps> = ({ synthsTotalSupply }) => {
 	const { t } = useTranslation();
 	const snxjs = useContext(SNXJSContext);
-	const tokenList = useSynthetixTokenList();
+	const { useTokenListQuery } = useSynthetixQueries();
+	const tokenList = useTokenListQuery('https://synths.snx.eth.link');
 	const [tradeStartTime] = useState(Math.floor(Date.now() / 1000 - 86400));
 	const synthTradesRequest = useGeneralTradingInfoQuery(tradeStartTime);
 	const synthFrozenRequest = useSnxjsContractQuery<any>(snxjs, 'SynthUtil', 'frozenSynths', []);
