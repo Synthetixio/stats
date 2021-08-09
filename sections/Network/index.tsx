@@ -269,17 +269,6 @@ const NetworkSection: FC = () => {
 					}
 				/>
 				<StatsBox
-					key="SNXVOLUME"
-					title={t('snx-volume.title')}
-					num={0}
-					percentChange={null}
-					subText={t('snx-volume.subtext')}
-					color={COLORS.green}
-					numberStyle="currency0"
-					numBoxes={4}
-					infoData={null}
-				/>
-				<StatsBox
 					key="ISSUANCECRATIO"
 					title={t('issuance-ratio.title')}
 					num={issuanceRatio != null ? 1 / (issuanceRatio ?? 0) : null}
