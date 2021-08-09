@@ -28,7 +28,6 @@ import { useSnxPriceChartQuery } from 'queries/network/useSnxPriceChartQuery';
 import { formatEther } from 'ethers/lib/utils';
 import { useSnxjsContractQuery } from 'queries/shared/useSnxjsContractQuery';
 import { useTokenBalanceQuery } from 'queries/shared/useTokenBalanceQuery';
-import { useCMCQuery } from 'queries/shared/useCMCQuery';
 import { useQuery } from 'react-query';
 import { useSNXInfo } from 'queries/shared/useSNXInfo';
 import { useSUSDInfo } from 'queries/shared/useSUSDInfo';
@@ -114,8 +113,6 @@ const NetworkSection: FC = () => {
 		snxjs.contracts.CollateralShort.address
 	);
 
-	const cmcSNXData = useCMCQuery('SNX');
-
 	const snxTotals = useQuery<any, string>(QUERY_KEYS.SnxTotals, async () => {
 		return snxData.snx.total();
 	});
@@ -142,7 +139,7 @@ const NetworkSection: FC = () => {
 
 	const SNXHolders = snxTotals.data?.snxHolders;
 
-	const SNX24HVolume = cmcSNXData?.data?.quote?.USD?.volume_24h || null;
+	//const SNX24HVolume = cmcSNXData?.data?.quote?.USD?.volume_24h || null;
 
 	const totalSupplySUSD = unformattedSUSDTotalSupply.isSuccess
 		? Number(formatEther(unformattedSUSDTotalSupply.data!))
@@ -236,7 +233,7 @@ const NetworkSection: FC = () => {
 					subText={t('snx-market-cap.subtext')}
 					color={COLORS.pink}
 					numberStyle="currency0"
-					numBoxes={4}
+					numBoxes={3}
 					infoData={
 						<Trans
 							i18nKey="snx-market-cap.infoData"
@@ -258,7 +255,7 @@ const NetworkSection: FC = () => {
 					subText={t('susd-price.subtext')}
 					color={COLORS.green}
 					numberStyle="currency2"
-					numBoxes={4}
+					numBoxes={3}
 					infoData={
 						<Trans
 							i18nKey="susd-price.infoData"
@@ -272,17 +269,6 @@ const NetworkSection: FC = () => {
 					}
 				/>
 				<StatsBox
-					key="SNXVOLUME"
-					title={t('snx-volume.title')}
-					num={SNX24HVolume}
-					percentChange={null}
-					subText={t('snx-volume.subtext')}
-					color={COLORS.green}
-					numberStyle="currency0"
-					numBoxes={4}
-					infoData={null}
-				/>
-				<StatsBox
 					key="ISSUANCECRATIO"
 					title={t('issuance-ratio.title')}
 					num={issuanceRatio != null ? 1 / (issuanceRatio ?? 0) : null}
@@ -291,7 +277,7 @@ const NetworkSection: FC = () => {
 					subText={t('issuance-ratio.subtext')}
 					color={COLORS.green}
 					numberStyle="percent0"
-					numBoxes={4}
+					numBoxes={3}
 					infoData={<>{t('issuance-ratio.infoData')}</>}
 				/>
 			</StatsRow>

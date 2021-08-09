@@ -11,7 +11,7 @@ import { COLORS, MAX_PAGE_WIDTH } from 'constants/styles';
 import { partnerNameMap } from 'constants/partner';
 import { ChartPeriod, AreaChartData, TradesRequestData } from 'types/data';
 import { formatCurrency, formatIdToIsoString } from 'utils/formatter';
-import { LinkText, FullLineLink, NewParagraph, SectionWrap, SectionTitle } from 'components/common';
+import { LinkText, FullLineLink, NewParagraph, SectionTitle } from 'components/common';
 import {
 	synthetixExchangesSubgraph,
 	githubSubgraph,
@@ -335,7 +335,7 @@ const Trading: FC = () => {
 										sortType: 'basic',
 										Cell: (cellProps: CellProps<ExchangePartnerData>) => (
 											<InterSpan>
-												{partnerTableCategory.value == 'trades'
+												{partnerTableCategory.value === 'trades'
 													? (cellProps.row.original as any)[partnerTableCategory.value]
 													: formatCurrency(
 															(cellProps.row.original as any)[partnerTableCategory.value]
