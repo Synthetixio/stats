@@ -233,7 +233,7 @@ const NetworkSection: FC = () => {
 					subText={t('snx-market-cap.subtext')}
 					color={COLORS.pink}
 					numberStyle="currency0"
-					numBoxes={4}
+					numBoxes={3}
 					infoData={
 						<Trans
 							i18nKey="snx-market-cap.infoData"
@@ -255,7 +255,7 @@ const NetworkSection: FC = () => {
 					subText={t('susd-price.subtext')}
 					color={COLORS.green}
 					numberStyle="currency2"
-					numBoxes={4}
+					numBoxes={3}
 					infoData={
 						<Trans
 							i18nKey="susd-price.infoData"
@@ -277,7 +277,7 @@ const NetworkSection: FC = () => {
 					subText={t('issuance-ratio.subtext')}
 					color={COLORS.green}
 					numberStyle="percent0"
-					numBoxes={4}
+					numBoxes={3}
 					infoData={<>{t('issuance-ratio.infoData')}</>}
 				/>
 			</StatsRow>
