@@ -2,25 +2,27 @@ import { FC } from 'react';
 import findIndex from 'lodash/findIndex';
 import { format } from 'date-fns';
 import { useTranslation, Trans } from 'react-i18next';
+import useSynthetixQueries from '@synthetixio/queries';
+import { OptionsMarket } from '@synthetixio/data/build/node/src/types';
 
 import SectionHeader from 'components/SectionHeader';
 import StatsBox from 'components/StatsBox';
 import StatsRow from 'components/StatsRow';
 import { COLORS } from 'constants/styles';
-import OptionsPieChart from './OptionsPieChart';
-import { SynthTotalSupply, OptionsMarket } from 'types/data';
 import { formatCurrency } from 'utils/formatter';
 import { LinkText } from 'components/common';
 import { synthetixOptionsSubgraph } from 'constants/links';
-import { useOptionsMarketsQuery, useOptionsTransactionsQuery } from 'queries/options';
+
+import OptionsPieChart, { SynthTotalSupply } from './OptionsPieChart';
 
 const MIN_PERCENT_FOR_PIE_CHART = 0.03;
 
 const Options: FC = () => {
 	const { t } = useTranslation();
 
+	const { useOptionsMarketsQuery, useOptionsTransactionsQuery } = useSynthetixQueries();
 	const sortedMarkets = useOptionsMarketsQuery({ max: 5000 });
-	const optionsTransactions = useOptionsTransactionsQuery({});
+	const optionsTransactions = useOptionsTransactionsQuery({ max: 5000 });
 
 	const now = new Date();
 
@@ -35,14 +37,14 @@ const Options: FC = () => {
 		largestMarket = sortedMarkets.data![0];
 
 		const activeMarkets = sortedMarkets.data!.filter((market: OptionsMarket, index: number) => {
-			const expiryDate = new Date(market.expiryDate as string);
+			const expiryDate = new Date(market.expiryDate);
 			return expiryDate > now;
 		});
 
 		largestActiveMarket = activeMarkets[0];
 
 		const marketsData = activeMarkets.reduce(
-			([count, sum]: [number, number], activeMarket: OptionsMarket, index: number) => {
+			([count, sum]: number[], activeMarket: OptionsMarket, index: number) => {
 				count++;
 				sum += parseFloat(activeMarket.poolSize);
 				return [count, sum];
@@ -57,7 +59,7 @@ const Options: FC = () => {
 				if (Number(curr.poolSize) / totalPoolSizes! < MIN_PERCENT_FOR_PIE_CHART) {
 					const othersIndex = findIndex(acc, (o) => o.name === 'others');
 					if (othersIndex === -1) {
-						acc.push({ name: 'others', value: curr?.value ?? 0 });
+						acc.push({ name: 'others', value: Number(curr?.poolSize ?? '0') });
 					} else {
 						acc[othersIndex].value = acc[othersIndex].value + Number(curr.poolSize);
 					}

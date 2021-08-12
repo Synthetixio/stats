@@ -42,11 +42,6 @@ const SynthsVolumeMatrix: FC<SynthsVolumeMatrixProps> = ({ synthsTotalSupply }) 
 		'getSynthSuspensions',
 		[synthTotalSupplies ?? []]
 	);
-	const supplyData = _orderBy(
-		Array.from(Object.values(synthsTotalSupply.supplyData)),
-		'value',
-		'desc'
-	);
 
 	let synthsVolumeData: SynthVolumeStatus[] = [];
 

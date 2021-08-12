@@ -4,6 +4,7 @@ import { ethers } from 'ethers';
 import { Trans, useTranslation } from 'react-i18next';
 import useSynthetixQueries from '@synthetixio/queries';
 import { wei } from '@synthetixio/wei';
+import styled from 'styled-components';
 
 import { ChartPeriod, TreeMapData } from 'types/data';
 import { ChartTitle } from 'components/common';
@@ -30,10 +31,8 @@ import { formatEther } from 'ethers/lib/utils';
 import { useSnxjsContractQuery } from 'queries/shared/useSnxjsContractQuery';
 import { useCMCQuery } from 'queries/shared/useCMCQuery';
 import { useQuery } from 'react-query';
-import { useSNXInfo } from 'queries/shared/useSNXInfo';
 import { useSUSDInfo } from 'queries/shared/useSUSDInfo';
 import SingleStatRow from 'components/SingleStatRow';
-import styled from 'styled-components';
 
 const NetworkSection: FC = () => {
 	const { t } = useTranslation();
@@ -43,26 +42,32 @@ const NetworkSection: FC = () => {
 		useSnxPriceChartQuery,
 		useTokensBalancesQuery,
 		useETHBalanceQuery,
+		useGlobalStakingInfoQuery,
 	} = useSynthetixQueries();
 	const SNXChartPriceData = useSnxPriceChartQuery(priceChartPeriod);
 
 	const snxjs = useContext(SNXJSContext);
 	const provider = useContext(ProviderContext);
 
+	const globalStakingInfoQuery = useGlobalStakingInfoQuery();
 	const {
-		SNXPrice,
-		SNXTotalSupply,
-		SNXPercentLocked,
+		snxPrice: SNXPrice,
+		totalSupply: SNXTotalSupply,
+		snxPercentLocked: SNXPercentLocked,
 		issuanceRatio,
 		activeCRatio,
 		totalIssuedSynths,
+	} = globalStakingInfoQuery.isSuccess
+		? globalStakingInfoQuery.data
+		: {
+				snxPrice: wei(0),
+				totalSupply: wei(0),
+				snxPercentLocked: wei(0),
+				issuanceRatio: wei(0),
+				activeCRatio: wei(0),
+				totalIssuedSynths: wei(0),
+		  };
 
-		SNXPriceQuery,
-		SNXTotalSupplyQuery,
-		issuanceRatioQuery,
-		totalIssuedSynthsQuery,
-		SNXHoldersQuery,
-	} = useSNXInfo(snxjs);
 	const { sUSDPrice, sUSDPriceQuery } = useSUSDInfo(provider);
 
 	const unformattedSUSDTotalSupply = useSnxjsContractQuery<ethers.BigNumber>(
@@ -96,16 +101,16 @@ const NetworkSection: FC = () => {
 	const multiCollateralEtherBalance = useETHBalanceQuery(snxjs.contracts.CollateralEth.address);
 
 	const bitcoinLockedQuery = useTokensBalancesQuery(
-		[renBTC],
+		[{ address: renBTC.address, symbol: 'renBTC' }],
 		snxjs.contracts.CollateralErc20.address
 	);
-	const bitcoinLocked = wei(bitcoinLockedQuery.data?.renBTC?.balance ?? 0).toNumber();
+	const bitcoinLocked = bitcoinLockedQuery.data?.renBTC?.balance ?? null;
 
 	const sUSDShortLockedQuery = useTokensBalancesQuery(
-		[snxjs.contracts.SynthsUSD],
+		[{ address: snxjs.contracts.SynthsUSD.address, symbol: 'sUSD' }],
 		snxjs.contracts.CollateralShort.address
 	);
-	const sUSDShortLocked = wei(sUSDShortLockedQuery.data?.sUSD?.balance ?? 0).toNumber();
+	const sUSDShortLocked = sUSDShortLockedQuery.data?.sUSD?.balance ?? null;
 
 	const cmcSNXData = useCMCQuery('SNX');
 
@@ -142,8 +147,8 @@ const NetworkSection: FC = () => {
 		: null;
 
 	const networkCRatio =
-		SNXTotalSupply && SNXPrice && totalIssuedSynths
-			? (SNXTotalSupply * SNXPrice) / totalIssuedSynths
+		SNXTotalSupply.gt(0) && SNXPrice.gt(0) && totalIssuedSynths.gt(0)
+			? SNXTotalSupply.mul(SNXPrice).div(totalIssuedSynths).toNumber()
 			: null;
 
 	const wrapprLocked = unformattedWrapprLocked.isSuccess
@@ -169,14 +174,14 @@ const NetworkSection: FC = () => {
 			},
 			{
 				name: 'BTC Collateral Loan',
-				value: bitcoinLocked * btcPrice,
+				value: bitcoinLocked.toNumber() * btcPrice,
 			}
 		);
 
 		// snx stakers are responsible for all the debt that is not covered by the previous sources
 		debtResponsibilityChartData.unshift({
 			name: 'SNX Stakers',
-			value: totalIssuedSynths, // this is actually issued synths not associated with above categories
+			value: totalIssuedSynths.toNumber(), // this is actually issued synths not associated with above categories
 		});
 	}
 
@@ -191,10 +196,12 @@ const NetworkSection: FC = () => {
 				}}
 				data={SNXChartPriceData.data || []}
 				title={t('snx-price.title')}
-				num={SNXPrice}
+				num={SNXPrice.toNumber()}
 				numFormat="currency2"
 				percentChange={
-					SNXPrice != null && priorSNXPrice != null ? (SNXPrice ?? 0) / priorSNXPrice - 1 : null
+					SNXPrice != null && priorSNXPrice != null
+						? SNXPrice.div(wei(priorSNXPrice).sub(wei(1))).toNumber()
+						: null
 				}
 				timeSeries={priceChartPeriod === 'D' ? '15m' : '1d'}
 				infoData={
@@ -216,8 +223,12 @@ const NetworkSection: FC = () => {
 				<StatsBox
 					key="SNXMKTCAP"
 					title={t('snx-market-cap.title')}
-					num={SNXPrice != null && SNXTotalSupply != null ? SNXTotalSupply * (SNXPrice ?? 0) : null}
-					queries={[SNXPriceQuery, SNXTotalSupplyQuery]}
+					num={
+						SNXPrice != null && SNXTotalSupply != null
+							? SNXTotalSupply.mul(SNXPrice).toNumber()
+							: null
+					}
+					queries={[globalStakingInfoQuery]}
 					percentChange={null}
 					subText={t('snx-market-cap.subtext')}
 					color={COLORS.pink}
@@ -271,8 +282,8 @@ const NetworkSection: FC = () => {
 				<StatsBox
 					key="ISSUANCECRATIO"
 					title={t('issuance-ratio.title')}
-					num={issuanceRatio != null ? 1 / (issuanceRatio ?? 0) : null}
-					queries={[issuanceRatioQuery]}
+					num={issuanceRatio.gt(0) ? wei(1).div(issuanceRatio).toNumber() : null}
+					queries={[globalStakingInfoQuery]}
 					percentChange={null}
 					subText={t('issuance-ratio.subtext')}
 					color={COLORS.green}
@@ -287,10 +298,10 @@ const NetworkSection: FC = () => {
 					title={t('total-snx-locked.title')}
 					num={
 						SNXPercentLocked != null && SNXTotalSupply != null && SNXPrice != null
-							? SNXPercentLocked * SNXTotalSupply * (SNXPrice ?? 0)
+							? SNXPercentLocked.mul(SNXTotalSupply).mul(SNXPrice).toNumber()
 							: null
 					}
-					queries={[SNXTotalSupplyQuery, SNXPriceQuery]}
+					queries={[globalStakingInfoQuery]}
 					percentChange={null}
 					subText={t('total-snx-locked.subtext')}
 					color={COLORS.pink}
@@ -315,7 +326,7 @@ const NetworkSection: FC = () => {
 					key="NETWORKCRATIO"
 					title={t('network-cratio.title')}
 					num={networkCRatio}
-					queries={[SNXTotalSupplyQuery, SNXPriceQuery, totalIssuedSynthsQuery]}
+					queries={[globalStakingInfoQuery]}
 					percentChange={null}
 					subText={t('network-cratio.subtext')}
 					color={COLORS.green}
@@ -336,7 +347,7 @@ const NetworkSection: FC = () => {
 				<StatsBox
 					key="ACTIVECRATIO"
 					title={t('active-cratio.title')}
-					num={activeCRatio}
+					num={activeCRatio.toNumber()}
 					percentChange={null}
 					subText={t('active-cratio.subtext')}
 					color={COLORS.green}
@@ -359,7 +370,7 @@ const NetworkSection: FC = () => {
 					key="SNXHOLDRS"
 					title={t('snx-holders.title')}
 					num={SNXHolders}
-					queries={[SNXHoldersQuery]}
+					queries={[globalStakingInfoQuery]}
 					percentChange={null}
 					subText={t('snx-holders.subtext')}
 					color={COLORS.green}
@@ -410,7 +421,7 @@ const NetworkSection: FC = () => {
 					<StatsBox
 						key="BTCLOCKED"
 						title={t('btc-collateral.title')}
-						num={bitcoinLocked}
+						num={bitcoinLocked?.toNumber() ?? null}
 						queries={[bitcoinLockedQuery]}
 						percentChange={null}
 						subText={t('btc-collateral.subtext')}
@@ -422,7 +433,7 @@ const NetworkSection: FC = () => {
 					<StatsBox
 						key="USDLOCKEDSHORT"
 						title={t('short-collateral.title')}
-						num={sUSDShortLocked}
+						num={sUSDShortLocked?.toNumber() ?? null}
 						queries={[sUSDShortLockedQuery]}
 						percentChange={null}
 						subText={t('short-collateral.subtext')}

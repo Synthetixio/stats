@@ -1,7 +1,6 @@
 import { FC } from 'react';
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
-import _padEnd from 'lodash/padEnd';
 import useSynthetixQueries from '@synthetixio/queries';
 
 import SectionHeader from 'components/SectionHeader';

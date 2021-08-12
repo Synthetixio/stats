@@ -24,7 +24,7 @@ const Header: FC = () => {
 			}
 		};
 		routeApp();
-	}, []);
+	}, [headersContext]);
 
 	const scrollToRef = (ref: any, hashLink: string) => {
 		const offsetTop = ref?.current?.offsetTop ?? 0;

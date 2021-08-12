@@ -1,4 +1,4 @@
-import { FC, useMemo } from 'react';
+import { FC } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
 import styled, { css, keyframes } from 'styled-components';
 

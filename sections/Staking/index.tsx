@@ -1,6 +1,13 @@
 import { FC, useState, useContext, useMemo } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
 import { format } from 'date-fns';
+import { CellProps } from 'react-table';
+import styled from 'styled-components';
+import { ethers } from 'ethers';
+import useSynthetixQueries from '@synthetixio/queries';
+import { wei } from '@synthetixio/wei';
+import _ from 'lodash';
+import snxData from 'synthetix-data';
 
 import SectionHeader from 'components/SectionHeader';
 import StatsRow from 'components/StatsRow';
@@ -14,20 +21,18 @@ import {
 	FlexDiv,
 	SectionWrap,
 } from 'components/common';
+import Table from 'components/Table';
 
-import snxData from 'synthetix-data';
-
-import { useLiquidationsQuery, useAggregateActiveStakersQuery } from 'queries/staking';
 import { COLORS, MAX_PAGE_WIDTH } from 'constants/styles';
-import { ProviderContext, SNXJSContext } from 'pages/_app';
-import { ActiveStakersData, AreaChartData, ChartPeriod } from 'types/data';
+import { ProviderContext } from 'pages/_app';
+import { AreaChartData, ChartPeriod } from 'types/data';
 import { synthetixSubgraph } from 'constants/links';
 
 import NoNotificationIcon from 'assets/svg/no-notifications.svg';
 
-import Liquidations from './Liquidations';
-import { useSNXInfo } from 'queries/shared/useSNXInfo';
+import { useLiquidationsQuery } from 'queries/staking';
 import { useSUSDInfo } from 'queries/shared/useSUSDInfo';
+import { usePageResults } from 'queries/shared/usePageResults';
 import {
 	formatCurrency,
 	formatIdToIsoString,
@@ -35,13 +40,8 @@ import {
 	TimeSeriesType,
 } from 'utils/formatter';
 import { periodToDays } from 'utils/dataMapping';
-import _ from 'lodash';
-import { usePageResults } from 'queries/shared/usePageResults';
-import Table from 'components/Table';
-import { CellProps } from 'react-table';
-import styled from 'styled-components';
-import { ethers } from 'ethers';
-import useSynthetixQueries from '@synthetixio/queries';
+
+import Liquidations from './Liquidations';
 
 const WEEK = 86400 * 7 * 1000;
 
@@ -104,26 +104,34 @@ const Staking: FC = () => {
 
 	const liquidationsChartPrecision = liquidationsChartPeriod === 'W' ? '15m' : '1d';
 
-	const snxjs = useContext(SNXJSContext);
 	const provider = useContext(ProviderContext);
 
-	const {
-		SNXPrice,
-		SNXStaked,
-		issuanceRatio,
-		totalIssuedSynths,
-
-		SNXPriceQuery,
-		issuanceRatioQuery,
-		totalIssuedSynthsQuery,
-	} = useSNXInfo(snxjs);
 	const { sUSDPrice, sUSDPriceQuery } = useSUSDInfo(provider);
 
-	const { useGetFeePoolDataQuery } = useSynthetixQueries();
+	const {
+		useGetFeePoolDataQuery,
+		useGlobalStakingInfoQuery,
+		useDailyTotalActiveStakersQuery,
+	} = useSynthetixQueries();
 	const currentFeePeriod = useGetFeePoolDataQuery(1);
 	const nextFeePeriod = useGetFeePoolDataQuery(0);
 
-	const activeStakersData = useAggregateActiveStakersQuery({
+	const globalStakingInfoQuery = useGlobalStakingInfoQuery();
+	const {
+		snxPrice: SNXPrice,
+		lockedValue: SNXValueStaked,
+		issuanceRatio,
+		totalIssuedSynths,
+	} = globalStakingInfoQuery.isSuccess
+		? globalStakingInfoQuery.data
+		: {
+				snxPrice: wei(0),
+				lockedValue: wei(0),
+				issuanceRatio: wei(0),
+				totalIssuedSynths: wei(0),
+		  };
+
+	const activeStakersData = useDailyTotalActiveStakersQuery({
 		max: periodToDays(stakersChartPeriod),
 	});
 
@@ -151,10 +159,6 @@ const Staking: FC = () => {
 	}
 
 	const stakingPeriods: ChartPeriod[] = ['W', 'M', 'Y'];
-	const SNXValueStaked = useMemo(() => (SNXPrice && SNXStaked ? SNXPrice * SNXStaked : null), [
-		SNXPrice,
-		SNXStaked,
-	]);
 
 	const recentLiquidatedChartData = useMemo<AreaChartData[]>(
 		() =>
@@ -185,14 +189,14 @@ const Staking: FC = () => {
 		SNXValueStaked != null
 	) {
 		const fakeSnxStaked = 1000;
-		const fakesUSDMinted = fakeSnxStaked * SNXPrice * issuanceRatio;
-		const feePoolPortion = fakesUSDMinted / totalIssuedSynths;
+		const fakesUSDMinted = fakeSnxStaked * SNXPrice.toNumber() * issuanceRatio.toNumber();
+		const feePoolPortion = fakesUSDMinted / totalIssuedSynths.toNumber();
 		const usdThisWeek =
 			sUSDPrice * currentFeePeriod.data!.feesToDistribute.toNumber() * feePoolPortion;
 		const snxThisWeek = currentFeePeriod.data!.rewardsToDistribute.toNumber() * feePoolPortion;
 
 		stakeApySnx = (snxThisWeek * (365.0 / 7)) / fakeSnxStaked;
-		stakeApyFees = (usdThisWeek * (365.0 / 7)) / (SNXPrice * fakeSnxStaked);
+		stakeApyFees = (usdThisWeek * (365.0 / 7)) / (SNXPrice.toNumber() * fakeSnxStaked);
 	}
 
 	return (
@@ -203,13 +207,7 @@ const Staking: FC = () => {
 					key="SNXSTKAPY"
 					title={t('current-staking-apy.title')}
 					num={stakeApyFees && stakeApySnx ? stakeApyFees + stakeApySnx : null}
-					queries={[
-						sUSDPriceQuery,
-						SNXPriceQuery,
-						issuanceRatioQuery,
-						totalIssuedSynthsQuery,
-						currentFeePeriod,
-					]}
+					queries={[sUSDPriceQuery, globalStakingInfoQuery, currentFeePeriod]}
 					percentChange={null}
 					subText={t('current-staking-apy.subtext')}
 					color={COLORS.green}
@@ -221,13 +219,7 @@ const Staking: FC = () => {
 					key="SNXSTKAPYSUSD"
 					title={t('current-staking-apy-susd.title')}
 					num={stakeApyFees}
-					queries={[
-						sUSDPriceQuery,
-						SNXPriceQuery,
-						issuanceRatioQuery,
-						totalIssuedSynthsQuery,
-						currentFeePeriod,
-					]}
+					queries={[sUSDPriceQuery, globalStakingInfoQuery, currentFeePeriod]}
 					percentChange={null}
 					subText={t('current-staking-apy-susd.subtext')}
 					color={COLORS.green}
@@ -239,13 +231,7 @@ const Staking: FC = () => {
 					key="SNXSTKAPYSNX"
 					title={t('current-staking-apy-snx.title')}
 					num={stakeApySnx}
-					queries={[
-						sUSDPriceQuery,
-						SNXPriceQuery,
-						issuanceRatioQuery,
-						totalIssuedSynthsQuery,
-						currentFeePeriod,
-					]}
+					queries={[sUSDPriceQuery, globalStakingInfoQuery, currentFeePeriod]}
 					percentChange={null}
 					subText={t('current-staking-apy-snx.subtext')}
 					color={COLORS.pink}
@@ -287,10 +273,10 @@ const Staking: FC = () => {
 					title={t('current-fee-pool-snx.title')}
 					num={
 						currentFeePeriod.isSuccess && SNXPrice != null
-							? (SNXPrice ?? 0) * currentFeePeriod.data!.rewardsToDistribute.toNumber()
+							? SNXPrice.toNumber() * currentFeePeriod.data!.rewardsToDistribute.toNumber()
 							: null
 					}
-					queries={[SNXPriceQuery, currentFeePeriod]}
+					queries={[globalStakingInfoQuery, currentFeePeriod]}
 					percentChange={null}
 					subText={t('current-fee-pool-snx.subtext', {
 						endDate: currentFeePeriod.isSuccess
@@ -310,12 +296,12 @@ const Staking: FC = () => {
 							? (sUSDPrice ?? 0) *
 									(currentFeePeriod.data!.feesToDistribute.toNumber() -
 										currentFeePeriod.data!.feesClaimed.toNumber()) +
-							  (SNXPrice ?? 0) *
+							  SNXPrice.toNumber() *
 									(currentFeePeriod.data!.rewardsToDistribute.toNumber() -
 										currentFeePeriod.data!.rewardsClaimed.toNumber())
 							: null
 					}
-					queries={[sUSDPriceQuery, SNXPriceQuery, currentFeePeriod]}
+					queries={[sUSDPriceQuery, globalStakingInfoQuery, currentFeePeriod]}
 					percentChange={null}
 					subText={t('unclaimed-fees-and-rewards.subtext', {
 						endDate: nextFeePeriod.isSuccess
@@ -412,7 +398,7 @@ const Staking: FC = () => {
 					liquidations.isSuccess ? _.reverse(_.sortBy(liquidations.data![1], 'amountToCover')) : []
 				}
 				isLoading={liquidations.isFetching}
-				issuanceRatio={issuanceRatio}
+				issuanceRatio={issuanceRatio.toNumber()}
 				snxPrice={SNXPrice}
 			/>
 			<AreaChart

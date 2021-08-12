@@ -17,7 +17,7 @@
 		"@material-ui/styles": "5.0.0-beta.2",
 		"@synthetixio/contracts-interface": "0.0.0-f7ca4d8",
 		"@synthetixio/providers": "0.0.12",
-		"@synthetixio/queries": "0.0.0-b507014",
+		"@synthetixio/queries": "0.0.0-27544c7",
 		"@synthetixio/wei": "0.0.0-c229fa7",
 		"axios": "0.21.1",
 		"bignumber.js": "9.0.0",

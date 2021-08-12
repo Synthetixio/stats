@@ -1,5 +1,9 @@
 import { FC, useState } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
+import useSynthetixQueries from '@synthetixio/queries';
+import { CellProps } from 'react-table';
+import { Skeleton } from '@material-ui/lab';
+import _ from 'lodash';
 
 import styled from 'styled-components';
 
@@ -7,11 +11,13 @@ import SectionHeader from 'components/SectionHeader';
 import StatsRow from 'components/StatsRow';
 import StatsBox from 'components/StatsBox';
 import AreaChart from 'components/Charts/AreaChart';
+import Select from 'components/Select';
+import Table from 'components/Table';
 import { COLORS, MAX_PAGE_WIDTH } from 'constants/styles';
 import { partnerNameMap } from 'constants/partner';
 import { ChartPeriod, AreaChartData, TradesRequestData } from 'types/data';
 import { formatCurrency, formatIdToIsoString } from 'utils/formatter';
-import { LinkText, FullLineLink, NewParagraph, SectionWrap, SectionTitle } from 'components/common';
+import { LinkText, FullLineLink, NewParagraph, SectionTitle } from 'components/common';
 import {
 	synthetixExchangesSubgraph,
 	githubSubgraph,
@@ -20,13 +26,8 @@ import {
 } from 'constants/links';
 import { usePageResults } from 'queries/shared/usePageResults';
 import { synthetixExchanges, synthetixExchanger } from 'constants/graph-urls';
-import { useTradesOverPeriodQuery, useGeneralTradingInfoQuery } from 'queries/trading';
+import { useGeneralTradingInfoQuery } from 'queries/trading';
 import { periodToDays } from 'utils/dataMapping';
-import Table from 'components/Table';
-import { CellProps } from 'react-table';
-import { Skeleton } from '@material-ui/lab';
-import _ from 'lodash';
-import Select from 'components/Select';
 
 function getTotalValue(data: AreaChartData[]): number {
 	return data.reduce((acc, curr) => (acc += curr.value), 0);
@@ -131,9 +132,10 @@ const Trading: FC = () => {
 
 	const timeSeries = '1d';
 
-	const tradesChartData = useTradesOverPeriodQuery({ timeSeries, max: tradesChartPeriodDays });
-	const volumeChartData = useTradesOverPeriodQuery({ timeSeries, max: volumeChartPeriodDays });
-	const monthlyTradersData = useTradesOverPeriodQuery({ timeSeries, max: 30 });
+	const { useExchangeTotalsQuery } = useSynthetixQueries();
+	const tradesChartData = useExchangeTotalsQuery({ timeSeries, max: tradesChartPeriodDays });
+	const volumeChartData = useExchangeTotalsQuery({ timeSeries, max: volumeChartPeriodDays });
+	const monthlyTradersData = useExchangeTotalsQuery({ timeSeries, max: 30 });
 
 	const totalTradingVolume = exchangeVolumeData.isSuccess
 		? exchangeVolumeData.data![0].exchangeUSDTally / 1e18
@@ -335,7 +337,7 @@ const Trading: FC = () => {
 										sortType: 'basic',
 										Cell: (cellProps: CellProps<ExchangePartnerData>) => (
 											<InterSpan>
-												{partnerTableCategory.value == 'trades'
+												{partnerTableCategory.value === 'trades'
 													? (cellProps.row.original as any)[partnerTableCategory.value]
 													: formatCurrency(
 															(cellProps.row.original as any)[partnerTableCategory.value]

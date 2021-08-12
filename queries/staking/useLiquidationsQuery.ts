@@ -3,10 +3,11 @@ import { useQuery } from 'react-query';
 import { ethers } from 'ethers';
 import { SNXJSContext } from 'pages/_app';
 import snxData from 'synthetix-data';
+import useSynthetixQueries from '@synthetixio/queries';
+import { wei } from '@synthetixio/wei';
+import _ from 'lodash';
 
 import QUERY_KEYS from 'constants/queryKeys';
-import { useSNXInfo } from 'queries/shared/useSNXInfo';
-import _ from 'lodash';
 
 export type LiquidationsSummary = {
 	amountToCover: number;
@@ -31,9 +32,22 @@ const MIN_LIQUIDATION_COVER_THRESHOLD = 10;
 const MIN_LIQUIDATION_BALANCE = 1;
 
 export const useLiquidationsQuery = () => {
-	const snxjs = useContext(SNXJSContext);
+	const { useGlobalStakingInfoQuery } = useSynthetixQueries();
 
-	const { SNXPrice, issuanceRatio, totalIssuedSynths, lastDebtLedgerEntry } = useSNXInfo(snxjs);
+	const globalStakingInfoQuery = useGlobalStakingInfoQuery();
+	const {
+		snxPrice: SNXPrice,
+		issuanceRatio,
+		totalIssuedSynths,
+		lastDebtLedgerEntry,
+	} = globalStakingInfoQuery.isSuccess
+		? globalStakingInfoQuery.data
+		: {
+				snxPrice: wei(0),
+				issuanceRatio: wei(0),
+				totalIssuedSynths: wei(0),
+				lastDebtLedgerEntry: wei(0),
+		  };
 
 	return useQuery<[LiquidationsSummary, LiquidationsData[]], string>(
 		QUERY_KEYS.Staking.Liquidations,
@@ -74,7 +88,7 @@ export const useLiquidationsQuery = () => {
 				);
 
 				let currentDebt =
-					((totalIssuedSynths! * lastDebtLedgerEntry!) / debtEntryAtIndexFmt) *
+					((totalIssuedSynths.toNumber() * lastDebtLedgerEntry.toNumber()) / debtEntryAtIndexFmt) *
 					initialDebtOwnershipFmt;
 
 				let currentCollateral = Number(
@@ -85,8 +99,9 @@ export const useLiquidationsQuery = () => {
 					ethers.utils.formatEther(ethers.BigNumber.from(accountInfo.balanceOf))
 				);
 
-				const amountToCover = currentDebt - issuanceRatio! * currentCollateral * SNXPrice!;
-				const liquidatableAmount = amountToCover / SNXPrice!;
+				const amountToCover =
+					currentDebt - issuanceRatio.toNumber() * currentCollateral * SNXPrice.toNumber();
+				const liquidatableAmount = amountToCover / SNXPrice.toNumber();
 
 				if (
 					amountToCover > MIN_LIQUIDATION_COVER_THRESHOLD &&
@@ -95,7 +110,7 @@ export const useLiquidationsQuery = () => {
 					liquidations.push({
 						deadline: l.deadline,
 						account: l.account,
-						currentRatio: currentDebt / (currentCollateral * SNXPrice!),
+						currentRatio: currentDebt / (currentCollateral * SNXPrice.toNumber()),
 						currentCollateral,
 						currentDebt,
 						amountToCover,

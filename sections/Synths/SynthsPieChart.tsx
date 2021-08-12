@@ -2,7 +2,6 @@ import { FC, useMemo } from 'react';
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 import { SynthsTotalSupplyData, SynthTotalSupply } from '@synthetixio/queries';
-import _orderBy from 'lodash/orderBy';
 
 import PieChart, {
 	MIN_PERCENT_FOR_PIE_CHART,
@@ -51,7 +50,7 @@ const SynthsPieChart: FC<SynthsPieChartProps> = ({ synthsTotalSupply }) => {
 				fillColor: MUTED_COLORS[index % MUTED_COLORS.length],
 				strokeColor: BRIGHT_COLORS[index % BRIGHT_COLORS.length],
 			}));
-	}, [synthsTotalSupply.supplyData, synthsTotalSupply.totalValue]);
+	}, [synthsTotalSupply]);
 
 	return !data ? null : (
 		<SynthsPieChartContainer>
