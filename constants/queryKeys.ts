@@ -18,7 +18,7 @@ export default {
 		Liquidations: ['staking', 'liquidations'],
 	},
 	Trading: {
-		GeneralTradingInfo: (minTimestamp: number) => ['trading', 'generalTradingInfo', minTimestamp],
+		GeneralTradingInfo: (period: string) => ['trading', 'generalTradingInfo', period],
 	},
 	YieldFarming: {
 		CurveApy: ['yieldFarming', 'curveApy'],

@@ -4,7 +4,7 @@ import useSynthetixQueries from '@synthetixio/queries';
 import { CellProps } from 'react-table';
 import Skeleton from '@material-ui/core/Skeleton';
 import _ from 'lodash';
-
+import { Period } from '@synthetixio/queries/build/node/src/constants';
 import styled from 'styled-components';
 
 import SectionHeader from 'components/SectionHeader';
@@ -15,7 +15,7 @@ import Select from 'components/Select';
 import Table from 'components/Table';
 import { COLORS, MAX_PAGE_WIDTH } from 'constants/styles';
 import { partnerNameMap } from 'constants/partner';
-import { ChartPeriod, AreaChartData, TradesRequestData } from 'types/data';
+import { ChartPeriod, AreaChartData } from 'types/data';
 import { formatCurrency, formatIdToIsoString } from 'utils/formatter';
 import { LinkText, FullLineLink, NewParagraph, SectionTitle } from 'components/common';
 import {
@@ -28,14 +28,15 @@ import { usePageResults } from 'queries/shared/usePageResults';
 import { synthetixExchanges, synthetixExchanger } from 'constants/graph-urls';
 import { useGeneralTradingInfoQuery } from 'queries/trading';
 import { periodToDays } from 'utils/dataMapping';
+import { ExchangeTotals } from '@synthetixio/data/build/node/src/types';
 
 function getTotalValue(data: AreaChartData[]): number {
 	return data.reduce((acc, curr) => (acc += curr.value), 0);
 }
 
-function formatChartData(data: TradesRequestData[], type: 'trade' | 'volume'): AreaChartData[] {
+function formatChartData(data: ExchangeTotals[], type: 'trade' | 'volume'): AreaChartData[] {
 	return data.map(({ id, trades, exchangeUSDTally }) => ({
-		created: formatIdToIsoString(id, '1d'),
+		created: formatIdToIsoString(id.toString(), '1d'),
 		value: type === 'trade' ? trades : exchangeUSDTally,
 	}));
 }
@@ -85,8 +86,6 @@ function reducePartnerData(partnerData: ExchangePartnerData[], limitDays: number
 const Trading: FC = () => {
 	const { t } = useTranslation();
 
-	const [tradeStartTime] = useState(Math.floor(Date.now() / 1000 - 86400));
-
 	const [tradesChartPeriod, setTradesChartPeriod] = useState<ChartPeriod>('M');
 	const [volumeChartPeriod, setVolumeChartPeriod] = useState<ChartPeriod>('M');
 
@@ -102,7 +101,7 @@ const Trading: FC = () => {
 	const tradesChartPeriodDays = periodToDays(tradesChartPeriod);
 	const volumeChartPeriodDays = periodToDays(volumeChartPeriod);
 
-	const generalTradingInfo = useGeneralTradingInfoQuery(tradeStartTime);
+	const generalTradingInfo = useGeneralTradingInfoQuery(Period.ONE_DAY);
 
 	const exchangeVolumeData = usePageResults<any>({
 		api: synthetixExchanges,
@@ -145,14 +144,20 @@ const Trading: FC = () => {
 		: null;
 	const totalTrades = exchangeVolumeData.isSuccess ? exchangeVolumeData.data![0].trades : null;
 
-	const tradesFormattedChartData = formatChartData(tradesChartData.data || [], 'trade');
-	const volumeFormattedChartData = formatChartData(volumeChartData.data || [], 'volume');
+	const tradesFormattedChartData = formatChartData(
+		tradesChartData.data?.slice(0).reverse() || [],
+		'trade'
+	);
+	const volumeFormattedChartData = formatChartData(
+		volumeChartData.data?.slice(0).reverse() || [],
+		'volume'
+	);
 
 	const totalTradesOverPeriod = getTotalValue(tradesFormattedChartData);
 	const totalVolumeOverPeriod = getTotalValue(volumeFormattedChartData);
 
 	const totalMonthlyTraders = monthlyTradersData.isSuccess
-		? monthlyTradersData.data!.reduce((acc: number, { exchangers }: TradesRequestData) => {
+		? monthlyTradersData.data!.reduce((acc: number, { exchangers }: ExchangeTotals) => {
 				acc += exchangers;
 				return acc;
 		  }, 0)

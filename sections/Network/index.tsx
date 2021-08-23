@@ -30,8 +30,6 @@ import { LinkText, NewParagraph } from 'components/common';
 import { renBTC } from 'contracts';
 import { formatEther } from 'ethers/lib/utils';
 import { useSnxjsContractQuery } from 'queries/shared/useSnxjsContractQuery';
-import { useCMCQuery } from 'queries/shared/useCMCQuery';
-import { useTokenBalanceQuery } from 'queries/shared/useTokenBalanceQuery';
 import { useQuery } from 'react-query';
 import { useSUSDInfo } from 'queries/shared/useSUSDInfo';
 import SingleStatRow from 'components/SingleStatRow';
@@ -156,7 +154,6 @@ const NetworkSection: FC = () => {
 		: null;
 
 	const priorSNXPrice = SNXChartPriceData.isSuccess ? SNXChartPriceData.data![0].value : null;
-
 	const pricePeriods: ChartPeriod[] = ['D', 'W', 'M', 'Y'];
 
 	// there are 4 sources of debt for the debt pool right now
@@ -200,7 +197,7 @@ const NetworkSection: FC = () => {
 				numFormat="currency2"
 				percentChange={
 					SNXPrice != null && priorSNXPrice != null
-						? SNXPrice.div(wei(priorSNXPrice).sub(wei(1))).toNumber()
+						? SNXPrice.div(wei(priorSNXPrice)).sub(wei(1)).toNumber()
 						: null
 				}
 				timeSeries={priceChartPeriod === 'D' ? '15m' : '1d'}

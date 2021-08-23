@@ -42,10 +42,11 @@ import {
 import { periodToDays } from 'utils/dataMapping';
 
 import Liquidations from './Liquidations';
+import { DailyTotalActiveStakers } from '@synthetixio/data/build/node/src/types';
 
 const WEEK = 86400 * 7 * 1000;
 
-function formatChartData(data: ActiveStakersData[]) {
+function formatChartData(data: DailyTotalActiveStakers[]) {
 	return data.map(({ id, count }) => {
 		return {
 			created: formatIdToIsoString(id, '1d'),
@@ -153,7 +154,7 @@ const Staking: FC = () => {
 	let stakersChartData: AreaChartData[] = [];
 	let totalActiveStakers: number | null = null;
 	if (activeStakersData.isSuccess) {
-		const d = activeStakersData.data!;
+		const d = activeStakersData.data!.slice(0).reverse();
 		stakersChartData = formatChartData(d);
 		totalActiveStakers = d[d.length - 1].count;
 	}
