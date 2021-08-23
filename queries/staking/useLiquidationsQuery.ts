@@ -1,10 +1,9 @@
-import { useContext } from 'react';
 import { useQuery } from 'react-query';
 import { ethers } from 'ethers';
-import { SNXJSContext } from 'pages/_app';
-import snxData from 'synthetix-data';
+import { l1Endpoints as l1GraphAPIEndpoints } from '@synthetixio/data';
 import useSynthetixQueries from '@synthetixio/queries';
 import { wei } from '@synthetixio/wei';
+import snxData from 'synthetix-data';
 import _ from 'lodash';
 
 import QUERY_KEYS from 'constants/queryKeys';
@@ -57,7 +56,7 @@ export const useLiquidationsQuery = () => {
 			const accountAddresses = activeLiquidations.map((l: any) => l.account.toLowerCase());
 
 			const rawAccountInfos = await snxData.pageResults({
-				api: snxData.graphAPIEndpoints.snx,
+				api: l1GraphAPIEndpoints.snx,
 				query: {
 					entity: 'snxholders',
 					selection: {

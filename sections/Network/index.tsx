@@ -1,9 +1,10 @@
 import { FC, useState, useContext } from 'react';
-import snxData from 'synthetix-data';
 import { ethers } from 'ethers';
 import { Trans, useTranslation } from 'react-i18next';
 import useSynthetixQueries from '@synthetixio/queries';
 import { wei } from '@synthetixio/wei';
+import snxData from 'synthetix-data';
+// import snxData from '@synthetixio/data';
 import styled from 'styled-components';
 
 import { ChartPeriod, TreeMapData } from 'types/data';
@@ -30,6 +31,7 @@ import { renBTC } from 'contracts';
 import { formatEther } from 'ethers/lib/utils';
 import { useSnxjsContractQuery } from 'queries/shared/useSnxjsContractQuery';
 import { useCMCQuery } from 'queries/shared/useCMCQuery';
+import { useTokenBalanceQuery } from 'queries/shared/useTokenBalanceQuery';
 import { useQuery } from 'react-query';
 import { useSUSDInfo } from 'queries/shared/useSUSDInfo';
 import SingleStatRow from 'components/SingleStatRow';
@@ -112,8 +114,6 @@ const NetworkSection: FC = () => {
 	);
 	const sUSDShortLocked = sUSDShortLockedQuery.data?.sUSD?.balance ?? null;
 
-	const cmcSNXData = useCMCQuery('SNX');
-
 	const snxTotals = useQuery<any, string>(QUERY_KEYS.SnxTotals, async () => {
 		return snxData.snx.total();
 	});
@@ -140,7 +140,7 @@ const NetworkSection: FC = () => {
 
 	const SNXHolders = snxTotals.data?.snxHolders;
 
-	const SNX24HVolume = cmcSNXData?.data?.quote?.USD?.volume_24h || null;
+	//const SNX24HVolume = cmcSNXData?.data?.quote?.USD?.volume_24h || null;
 
 	const totalSupplySUSD = unformattedSUSDTotalSupply.isSuccess
 		? Number(formatEther(unformattedSUSDTotalSupply.data!))
@@ -233,7 +233,7 @@ const NetworkSection: FC = () => {
 					subText={t('snx-market-cap.subtext')}
 					color={COLORS.pink}
 					numberStyle="currency0"
-					numBoxes={4}
+					numBoxes={3}
 					infoData={
 						<Trans
 							i18nKey="snx-market-cap.infoData"
@@ -255,7 +255,7 @@ const NetworkSection: FC = () => {
 					subText={t('susd-price.subtext')}
 					color={COLORS.green}
 					numberStyle="currency2"
-					numBoxes={4}
+					numBoxes={3}
 					infoData={
 						<Trans
 							i18nKey="susd-price.infoData"
@@ -269,17 +269,6 @@ const NetworkSection: FC = () => {
 					}
 				/>
 				<StatsBox
-					key="SNXVOLUME"
-					title={t('snx-volume.title')}
-					num={SNX24HVolume}
-					percentChange={null}
-					subText={t('snx-volume.subtext')}
-					color={COLORS.green}
-					numberStyle="currency0"
-					numBoxes={4}
-					infoData={null}
-				/>
-				<StatsBox
 					key="ISSUANCECRATIO"
 					title={t('issuance-ratio.title')}
 					num={issuanceRatio.gt(0) ? wei(1).div(issuanceRatio).toNumber() : null}
@@ -288,7 +277,7 @@ const NetworkSection: FC = () => {
 					subText={t('issuance-ratio.subtext')}
 					color={COLORS.green}
 					numberStyle="percent0"
-					numBoxes={4}
+					numBoxes={3}
 					infoData={<>{t('issuance-ratio.infoData')}</>}
 				/>
 			</StatsRow>

@@ -4,10 +4,10 @@ import { format } from 'date-fns';
 import { CellProps } from 'react-table';
 import styled from 'styled-components';
 import { ethers } from 'ethers';
-import useSynthetixQueries from '@synthetixio/queries';
+import { l1Endpoints as l1GraphAPIEndpoints } from '@synthetixio/data';
+import useSynthetixQueries, { ActiveStakersData } from '@synthetixio/queries';
 import { wei } from '@synthetixio/wei';
 import _ from 'lodash';
-import snxData from 'synthetix-data';
 
 import SectionHeader from 'components/SectionHeader';
 import StatsRow from 'components/StatsRow';
@@ -86,7 +86,7 @@ function formatLiquidationsChart(
 		}
 	}
 
-	return chartData;
+	return _.reverse(chartData);
 }
 
 interface RawRecentLiquidation {
@@ -138,7 +138,7 @@ const Staking: FC = () => {
 	const liquidations = useLiquidationsQuery();
 
 	const recentLiquidationsQuery = usePageResults<RawRecentLiquidation[]>({
-		api: snxData.graphAPIEndpoints.liquidations,
+		api: l1GraphAPIEndpoints.liquidations,
 		query: {
 			entity: 'accountLiquidateds',
 			selection: {
@@ -399,7 +399,7 @@ const Staking: FC = () => {
 				}
 				isLoading={liquidations.isFetching}
 				issuanceRatio={issuanceRatio.toNumber()}
-				snxPrice={SNXPrice}
+				snxPrice={SNXPrice.toNumber()}
 			/>
 			<AreaChart
 				periods={stakingPeriods}

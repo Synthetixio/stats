@@ -5,9 +5,11 @@ import { ethers } from 'ethers';
 import { curvepoolRewards, snxRewards } from 'contracts';
 import { useSnxjsContractQuery } from 'queries/shared/useSnxjsContractQuery';
 import { SynthetixJS } from '@synthetixio/contracts-interface';
-import { useCMCQuery } from 'queries/shared/useCMCQuery';
 import axios from 'axios';
 import { useCurveContractInfoQuery } from './useCurveContractInfoQuery';
+import { useTokenPriceQuery } from 'queries/shared/useTokenPriceQuery';
+
+const CRV_TOKEN_ADDRESS = '0xd533a949740bb3306d119cc777fa900ba034cd52';
 
 export interface RewardsContractInfo {
 	duration: number;
@@ -92,7 +94,7 @@ export const useRewardsContractInfo = (
 	if (type === 'curve') {
 		/* eslint-disable react-hooks/rules-of-hooks */
 		const curveContractInfo = useCurveContractInfoQuery(provider);
-		const crvPriceInfo = useCMCQuery('CRV');
+		const [crvPrice, crvPriceQueries] = useTokenPriceQuery(CRV_TOKEN_ADDRESS);
 		const curveApy = useQuery<any, string>(QUERY_KEYS.YieldFarming.CurveApy, async () => {
 			return (await axios.get('https://stats.curve.fi/raw-stats/apys.json')).data;
 		});
@@ -104,12 +106,12 @@ export const useRewardsContractInfo = (
 				(((d.curveInflationRate * d.gaugeRelativeWeight * 31536000) / d.curveWorkingSupply) * 0.4) /
 				d.curveSusdTokenPrice;
 
-			apy += crvPriceInfo.isSuccess ? crvPriceInfo.data!.quote.USD.price * curveSUSDTokenRate : 0;
+			apy += crvPrice ? crvPrice! * curveSUSDTokenRate : 0;
 		}
 
 		apy += curveApy?.data?.apy?.day?.susd || 0;
 
-		queries.push(curveContractInfo, crvPriceInfo, curveApy);
+		queries.push(curveContractInfo, curveApy, ...crvPriceQueries);
 	}
 
 	return {
