@@ -4,7 +4,6 @@ import useSynthetixQueries from '@synthetixio/queries';
 import { CellProps } from 'react-table';
 import Skeleton from '@material-ui/core/Skeleton';
 import _ from 'lodash';
-import { Period } from '@synthetixio/queries/build/node/src/constants';
 import styled from 'styled-components';
 
 import SectionHeader from 'components/SectionHeader';
@@ -101,7 +100,7 @@ const Trading: FC = () => {
 	const tradesChartPeriodDays = periodToDays(tradesChartPeriod);
 	const volumeChartPeriodDays = periodToDays(volumeChartPeriod);
 
-	const generalTradingInfo = useGeneralTradingInfoQuery(Period.ONE_DAY);
+	const generalTradingInfo = useGeneralTradingInfoQuery();
 
 	const exchangeVolumeData = usePageResults<any>({
 		api: synthetixExchanges,

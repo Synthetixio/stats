@@ -1,10 +1,9 @@
-import React, { FC, useContext, useState } from 'react';
+import React, { FC, useContext } from 'react';
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 import useSynthetixQueries, { SynthsTotalSupplyData } from '@synthetixio/queries';
 import _padEnd from 'lodash/padEnd';
 import _orderBy from 'lodash/orderBy';
-import { Period } from '@synthetixio/queries/build/node/src/constants';
 
 import { ChartTitle, SnxTooltip } from 'components/common';
 import colors from 'styles/colors';
@@ -33,7 +32,7 @@ const SynthsVolumeMatrix: FC<SynthsVolumeMatrixProps> = ({ synthsTotalSupply }) 
 	const snxjs = useContext(SNXJSContext);
 	const { useTokenListQuery } = useSynthetixQueries();
 	const tokenList = useTokenListQuery('https://synths.snx.eth.link');
-	const synthTradesRequest = useGeneralTradingInfoQuery(Period.ONE_DAY);
+	const synthTradesRequest = useGeneralTradingInfoQuery();
 	const synthFrozenRequest = useSnxjsContractQuery<any>(snxjs, 'SynthUtil', 'frozenSynths', []);
 	const synthTotalSupplies: string[] = synthsTotalSupply?.synthTotalSupplies[0];
 	const synthStatusesRequest = useSnxjsContractQuery<any>(

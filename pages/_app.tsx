@@ -7,6 +7,7 @@ import { ReactQueryDevtools } from 'react-query/devtools';
 
 import { synthetix, Network } from '@synthetixio/contracts-interface';
 import { createQueryContext, SynthetixQueryContextProvider } from '@synthetixio/queries';
+import { SynthetixProvider } from '@synthetixio/providers';
 
 import { ThemeProvider as SCThemeProvider } from 'styled-components';
 import { ThemeProvider as MuiThemeProvider } from '@material-ui/core/styles';
@@ -40,7 +41,7 @@ export const headersAndScrollRef: { [key: string]: RefObject<unknown> } = {
 const provider = new ethers.providers.InfuraProvider(
 	'homestead',
 	process.env.NEXT_PUBLIC_INFURA_KEY
-);
+) as SynthetixProvider;
 
 export const ProviderContext = createContext(provider);
 

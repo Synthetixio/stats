@@ -1,7 +1,7 @@
 import { FC, useState, useContext } from 'react';
 import { ethers } from 'ethers';
 import { Trans, useTranslation } from 'react-i18next';
-import useSynthetixQueries from '@synthetixio/queries';
+import useSynthetixQueries, { Token } from '@synthetixio/queries';
 import { wei } from '@synthetixio/wei';
 import snxData from 'synthetix-data';
 // import snxData from '@synthetixio/data';
@@ -101,13 +101,13 @@ const NetworkSection: FC = () => {
 	const multiCollateralEtherBalance = useETHBalanceQuery(snxjs.contracts.CollateralEth.address);
 
 	const bitcoinLockedQuery = useTokensBalancesQuery(
-		[{ address: renBTC.address, symbol: 'renBTC' }],
+		[{ address: renBTC.address, symbol: 'renBTC' } as Token],
 		snxjs.contracts.CollateralErc20.address
 	);
 	const bitcoinLocked = bitcoinLockedQuery.data?.renBTC?.balance ?? null;
 
 	const sUSDShortLockedQuery = useTokensBalancesQuery(
-		[{ address: snxjs.contracts.SynthsUSD.address, symbol: 'sUSD' }],
+		[{ address: snxjs.contracts.SynthsUSD.address, symbol: 'sUSD' } as Token],
 		snxjs.contracts.CollateralShort.address
 	);
 	const sUSDShortLocked = sUSDShortLockedQuery.data?.sUSD?.balance ?? null;

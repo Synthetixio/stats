@@ -49,7 +49,7 @@ const WEEK = 86400 * 7 * 1000;
 function formatChartData(data: DailyTotalActiveStakers[]) {
 	return data.map(({ id, count }) => {
 		return {
-			created: formatIdToIsoString(id, '1d'),
+			created: formatIdToIsoString(id.toString(), '1d'),
 			value: count,
 		};
 	});
