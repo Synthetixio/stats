@@ -1,6 +1,6 @@
 import { FC } from 'react';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
-import { Skeleton } from '@material-ui/lab';
+import Skeleton from '@material-ui/core/Skeleton';
 
 import colors from '../../styles/colors';
 import { AreaChartData } from '../../types/data';

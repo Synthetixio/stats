@@ -1,5 +1,5 @@
 import { FC, ReactNode } from 'react';
-import { Skeleton } from '@material-ui/lab';
+import Skeleton from '@material-ui/core/Skeleton';
 import styled, { css } from 'styled-components';
 
 import { getFormattedNumber } from 'utils/formatter';

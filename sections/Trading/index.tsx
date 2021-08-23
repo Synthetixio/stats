@@ -2,7 +2,7 @@ import { FC, useState } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
 import useSynthetixQueries from '@synthetixio/queries';
 import { CellProps } from 'react-table';
-import { Skeleton } from '@material-ui/lab';
+import Skeleton from '@material-ui/core/Skeleton';
 import _ from 'lodash';
 
 import styled from 'styled-components';
