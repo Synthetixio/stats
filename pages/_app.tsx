@@ -177,7 +177,7 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
 				<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter" />
 				
 				{/* matomo */}
-				<script>
+				<script>{`
 				  var _paq = window._paq = window._paq || [];
 				  /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
 				  _paq.push(['trackPageView']);
@@ -189,7 +189,7 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
 				    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
 				    g.async=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
 				  })();
-				</script>
+				`}</script>
 
 			</Head>
 			<SCThemeProvider theme={scTheme}>
