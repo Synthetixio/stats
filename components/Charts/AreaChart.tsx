@@ -19,6 +19,7 @@ interface AreaChartProps {
 	timeSeries: TimeSeriesType;
 	activePeriod: ChartPeriod;
 	infoData: React.ReactNode;
+	isLoadingData?: boolean;
 }
 
 const AreaChart: FC<AreaChartProps> = ({
@@ -32,6 +33,7 @@ const AreaChart: FC<AreaChartProps> = ({
 	percentChange,
 	timeSeries,
 	infoData,
+	isLoadingData,
 }) => (
 	<ChartContainer>
 		<ChartHeader>
@@ -49,6 +51,7 @@ const AreaChart: FC<AreaChartProps> = ({
 			valueType={numFormat}
 			data={data}
 			timeSeries={timeSeries}
+			{...{ isLoadingData }}
 		/>
 	</ChartContainer>
 );

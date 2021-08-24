@@ -2,26 +2,26 @@ import { useQuery } from 'react-query';
 import { ethers } from 'ethers';
 import { l1Endpoints as l1GraphAPIEndpoints } from '@synthetixio/data';
 import useSynthetixQueries from '@synthetixio/queries';
-import { wei } from '@synthetixio/wei';
+import { wei, WeiSource } from '@synthetixio/wei';
 import snxData from 'synthetix-data';
 import _ from 'lodash';
 
 import QUERY_KEYS from 'constants/queryKeys';
 
 export type LiquidationsSummary = {
-	amountToCover: number;
-	totalLiquidatableSNX: number;
-	liquidatableCount: number;
+	amountToCover: WeiSource;
+	totalLiquidatableSNX: WeiSource;
+	liquidatableCount: WeiSource;
 };
 
 export type LiquidationsData = {
-	deadline: number;
+	deadline: WeiSource;
 	account: string;
-	currentRatio: number;
-	currentCollateral: number;
-	currentDebt: number;
-	amountToCover: number;
-	liquidatableAmount: number;
+	currentRatio: WeiSource;
+	currentCollateral: WeiSource;
+	currentDebt: WeiSource;
+	amountToCover: WeiSource;
+	liquidatableAmount: WeiSource;
 };
 
 // number of sUSD to cover before showing on page
@@ -86,38 +86,38 @@ export const useLiquidationsQuery = () => {
 					ethers.utils.formatEther(ethers.BigNumber.from(accountInfo.initialDebtOwnership))
 				);
 
-				let currentDebt =
-					((totalIssuedSynths.toNumber() * lastDebtLedgerEntry.toNumber()) / debtEntryAtIndexFmt) *
-					initialDebtOwnershipFmt;
+				let currentDebt = totalIssuedSynths
+					.mul(lastDebtLedgerEntry)
+					.mul(initialDebtOwnershipFmt)
+					.div(debtEntryAtIndexFmt);
 
-				let currentCollateral = Number(
+				let currentCollateral = wei(
 					ethers.utils.formatEther(ethers.BigNumber.from(accountInfo.collateral))
 				);
 
-				let currentBalanceOf = Number(
+				let currentBalanceOf = wei(
 					ethers.utils.formatEther(ethers.BigNumber.from(accountInfo.balanceOf))
 				);
 
-				const amountToCover =
-					currentDebt - issuanceRatio.toNumber() * currentCollateral * SNXPrice.toNumber();
-				const liquidatableAmount = amountToCover / SNXPrice.toNumber();
+				const amountToCover = currentDebt.sub(issuanceRatio).mul(currentCollateral).mul(SNXPrice);
+				const liquidatableAmount = amountToCover.div(SNXPrice);
 
 				if (
-					amountToCover > MIN_LIQUIDATION_COVER_THRESHOLD &&
-					currentBalanceOf > MIN_LIQUIDATION_BALANCE
+					amountToCover.gt(MIN_LIQUIDATION_COVER_THRESHOLD) &&
+					currentBalanceOf.gt(MIN_LIQUIDATION_BALANCE)
 				) {
 					liquidations.push({
 						deadline: l.deadline,
 						account: l.account,
-						currentRatio: currentDebt / (currentCollateral * SNXPrice.toNumber()),
+						currentRatio: currentDebt.div(currentCollateral).mul(SNXPrice),
 						currentCollateral,
 						currentDebt,
 						amountToCover,
 						liquidatableAmount,
 					});
 
-					summary.amountToCover += amountToCover;
-					summary.totalLiquidatableSNX += liquidatableAmount;
+					summary.amountToCover = summary.amountToCover.add(amountToCover);
+					summary.totalLiquidatableSNX = summary.totalLiquidatableSNX.add(liquidatableAmount);
 				}
 			}
 			return [summary, liquidations];

@@ -1,6 +1,7 @@
 import { FC } from 'react';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import Skeleton from '@material-ui/core/Skeleton';
+import isBoolean from 'lodash/isBoolean';
 
 import colors from '../../styles/colors';
 import { AreaChartData } from '../../types/data';
@@ -18,6 +19,7 @@ interface BasicAreaChartProps {
 	timeSeries: TimeSeriesType;
 	valueType: NumberStyle;
 	percentChange: number | null;
+	isLoadingData?: boolean;
 }
 
 const BasicAreaChart: FC<BasicAreaChartProps> = ({
@@ -25,8 +27,9 @@ const BasicAreaChart: FC<BasicAreaChartProps> = ({
 	timeSeries,
 	valueType,
 	percentChange,
+	isLoadingData,
 }) => {
-	if (data.length === 0) {
+	if (isBoolean(isLoadingData) ? isLoadingData : !data.length) {
 		return (
 			<Skeleton
 				className="chart-skeleton"

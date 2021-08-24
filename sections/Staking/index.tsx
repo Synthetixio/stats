@@ -343,6 +343,7 @@ const Staking: FC = () => {
 					setStakersChartPeriod(period);
 				}}
 				data={stakersChartData}
+				isLoadingData={activeStakersData.isLoading}
 				title={t('total-active-stakers.title')}
 				num={totalActiveStakers}
 				numFormat="number"
@@ -414,6 +415,7 @@ const Staking: FC = () => {
 					setLiquidationsChartPeriod(period);
 				}}
 				data={recentLiquidatedChartData}
+				isLoadingData={recentLiquidationsQuery.isLoading}
 				title={t('recent-liquidations-chart.title')}
 				numFormat="currency0"
 				num={null}
