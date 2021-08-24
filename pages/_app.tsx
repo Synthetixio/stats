@@ -32,6 +32,7 @@ export const headersAndScrollRef: { [key: string]: RefObject<unknown> } = {
 	'YIELD FARMING': createRef(),
 	SYNTHS: createRef(),
 	OPTIONS: createRef(),
+	L2: createRef(),
 };
 
 const provider = new ethers.providers.InfuraProvider(

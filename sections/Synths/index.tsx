@@ -110,7 +110,6 @@ const SynthsSection: FC<{ l2: boolean }> = ({ l2 }) => {
 				snxjs.contracts.CollateralEth.address
 		  )
 		: null;
-	/* eslint-enable */
 
 	const etherLocked =
 		ethCollateralBalance?.isSuccess &&
@@ -121,12 +120,10 @@ const SynthsSection: FC<{ l2: boolean }> = ({ l2 }) => {
 			  Number(multiCollateralEtherBalance?.data!)
 			: null;
 
-	const unformattedWrapprLocked = useSnxjsContractQuery<ethers.BigNumber>(
-		snxjs,
-		'EtherWrapper',
-		'sETHIssued',
-		[]
-	);
+	const unformattedWrapprLocked = snxjs.contracts.EtherWrapper.sETHIssued
+		? useSnxjsContractQuery<ethers.BigNumber>(snxjs, 'EtherWrapper', 'sETHIssued', [])
+		: null;
+	/* eslint-enable */
 
 	const synthTotalSupplies = synthTotalSuppliesRequest.isSuccess
 		? synthTotalSuppliesRequest.data!
@@ -271,7 +268,7 @@ const SynthsSection: FC<{ l2: boolean }> = ({ l2 }) => {
 
 	return (
 		<>
-			<SectionHeader title={t('section-header.synths')} />
+			<SectionHeader title={l2 ? 'L2 Synths' : t('section-header.synths')} />
 			<SingleStatRow
 				text={t('total-debt.title')}
 				subtext={t('total-debt.subtext')}
