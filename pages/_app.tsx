@@ -38,7 +38,11 @@ const provider = new ethers.providers.InfuraProvider(
 	'homestead',
 	process.env.NEXT_PUBLIC_INFURA_KEY
 );
-export const ProviderContext = createContext(provider);
+
+const providerl2 = new ethers.providers.JsonRpcProvider('https://mainnet.optimism.io');
+
+export const ProviderContext = createContext(provider as ethers.providers.Provider);
+export const ProviderContextL2 = createContext(providerl2 as ethers.providers.Provider);
 
 export const HeadersContext = createContext(headersAndScrollRef);
 
@@ -55,8 +59,10 @@ const queryClient = new QueryClient({
 let checkInterval: any = null;
 
 const snxjs = synthetix({ network: Network.Mainnet, provider });
+const snxjsl2 = synthetix({ network: Network['Mainnet-Ovm'], provider: providerl2 });
 
 export const SNXJSContext = createContext(snxjs);
+export const SNXJSContextL2 = createContext(snxjsl2);
 
 const App: FC<AppProps> = ({ Component, pageProps }) => {
 	const { t } = useTranslation();

@@ -31,10 +31,13 @@ const HomePage: FC = () => {
 				<YieldFarmingSection />
 			</div>
 			<div ref={headersContext.SYNTHS as React.RefObject<HTMLDivElement>}>
-				<SynthsSection />
+				<SynthsSection l2={false} />
 			</div>
 			<div ref={headersContext.OPTIONS as React.RefObject<HTMLDivElement>}>
 				<OptionsSection />
+			</div>
+			<div ref={headersContext.L2 as React.RefObject<HTMLDivElement>}>
+				<SynthsSection l2={true} />
 			</div>
 		</>
 	);
