@@ -220,11 +220,7 @@ const NetworkSection: FC = () => {
 				<StatsBox
 					key="SNXMKTCAP"
 					title={t('snx-market-cap.title')}
-					num={
-						SNXPrice != null && SNXTotalSupply != null
-							? SNXTotalSupply.mul(SNXPrice).toNumber()
-							: null
-					}
+					num={SNXPrice != null && SNXTotalSupply != null ? SNXTotalSupply.mul(SNXPrice) : null}
 					queries={[globalStakingInfoQuery]}
 					percentChange={null}
 					subText={t('snx-market-cap.subtext')}
@@ -268,7 +264,7 @@ const NetworkSection: FC = () => {
 				<StatsBox
 					key="ISSUANCECRATIO"
 					title={t('issuance-ratio.title')}
-					num={issuanceRatio.gt(0) ? wei(1).div(issuanceRatio).toNumber() : null}
+					num={issuanceRatio.gt(0) ? wei(1).div(issuanceRatio) : null}
 					queries={[globalStakingInfoQuery]}
 					percentChange={null}
 					subText={t('issuance-ratio.subtext')}
@@ -284,7 +280,7 @@ const NetworkSection: FC = () => {
 					title={t('total-snx-locked.title')}
 					num={
 						SNXPercentLocked != null && SNXTotalSupply != null && SNXPrice != null
-							? SNXPercentLocked.mul(SNXTotalSupply).mul(SNXPrice).toNumber()
+							? SNXPercentLocked.mul(SNXTotalSupply).mul(SNXPrice)
 							: null
 					}
 					queries={[globalStakingInfoQuery]}
@@ -333,7 +329,7 @@ const NetworkSection: FC = () => {
 				<StatsBox
 					key="ACTIVECRATIO"
 					title={t('active-cratio.title')}
-					num={activeCRatio.toNumber()}
+					num={activeCRatio}
 					percentChange={null}
 					subText={t('active-cratio.subtext')}
 					color={COLORS.green}
@@ -407,7 +403,7 @@ const NetworkSection: FC = () => {
 					<StatsBox
 						key="BTCLOCKED"
 						title={t('btc-collateral.title')}
-						num={bitcoinLocked?.toNumber() ?? null}
+						num={bitcoinLocked}
 						queries={[bitcoinLockedQuery]}
 						percentChange={null}
 						subText={t('btc-collateral.subtext')}
@@ -419,7 +415,7 @@ const NetworkSection: FC = () => {
 					<StatsBox
 						key="USDLOCKEDSHORT"
 						title={t('short-collateral.title')}
-						num={sUSDShortLocked?.toNumber() ?? null}
+						num={sUSDShortLocked}
 						queries={[sUSDShortLockedQuery]}
 						percentChange={null}
 						subText={t('short-collateral.subtext')}

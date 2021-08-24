@@ -247,7 +247,7 @@ const Staking: FC = () => {
 					title={t('current-fee-pool.title')}
 					num={
 						sUSDPrice != null && currentFeePeriod.isSuccess && sUSDPrice != null
-							? (sUSDPrice ?? 0) * currentFeePeriod.data!.feesToDistribute.toNumber()
+							? currentFeePeriod.data!.feesToDistribute.mul(wei(sUSDPrice ?? 0))
 							: null
 					}
 					queries={[sUSDPriceQuery, currentFeePeriod]}
@@ -274,7 +274,7 @@ const Staking: FC = () => {
 					title={t('current-fee-pool-snx.title')}
 					num={
 						currentFeePeriod.isSuccess && SNXPrice != null
-							? SNXPrice.toNumber() * currentFeePeriod.data!.rewardsToDistribute.toNumber()
+							? SNXPrice.mul(currentFeePeriod.data!.rewardsToDistribute)
 							: null
 					}
 					queries={[globalStakingInfoQuery, currentFeePeriod]}
@@ -294,12 +294,17 @@ const Staking: FC = () => {
 					title={t('unclaimed-fees-and-rewards.title')}
 					num={
 						currentFeePeriod.isSuccess && sUSDPrice != null && SNXPrice != null
-							? (sUSDPrice ?? 0) *
-									(currentFeePeriod.data!.feesToDistribute.toNumber() -
-										currentFeePeriod.data!.feesClaimed.toNumber()) +
-							  SNXPrice.toNumber() *
-									(currentFeePeriod.data!.rewardsToDistribute.toNumber() -
-										currentFeePeriod.data!.rewardsClaimed.toNumber())
+							? wei(sUSDPrice ?? 0)
+									.mul(
+										currentFeePeriod.data!.feesToDistribute.sub(currentFeePeriod.data!.feesClaimed)
+									)
+									.add(
+										SNXPrice.mul(
+											currentFeePeriod.data!.rewardsToDistribute.sub(
+												currentFeePeriod.data!.rewardsClaimed
+											)
+										)
+									)
 							: null
 					}
 					queries={[sUSDPriceQuery, globalStakingInfoQuery, currentFeePeriod]}
@@ -319,7 +324,7 @@ const Staking: FC = () => {
 					title={t('fees-in-next-period.title')}
 					num={
 						nextFeePeriod.isSuccess && sUSDPrice != null
-							? (sUSDPrice ?? 0) * nextFeePeriod.data!.feesToDistribute.toNumber()
+							? wei(sUSDPrice ?? 0).mul(nextFeePeriod.data!.feesToDistribute)
 							: null
 					}
 					queries={[sUSDPriceQuery, nextFeePeriod]}

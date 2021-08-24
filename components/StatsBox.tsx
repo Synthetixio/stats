@@ -1,6 +1,7 @@
 import { FC, ReactNode } from 'react';
 import Skeleton from '@material-ui/core/Skeleton';
 import styled, { css } from 'styled-components';
+import { WeiSource } from '@synthetixio/wei';
 
 import { getFormattedNumber } from 'utils/formatter';
 import { COLORS, NumberColor, NumberStyle } from 'constants/styles';
@@ -12,7 +13,7 @@ import StatsTools from './StatsTools';
 
 interface StatsBoxProps {
 	title: string;
-	num: number | null;
+	num: WeiSource | null;
 	queries?: UseQueryResult[];
 	percentChange: number | null;
 	subText: string;
@@ -38,7 +39,7 @@ const StatsBox: FC<StatsBoxProps> = ({
 
 	const formattedNumber =
 		allQueriesLoaded && num != null
-			? getFormattedNumber(num, numberStyle)
+			? getFormattedNumber(num.toNumber(), numberStyle)
 			: getFormattedNumber(0, numberStyle)!.replace(/0/g, '-');
 
 	return (
