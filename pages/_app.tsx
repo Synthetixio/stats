@@ -53,7 +53,7 @@ const queryClient = new QueryClient({
 			retry: 0, // on failure, do not repeat the request
 			refetchOnWindowFocus: false,
 			refetchOnReconnect: false,
-			refetchInterval: 60000, // 1 minute
+			refetchInterval: false,
 		},
 	},
 });
