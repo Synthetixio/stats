@@ -175,6 +175,22 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
 				<meta name="twitter:url" content="https://stats.synthetix.io" />
 				<link rel="icon" href="/images/favicon.png" />
 				<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter" />
+				
+				{/* matomo */}
+				<script>
+				  var _paq = window._paq = window._paq || [];
+				  /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
+				  _paq.push(['trackPageView']);
+				  _paq.push(['enableLinkTracking']);
+				  (function() {
+				    var u="https://analytics.synthetix.io/";
+				    _paq.push(['setTrackerUrl', u+'matomo.php']);
+				    _paq.push(['setSiteId', '2']);
+				    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+				    g.async=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
+				  })();
+				</script>
+
 			</Head>
 			<SCThemeProvider theme={scTheme}>
 				<MuiThemeProvider theme={muiTheme}>
