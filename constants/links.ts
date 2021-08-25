@@ -13,7 +13,8 @@ export const synthetixExchangesSubgraph =
 
 export const curveDocumentation = 'https://www.curve.fi/devdocs';
 
-export const synthetixDataGithub = 'https://github.com/Synthetixio/synthetix-data';
+export const synthetixDataGithub =
+	'https://github.com/Synthetixio/js-monorepo/tree/master/packages/data';
 
 export const synthetixOptionsSubgraph =
 	'https://thegraph.com/explorer/subgraph/synthetixio-team/synthetix-binary-options';

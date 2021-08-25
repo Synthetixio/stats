@@ -5,7 +5,7 @@ import { CellProps } from 'react-table';
 import styled from 'styled-components';
 import { ethers } from 'ethers';
 import { l1Endpoints as l1GraphAPIEndpoints } from '@synthetixio/data';
-import useSynthetixQueries, { ActiveStakersData } from '@synthetixio/queries';
+import useSynthetixQueries from '@synthetixio/queries';
 import { wei } from '@synthetixio/wei';
 import _ from 'lodash';
 
@@ -42,7 +42,7 @@ import {
 import { periodToDays } from 'utils/dataMapping';
 
 import Liquidations from './Liquidations';
-import { DailyTotalActiveStakers } from '@synthetixio/data/build/node/src/types';
+import { DailyTotalActiveStakers } from '@synthetixio/data';
 
 const WEEK = 86400 * 7 * 1000;
 

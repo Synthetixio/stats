@@ -3,7 +3,7 @@ import findIndex from 'lodash/findIndex';
 import { format } from 'date-fns';
 import { useTranslation, Trans } from 'react-i18next';
 import useSynthetixQueries from '@synthetixio/queries';
-import { OptionsMarket } from '@synthetixio/data/build/node/src/types';
+import { OptionsMarket } from '@synthetixio/data';
 
 import SectionHeader from 'components/SectionHeader';
 import StatsBox from 'components/StatsBox';

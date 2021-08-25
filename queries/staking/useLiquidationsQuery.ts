@@ -1,9 +1,9 @@
+import { useContext } from 'react';
 import { useQuery } from 'react-query';
 import { ethers } from 'ethers';
-import { l1Endpoints as l1GraphAPIEndpoints } from '@synthetixio/data';
 import useSynthetixQueries from '@synthetixio/queries';
 import { wei, WeiSource } from '@synthetixio/wei';
-import snxData from 'synthetix-data';
+import { SNXDataContext } from 'pages/_app';
 import _ from 'lodash';
 
 import QUERY_KEYS from 'constants/queryKeys';
@@ -31,6 +31,7 @@ const MIN_LIQUIDATION_COVER_THRESHOLD = 10;
 const MIN_LIQUIDATION_BALANCE = 1;
 
 export const useLiquidationsQuery = () => {
+	const snxData = useContext(SNXDataContext);
 	const { useGlobalStakingInfoQuery } = useSynthetixQueries();
 
 	const globalStakingInfoQuery = useGlobalStakingInfoQuery();
@@ -51,21 +52,18 @@ export const useLiquidationsQuery = () => {
 	return useQuery<[LiquidationsSummary, LiquidationsData[]], string>(
 		QUERY_KEYS.Staking.Liquidations,
 		async () => {
-			const activeLiquidations = await snxData.liquidations.getActiveLiquidations();
+			const activeLiquidations =
+				(await snxData.accountsFlaggedForLiquidation({
+					maxTimestamp: Math.round(Date.now() / 1000 + 86400 * 3),
+					minTimestamp: Math.round(Date.now() / 1000 + 86400 * (-30 + 3)),
+					account: undefined,
+					max: 5000,
+				})) ?? [];
 
 			const accountAddresses = activeLiquidations.map((l: any) => l.account.toLowerCase());
 
-			const rawAccountInfos = await snxData.pageResults({
-				api: l1GraphAPIEndpoints.snx,
-				query: {
-					entity: 'snxholders',
-					selection: {
-						where: {
-							id_in: '[' + accountAddresses.map((v: string) => `\\"${v}\\"`).join(',') + ']',
-						},
-					},
-					properties: ['id', 'collateral', 'balanceOf', 'initialDebtOwnership', 'debtEntryAtIndex'],
-				},
+			const rawAccountInfos = await snxData.snxHolders({
+				addresses: accountAddresses,
 			});
 
 			const accountInfos = _.keyBy(rawAccountInfos, 'id');

@@ -27,7 +27,7 @@ import { usePageResults } from 'queries/shared/usePageResults';
 import { synthetixExchanges, synthetixExchanger } from 'constants/graph-urls';
 import { useGeneralTradingInfoQuery } from 'queries/trading';
 import { periodToDays } from 'utils/dataMapping';
-import { ExchangeTotals } from '@synthetixio/data/build/node/src/types';
+import { ExchangeTotals } from '@synthetixio/data';
 
 function getTotalValue(data: AreaChartData[]): number {
 	return data.reduce((acc, curr) => (acc += curr.value), 0);

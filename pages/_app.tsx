@@ -5,9 +5,10 @@ import { ethers } from 'ethers';
 import { QueryClientProvider, QueryClient, Query } from 'react-query';
 import { ReactQueryDevtools } from 'react-query/devtools';
 
-import { synthetix, Network } from '@synthetixio/contracts-interface';
+import initSynthetixJS, { Network, NetworkId } from '@synthetixio/contracts-interface';
 import { createQueryContext, SynthetixQueryContextProvider } from '@synthetixio/queries';
 import { SynthetixProvider } from '@synthetixio/providers';
+import initSynthetixData, { SynthetixData } from '@synthetixio/data';
 
 import { ThemeProvider as SCThemeProvider } from 'styled-components';
 import { ThemeProvider as MuiThemeProvider } from '@material-ui/core/styles';
@@ -60,9 +61,11 @@ const queryClient = new QueryClient({
 
 let checkInterval: any = null;
 
-const snxjs = synthetix({ network: Network.Mainnet, provider });
+const snxjs = initSynthetixJS({ network: Network.Mainnet, provider });
+const snxdata = initSynthetixData({ networkId: NetworkId.Mainnet });
 
 export const SNXJSContext = createContext(snxjs);
+export const SNXDataContext = createContext(snxdata);
 
 const App: FC<AppProps> = ({ Component, pageProps }) => {
 	const { t } = useTranslation();
@@ -180,20 +183,22 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
 					<QueryClientProvider client={queryClient}>
 						<HeadersContext.Provider value={headersAndScrollRef}>
 							<SNXJSContext.Provider value={snxjs}>
-								<ProviderContext.Provider value={provider}>
-									<QueryClientProvider client={new QueryClient()}>
-										<SynthetixQueryContextProvider
-											value={createQueryContext({
-												provider,
-												networkId: 1,
-											})}
-										>
-											<Layout>
-												<Component {...pageProps} />
-											</Layout>
-										</SynthetixQueryContextProvider>
-									</QueryClientProvider>
-								</ProviderContext.Provider>
+								<SNXDataContext.Provider value={snxdata}>
+									<ProviderContext.Provider value={provider}>
+										<QueryClientProvider client={new QueryClient()}>
+											<SynthetixQueryContextProvider
+												value={createQueryContext({
+													provider,
+													networkId: 1,
+												})}
+											>
+												<Layout>
+													<Component {...pageProps} />
+												</Layout>
+											</SynthetixQueryContextProvider>
+										</QueryClientProvider>
+									</ProviderContext.Provider>
+								</SNXDataContext.Provider>
 							</SNXJSContext.Provider>
 						</HeadersContext.Provider>
 						<Snackbar

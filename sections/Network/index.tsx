@@ -1,10 +1,11 @@
 import { FC, useState, useContext } from 'react';
 import { ethers } from 'ethers';
+import { formatEther } from 'ethers/lib/utils';
 import { Trans, useTranslation } from 'react-i18next';
+import { useQuery } from 'react-query';
 import useSynthetixQueries, { Token } from '@synthetixio/queries';
 import { wei } from '@synthetixio/wei';
-import snxData from 'synthetix-data';
-// import snxData from '@synthetixio/data';
+import { SynthHolder } from '@synthetixio/data';
 import styled from 'styled-components';
 
 import { ChartPeriod, TreeMapData } from 'types/data';
@@ -14,6 +15,8 @@ import StatsRow from 'components/StatsRow';
 import AreaChart from 'components/Charts/AreaChart';
 import PieChart from 'components/Charts/PieChart';
 import SectionHeader from 'components/SectionHeader';
+import SingleStatRow from 'components/SingleStatRow';
+import { LinkText, NewParagraph } from 'components/common';
 import { COLORS, MAX_PAGE_WIDTH } from 'constants/styles';
 import QUERY_KEYS from 'constants/queryKeys';
 import {
@@ -23,16 +26,13 @@ import {
 	curveDocumentation,
 	synthetixDataGithub,
 } from 'constants/links';
-import SUSDDistribution from '../Network/SUSDDistribution';
-import { SNXJSContext, ProviderContext } from 'pages/_app';
+import { SNXJSContext, SNXDataContext, ProviderContext } from 'pages/_app';
 import { getSUSDHoldersName } from 'utils/dataMapping';
-import { LinkText, NewParagraph } from 'components/common';
 import { renBTC } from 'contracts';
-import { formatEther } from 'ethers/lib/utils';
 import { useSnxjsContractQuery } from 'queries/shared/useSnxjsContractQuery';
-import { useQuery } from 'react-query';
 import { useSUSDInfo } from 'queries/shared/useSUSDInfo';
-import SingleStatRow from 'components/SingleStatRow';
+
+import SUSDDistribution from '../Network/SUSDDistribution';
 
 const NetworkSection: FC = () => {
 	const { t } = useTranslation();
@@ -47,6 +47,7 @@ const NetworkSection: FC = () => {
 	const SNXChartPriceData = useSnxPriceChartQuery(priceChartPeriod);
 
 	const snxjs = useContext(SNXJSContext);
+	const snxData = useContext(SNXDataContext);
 	const provider = useContext(ProviderContext);
 
 	const globalStakingInfoQuery = useGlobalStakingInfoQuery();
@@ -113,11 +114,11 @@ const NetworkSection: FC = () => {
 	const sUSDShortLocked = sUSDShortLockedQuery.data?.sUSD?.balance ?? null;
 
 	const snxTotals = useQuery<any, string>(QUERY_KEYS.SnxTotals, async () => {
-		return snxData.snx.total();
+		return snxData.synthetix();
 	});
 	const SUSDHolders = useQuery<TreeMapData[], string>(QUERY_KEYS.sUSDHolders, async () => {
-		const topSUSDHolders = await snxData.synths.holders({ max: 10, synth: 'sUSD' });
-		return topSUSDHolders.map(({ balanceOf, address }: { balanceOf: number; address: string }) => ({
+		const topSUSDHolders = await snxData.synthHolders({ max: 10, synth: 'sUSD' });
+		return topSUSDHolders.map(({ balanceOf, address }: SynthHolder) => ({
 			name: getSUSDHoldersName(address),
 			value: balanceOf,
 		}));
