@@ -37,14 +37,19 @@ export const headersAndScrollRef: { [key: string]: RefObject<unknown> } = {
 	'YIELD FARMING': createRef(),
 	SYNTHS: createRef(),
 	OPTIONS: createRef(),
+	L2: createRef(),
 };
 
 const provider = new ethers.providers.InfuraProvider(
 	'homestead',
 	process.env.NEXT_PUBLIC_INFURA_KEY
 ) as SynthetixProvider;
+const providerl2 = new ethers.providers.JsonRpcProvider(
+	'https://mainnet.optimism.io'
+) as SynthetixProvider;
 
-export const ProviderContext = createContext(provider);
+export const ProviderContext = createContext(provider as ethers.providers.Provider);
+export const ProviderContextL2 = createContext(providerl2 as ethers.providers.Provider);
 
 export const HeadersContext = createContext(headersAndScrollRef);
 
@@ -62,9 +67,11 @@ const queryClient = new QueryClient({
 let checkInterval: any = null;
 
 const snxjs = initSynthetixJS({ network: Network.Mainnet, provider });
+const snxjsl2 = initSynthetixJS({ network: Network['Mainnet-Ovm'], provider: providerl2 });
 const snxdata = initSynthetixData({ networkId: NetworkId.Mainnet });
 
 export const SNXJSContext = createContext(snxjs);
+export const SNXJSContextL2 = createContext(snxjsl2);
 export const SNXDataContext = createContext(snxdata);
 
 const App: FC<AppProps> = ({ Component, pageProps }) => {
@@ -177,6 +184,25 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
 				<meta name="twitter:url" content="https://stats.synthetix.io" />
 				<link rel="icon" href="/images/favicon.png" />
 				<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter" />
+
+				{/* matomo */}
+				<script
+					dangerouslySetInnerHTML={{
+						__html: `
+					  var _paq = window._paq = window._paq || [];
+					  /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
+					  _paq.push(['trackPageView']);
+					  _paq.push(['enableLinkTracking']);
+					  (function() {
+					    var u="https://analytics.synthetix.io/";
+					    _paq.push(['setTrackerUrl', u+'matomo.php']);
+					    _paq.push(['setSiteId', '4']);
+					    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+					    g.async=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
+					  })();
+				`,
+					}}
+				/>
 			</Head>
 			<SCThemeProvider theme={scTheme}>
 				<MuiThemeProvider theme={muiTheme}>

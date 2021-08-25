@@ -1,7 +1,9 @@
 import { FC } from 'react';
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
-import useSynthetixQueries from '@synthetixio/queries';
+// import useSynthetixQueries from '@synthetixio/queries';
+import { SynthsTotalSupplyData } from '@synthetixio/queries';
+import { Query, UseQueryResult } from 'react-query';
 
 import SectionHeader from 'components/SectionHeader';
 import { MAX_PAGE_WIDTH, COLORS } from 'constants/styles';
@@ -12,18 +14,20 @@ import SynthsPieChart from './SynthsPieChart';
 import TopSynths from './TopSynths';
 import SynthsVolumeMatrix from './SynthsVolumeMatrix';
 
-const SynthsSection: FC<{}> = () => {
+const SynthsSection: FC<{
+	l2: boolean;
+	synthsTotalSupplyQuery: UseQueryResult<SynthsTotalSupplyData>;
+}> = ({ l2, synthsTotalSupplyQuery }) => {
 	const { t } = useTranslation();
-	const { useSynthsTotalSupplyQuery } = useSynthetixQueries();
-	const synthsTotalSupplyQuery = useSynthsTotalSupplyQuery();
+	// const { useSynthsTotalSupplyQuery } = useSynthetixQueries();
+	// const synthsTotalSupplyQuery = useSynthsTotalSupplyQuery();
 	const synthsTotalSupply = synthsTotalSupplyQuery?.data!;
 
 	return (
 		<>
-			<SectionHeader title={t('section-header.synths')} />
+			<SectionHeader title={l2 ? 'L2 Synths' : t('section-header.synths')} />
 			{!synthsTotalSupply ? null : (
 				<>
-					{' '}
 					<SingleStatRow
 						text={t('total-debt.title')}
 						subtext={t('total-debt.subtext')}

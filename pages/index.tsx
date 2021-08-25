@@ -1,5 +1,6 @@
 import React, { FC, useContext } from 'react';
 import Head from 'next/head';
+import useSynthetixQueries from '@synthetixio/queries';
 
 import SnxSection from 'sections/Network';
 import TradingSection from 'sections/Trading';
@@ -9,8 +10,15 @@ import StakingSection from 'sections/Staking';
 import YieldFarmingSection from 'sections/YieldFarming';
 import { HeadersContext } from './_app';
 
+import useL2SynthsTotalSupplyQuery from 'hooks/useL2SynthsTotalSupplyQuery';
+
 const HomePage: FC = () => {
 	const headersContext = useContext(HeadersContext);
+	const { useSynthsTotalSupplyQuery } = useSynthetixQueries();
+
+	// todo: revert when implementing mainnet<>ovm based ux
+	const synthsTotalSupplyQuery = useSynthsTotalSupplyQuery();
+	const l2SynthsTotalSupplyQuery = useL2SynthsTotalSupplyQuery();
 
 	return (
 		<>
@@ -31,10 +39,13 @@ const HomePage: FC = () => {
 				<YieldFarmingSection />
 			</div>
 			<div ref={headersContext.SYNTHS as React.RefObject<HTMLDivElement>}>
-				<SynthsSection />
+				<SynthsSection l2={false} {...{ synthsTotalSupplyQuery }} />
 			</div>
 			<div ref={headersContext.OPTIONS as React.RefObject<HTMLDivElement>}>
 				<OptionsSection />
+			</div>
+			<div ref={headersContext.L2 as React.RefObject<HTMLDivElement>}>
+				<SynthsSection l2={true} synthsTotalSupplyQuery={l2SynthsTotalSupplyQuery} />
 			</div>
 		</>
 	);
