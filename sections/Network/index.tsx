@@ -61,7 +61,7 @@ const NetworkSection: FC = () => {
 	} = globalStakingInfoQuery.isSuccess
 		? globalStakingInfoQuery.data
 		: {
-				snxPrice: wei(0),
+				snxPrice: null,
 				totalSupply: wei(0),
 				snxPercentLocked: wei(0),
 				issuanceRatio: wei(0),
@@ -117,7 +117,7 @@ const NetworkSection: FC = () => {
 		return snxData.synthetix();
 	});
 	const SUSDHolders = useQuery<TreeMapData[], string>(QUERY_KEYS.sUSDHolders, async () => {
-		const topSUSDHolders = await snxData.synthHolders({ max: 10, synth: 'sUSD' });
+		const topSUSDHolders = (await snxData.synthHolders({ max: 10, synth: 'sUSD' })) ?? [];
 		return topSUSDHolders.map(({ balanceOf, address }: SynthHolder) => ({
 			name: getSUSDHoldersName(address),
 			value: balanceOf,
@@ -146,7 +146,7 @@ const NetworkSection: FC = () => {
 		: null;
 
 	const networkCRatio =
-		SNXTotalSupply.gt(0) && SNXPrice.gt(0) && totalIssuedSynths.gt(0)
+		SNXTotalSupply.gt(0) && SNXPrice?.gt(0) && totalIssuedSynths.gt(0)
 			? SNXTotalSupply.mul(SNXPrice).div(totalIssuedSynths).toNumber()
 			: null;
 
@@ -194,7 +194,7 @@ const NetworkSection: FC = () => {
 				}}
 				data={SNXChartPriceData.data || []}
 				title={t('snx-price.title')}
-				num={SNXPrice.toNumber()}
+				num={SNXPrice?.toNumber() ?? null}
 				numFormat="currency2"
 				percentChange={
 					SNXPrice != null && priorSNXPrice != null
