@@ -1,4 +1,4 @@
-import { FC, useContext } from 'react';
+import { FC } from 'react';
 import orderBy from 'lodash/orderBy';
 import _orderBy from 'lodash/orderBy';
 import styled from 'styled-components';
@@ -8,7 +8,7 @@ import { wei } from '@synthetixio/wei';
 
 import SidewaysBarChart, { OpenInterest } from 'components/Charts/SidewaysBarChart';
 import { ChartTitle, ChartSubtitle } from 'components/common';
-import { SNXJSContext } from 'pages/_app';
+import { useNetwork } from 'contexts/Network';
 
 type SynthsBarChartProps = {
 	synthsTotalSupply: SynthsTotalSupplyData;
@@ -16,7 +16,7 @@ type SynthsBarChartProps = {
 
 const SynthsBarChart: FC<SynthsBarChartProps> = ({ synthsTotalSupply }) => {
 	const { t } = useTranslation();
-	const snxjs = useContext(SNXJSContext);
+	const { snxJs } = useNetwork();
 
 	const { ethPrice, btcPrice } = synthsTotalSupply.priceData;
 	const { ethNegativeEntries, btcNegativeEntries } = synthsTotalSupply.shortData;
@@ -27,7 +27,7 @@ const SynthsBarChart: FC<SynthsBarChartProps> = ({ synthsTotalSupply }) => {
 		'desc'
 	);
 
-	const openInterestSynths: string[] = snxjs.synths
+	const openInterestSynths: string[] = snxJs.synths
 		.filter((synth) => ['crypto', 'index'].includes(synth.category))
 		.map(({ name }) => name);
 

@@ -1,12 +1,11 @@
-import { useContext } from 'react';
 import { useQuery } from 'react-query';
 import { ethers } from 'ethers';
 import useSynthetixQueries from '@synthetixio/queries';
 import { wei, WeiSource } from '@synthetixio/wei';
-import { SNXDataContext } from 'pages/_app';
 import _ from 'lodash';
 
 import QUERY_KEYS from 'constants/queryKeys';
+import { useNetwork } from 'contexts/Network';
 
 export type LiquidationsSummary = {
 	amountToCover: WeiSource;
@@ -31,7 +30,7 @@ const MIN_LIQUIDATION_COVER_THRESHOLD = 10;
 const MIN_LIQUIDATION_BALANCE = 1;
 
 export const useLiquidationsQuery = () => {
-	const snxData = useContext(SNXDataContext);
+	const { snxData } = useNetwork();
 	const { useGlobalStakingInfoQuery } = useSynthetixQueries();
 
 	const globalStakingInfoQuery = useGlobalStakingInfoQuery();

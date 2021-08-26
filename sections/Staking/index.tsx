@@ -4,7 +4,7 @@ import { format } from 'date-fns';
 import { CellProps } from 'react-table';
 import styled from 'styled-components';
 import { ethers } from 'ethers';
-import { l1Endpoints as l1GraphAPIEndpoints } from '@synthetixio/data';
+import { l1Endpoints as l1GraphAPIEndpoints, DailyTotalActiveStakers } from '@synthetixio/data';
 import useSynthetixQueries from '@synthetixio/queries';
 import { wei } from '@synthetixio/wei';
 import _ from 'lodash';
@@ -24,10 +24,9 @@ import {
 import Table from 'components/Table';
 
 import { COLORS, MAX_PAGE_WIDTH } from 'constants/styles';
-import { ProviderContext } from 'pages/_app';
 import { AreaChartData, ChartPeriod } from 'types/data';
 import { synthetixSubgraph } from 'constants/links';
-
+import { useNetwork } from 'contexts/Network';
 import NoNotificationIcon from 'assets/svg/no-notifications.svg';
 
 import { useLiquidationsQuery } from 'queries/staking';
@@ -42,7 +41,6 @@ import {
 import { periodToDays } from 'utils/dataMapping';
 
 import Liquidations from './Liquidations';
-import { DailyTotalActiveStakers } from '@synthetixio/data';
 
 const WEEK = 86400 * 7 * 1000;
 
@@ -105,7 +103,7 @@ const Staking: FC = () => {
 
 	const liquidationsChartPrecision = liquidationsChartPeriod === 'W' ? '15m' : '1d';
 
-	const provider = useContext(ProviderContext);
+	const { provider } = useNetwork();
 
 	const { sUSDPrice, sUSDPriceQuery } = useSUSDInfo(provider);
 

@@ -2,7 +2,7 @@ import { useQuery } from 'react-query';
 import QUERY_KEYS from 'constants/queryKeys';
 import useSynthetixQueries from '@synthetixio/queries';
 import { Period } from '@synthetixio/queries/build/node/src/constants';
-import { SynthExchangeExpanded } from '@synthetixio/data';
+import { SynthExchangeExpanded } from '@synthetixio/data/build/node/src/types';
 
 export interface GeneralTradingInfo {
 	exchanges: SynthExchangeExpanded[];

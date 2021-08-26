@@ -3,10 +3,10 @@ import { SynthetixJS } from '@synthetixio/contracts-interface';
 export default {
 	CMC: (symbol: string) => ['cmc', symbol],
 	PageResults: (query: any) => ['pageResults', query],
-	SnxjsContract: (snxjs: SynthetixJS, contract: string, method: string, args: any[]) => [
-		'snxjs',
+	SnxjsContract: (snxJs: SynthetixJS, contract: string, method: string, args: any[]) => [
+		'snxJs',
 		'contract',
-		snxjs.network,
+		snxJs.network,
 		contract,
 		method,
 		args,

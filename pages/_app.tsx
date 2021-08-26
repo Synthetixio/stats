@@ -1,14 +1,8 @@
 import { createContext, FC, createRef, RefObject, useState } from 'react';
 import { AppProps } from 'next/app';
 import Head from 'next/head';
-import { ethers } from 'ethers';
-import { QueryClientProvider, QueryClient, Query } from 'react-query';
 import { ReactQueryDevtools } from 'react-query/devtools';
-
-import initSynthetixJS, { Network, NetworkId } from '@synthetixio/contracts-interface';
-import { createQueryContext, SynthetixQueryContextProvider } from '@synthetixio/queries';
-import { SynthetixProvider } from '@synthetixio/providers';
-import initSynthetixData, { SynthetixData } from '@synthetixio/data';
+import { QueryClientProvider, QueryClient, Query } from 'react-query';
 
 import { ThemeProvider as SCThemeProvider } from 'styled-components';
 import { ThemeProvider as MuiThemeProvider } from '@material-ui/core/styles';
@@ -27,6 +21,8 @@ import { Alert } from '@material-ui/lab';
 import colors from 'styles/colors';
 import { SPIN360 } from 'constants/styles';
 
+import { NetworkProvider } from 'contexts/Network';
+
 import MenuCloseIcon from 'assets/svg/menu-close';
 import RefetchIcon from 'assets/svg/refetch';
 
@@ -37,19 +33,7 @@ export const headersAndScrollRef: { [key: string]: RefObject<unknown> } = {
 	'YIELD FARMING': createRef(),
 	SYNTHS: createRef(),
 	OPTIONS: createRef(),
-	L2: createRef(),
 };
-
-const provider = new ethers.providers.InfuraProvider(
-	'homestead',
-	process.env.NEXT_PUBLIC_INFURA_KEY
-) as SynthetixProvider;
-const providerl2 = new ethers.providers.JsonRpcProvider(
-	'https://mainnet.optimism.io'
-) as SynthetixProvider;
-
-export const ProviderContext = createContext(provider as ethers.providers.Provider);
-export const ProviderContextL2 = createContext(providerl2 as ethers.providers.Provider);
 
 export const HeadersContext = createContext(headersAndScrollRef);
 
@@ -65,14 +49,6 @@ const queryClient = new QueryClient({
 });
 
 let checkInterval: any = null;
-
-const snxjs = initSynthetixJS({ network: Network.Mainnet, provider });
-const snxjsl2 = initSynthetixJS({ network: Network['Mainnet-Ovm'], provider: providerl2 });
-const snxdata = initSynthetixData({ networkId: NetworkId.Mainnet });
-
-export const SNXJSContext = createContext(snxjs);
-export const SNXJSContextL2 = createContext(snxjsl2);
-export const SNXDataContext = createContext(snxdata);
 
 const App: FC<AppProps> = ({ Component, pageProps }) => {
 	const { t } = useTranslation();
@@ -208,24 +184,11 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
 				<MuiThemeProvider theme={muiTheme}>
 					<QueryClientProvider client={queryClient}>
 						<HeadersContext.Provider value={headersAndScrollRef}>
-							<SNXJSContext.Provider value={snxjs}>
-								<SNXDataContext.Provider value={snxdata}>
-									<ProviderContext.Provider value={provider}>
-										<QueryClientProvider client={new QueryClient()}>
-											<SynthetixQueryContextProvider
-												value={createQueryContext({
-													provider,
-													networkId: 1,
-												})}
-											>
-												<Layout>
-													<Component {...pageProps} />
-												</Layout>
-											</SynthetixQueryContextProvider>
-										</QueryClientProvider>
-									</ProviderContext.Provider>
-								</SNXDataContext.Provider>
-							</SNXJSContext.Provider>
+							<NetworkProvider>
+								<Layout>
+									<Component {...pageProps} />
+								</Layout>
+							</NetworkProvider>
 						</HeadersContext.Provider>
 						<Snackbar
 							anchorOrigin={{ vertical: 'top', horizontal: 'right' }}

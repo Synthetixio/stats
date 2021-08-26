@@ -27,7 +27,7 @@ export interface RewardsData {
 }
 
 export const useRewardsContractInfo = (
-	snxjs: SynthetixJS,
+	snxJs: SynthetixJS,
 	provider: ethers.providers.Provider,
 	fromToken: string,
 	contractAddress: string,
@@ -58,15 +58,15 @@ export const useRewardsContractInfo = (
 		}
 	);
 
-	const price = useSnxjsContractQuery<ethers.BigNumber>(snxjs, 'ExchangeRates', 'rateForCurrency', [
-		snxjs.toBytes32(fromToken),
+	const price = useSnxjsContractQuery<ethers.BigNumber>(snxJs, 'ExchangeRates', 'rateForCurrency', [
+		snxJs.toBytes32(fromToken),
 	]);
 
 	const SNXPrice = useSnxjsContractQuery<ethers.BigNumber>(
-		snxjs,
+		snxJs,
 		'ExchangeRates',
 		'rateForCurrency',
-		[snxjs.toBytes32('SNX')]
+		[snxJs.toBytes32('SNX')]
 	);
 
 	let distribution = null;

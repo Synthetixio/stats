@@ -12,10 +12,10 @@ import { formatCurrency } from 'utils/formatter';
 import Image from 'next/image';
 
 import CircleIcon from 'assets/svg/circle';
-import { SNXJSContext } from 'pages/_app';
 import { MAX_PAGE_WIDTH } from 'constants/styles';
 import { useGeneralTradingInfoQuery } from 'queries/trading';
 import { useSnxjsContractQuery } from 'queries/shared/useSnxjsContractQuery';
+import { useNetwork } from 'contexts/Network';
 
 export type SynthVolumeStatus = {
 	key: string;
@@ -29,14 +29,15 @@ export type SynthsVolumeMatrixProps = {
 
 const SynthsVolumeMatrix: FC<SynthsVolumeMatrixProps> = ({ synthsTotalSupply }) => {
 	const { t } = useTranslation();
-	const snxjs = useContext(SNXJSContext);
+	const { snxJs } = useNetwork();
 	const { useTokenListQuery } = useSynthetixQueries();
 	const tokenList = useTokenListQuery('https://synths.snx.eth.link');
+
 	const synthTradesRequest = useGeneralTradingInfoQuery();
-	const synthFrozenRequest = useSnxjsContractQuery<any>(snxjs, 'SynthUtil', 'frozenSynths', []);
+	const synthFrozenRequest = useSnxjsContractQuery<any>(snxJs, 'SynthUtil', 'frozenSynths', []);
 	const synthTotalSupplies: string[] = synthsTotalSupply?.synthTotalSupplies[0];
 	const synthStatusesRequest = useSnxjsContractQuery<any>(
-		snxjs,
+		snxJs,
 		'SystemStatus',
 		'getSynthSuspensions',
 		[synthTotalSupplies ?? []]
@@ -54,7 +55,7 @@ const SynthsVolumeMatrix: FC<SynthsVolumeMatrixProps> = ({ synthsTotalSupply }) 
 		const frozenSynthKeys = synthFrozenRequest.data!;
 
 		synthsVolumeData = synthTotalSupplies.map((currencyKey: string, idx: number) => ({
-			key: snxjs.utils.parseBytes32String(currencyKey),
+			key: snxJs.utils.parseBytes32String(currencyKey),
 			lastDayVolume: aggregatedSynthVolume[currencyKey] || 0,
 			suspensionReason:
 				suspendedSynths[1][idx].toNumber() || (frozenSynthKeys.indexOf(currencyKey) !== -1 ? 4 : 0),
@@ -104,9 +105,9 @@ const SynthsVolumeMatrix: FC<SynthsVolumeMatrixProps> = ({ synthsTotalSupply }) 
 								arrow
 								placement="top"
 								title={
-									snxjs.suspensionReasons[info.suspensionReason]
+									snxJs.suspensionReasons[info.suspensionReason]
 										? (t('synths-status.suspension-with-reason', {
-												reason: snxjs.suspensionReasons[info.suspensionReason],
+												reason: snxJs.suspensionReasons[info.suspensionReason],
 										  }) as string)
 										: (t('synths-status.suspension') as string)
 								}

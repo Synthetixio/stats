@@ -4,12 +4,12 @@ import QUERY_KEYS from 'constants/queryKeys';
 import { SynthetixJS } from '@synthetixio/contracts-interface';
 
 export const useSnxjsContractQuery = <T>(
-	snxjs: SynthetixJS,
+	snxJs: SynthetixJS,
 	contract: string,
 	method: string,
 	args: any[]
 ) => {
-	return useQuery<T, string>(QUERY_KEYS.SnxjsContract(snxjs, contract, method, args), async () => {
-		return snxjs.contracts[contract][method](...args);
+	return useQuery<T, string>(QUERY_KEYS.SnxjsContract(snxJs, contract, method, args), async () => {
+		return snxJs.contracts[contract][method](...args);
 	});
 };

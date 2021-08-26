@@ -1,31 +1,28 @@
 import { FC } from 'react';
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
-// import useSynthetixQueries from '@synthetixio/queries';
-import { SynthsTotalSupplyData } from '@synthetixio/queries';
-import { Query, UseQueryResult } from 'react-query';
+import useSynthetixQueries from '@synthetixio/queries';
 
 import SectionHeader from 'components/SectionHeader';
 import { MAX_PAGE_WIDTH, COLORS } from 'constants/styles';
 import SingleStatRow from 'components/SingleStatRow';
+import { useNetwork } from 'contexts/Network';
 
 import SynthsBarChart from './SynthsBarChart';
 import SynthsPieChart from './SynthsPieChart';
 import TopSynths from './TopSynths';
 import SynthsVolumeMatrix from './SynthsVolumeMatrix';
 
-const SynthsSection: FC<{
-	l2: boolean;
-	synthsTotalSupplyQuery: UseQueryResult<SynthsTotalSupplyData>;
-}> = ({ l2, synthsTotalSupplyQuery }) => {
+const SynthsSection: FC<{}> = ({}) => {
 	const { t } = useTranslation();
-	// const { useSynthsTotalSupplyQuery } = useSynthetixQueries();
-	// const synthsTotalSupplyQuery = useSynthsTotalSupplyQuery();
+	const { isL2 } = useNetwork();
+	const { useSynthsTotalSupplyQuery } = useSynthetixQueries();
+	const synthsTotalSupplyQuery = useSynthsTotalSupplyQuery();
 	const synthsTotalSupply = synthsTotalSupplyQuery?.data!;
 
 	return (
 		<>
-			<SectionHeader title={l2 ? 'L2 Synths' : t('section-header.synths')} />
+			<SectionHeader title={t('section-header.synths', { isL2 })} />
 			{!synthsTotalSupply ? null : (
 				<>
 					<SingleStatRow

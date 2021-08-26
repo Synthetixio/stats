@@ -26,11 +26,11 @@ import {
 	curveDocumentation,
 	synthetixDataGithub,
 } from 'constants/links';
-import { SNXJSContext, SNXDataContext, ProviderContext } from 'pages/_app';
 import { getSUSDHoldersName } from 'utils/dataMapping';
 import { renBTC } from 'contracts';
 import { useSnxjsContractQuery } from 'queries/shared/useSnxjsContractQuery';
 import { useSUSDInfo } from 'queries/shared/useSUSDInfo';
+import { useNetwork } from 'contexts/Network';
 
 import SUSDDistribution from '../Network/SUSDDistribution';
 
@@ -46,9 +46,7 @@ const NetworkSection: FC = () => {
 	} = useSynthetixQueries();
 	const SNXChartPriceData = useSnxPriceChartQuery(priceChartPeriod);
 
-	const snxjs = useContext(SNXJSContext);
-	const snxData = useContext(SNXDataContext);
-	const provider = useContext(ProviderContext);
+	const { provider, snxJs, snxData } = useNetwork();
 
 	const globalStakingInfoQuery = useGlobalStakingInfoQuery();
 	const {
@@ -72,44 +70,44 @@ const NetworkSection: FC = () => {
 	const { sUSDPrice, sUSDPriceQuery } = useSUSDInfo(provider);
 
 	const unformattedSUSDTotalSupply = useSnxjsContractQuery<ethers.BigNumber>(
-		snxjs,
+		snxJs,
 		'SynthsUSD',
 		'totalSupply',
 		[]
 	);
 
 	const unformattedWrapprLocked = useSnxjsContractQuery<ethers.BigNumber>(
-		snxjs,
+		snxJs,
 		'EtherWrapper',
 		'sETHIssued',
 		[]
 	);
 	const unformattedEthPrice = useSnxjsContractQuery<ethers.BigNumber>(
-		snxjs,
+		snxJs,
 		'ExchangeRates',
 		'rateForCurrency',
-		[snxjs.toBytes32('sETH')]
+		[snxJs.toBytes32('sETH')]
 	);
 	const unformattedBtcPrice = useSnxjsContractQuery<ethers.BigNumber>(
-		snxjs,
+		snxJs,
 		'ExchangeRates',
 		'rateForCurrency',
-		[snxjs.toBytes32('sBTC')]
+		[snxJs.toBytes32('sBTC')]
 	);
 
-	const ethSusdCollateralBalance = useETHBalanceQuery(snxjs.contracts.EtherCollateralsUSD.address);
-	const ethCollateralBalance = useETHBalanceQuery(snxjs.contracts.EtherCollateral.address);
-	const multiCollateralEtherBalance = useETHBalanceQuery(snxjs.contracts.CollateralEth.address);
+	const ethSusdCollateralBalance = useETHBalanceQuery(snxJs.contracts.EtherCollateralsUSD.address);
+	const ethCollateralBalance = useETHBalanceQuery(snxJs.contracts.EtherCollateral.address);
+	const multiCollateralEtherBalance = useETHBalanceQuery(snxJs.contracts.CollateralEth.address);
 
 	const bitcoinLockedQuery = useTokensBalancesQuery(
 		[{ address: renBTC.address, symbol: 'renBTC' } as Token],
-		snxjs.contracts.CollateralErc20.address
+		snxJs.contracts.CollateralErc20.address
 	);
 	const bitcoinLocked = bitcoinLockedQuery.data?.renBTC?.balance ?? null;
 
 	const sUSDShortLockedQuery = useTokensBalancesQuery(
-		[{ address: snxjs.contracts.SynthsUSD.address, symbol: 'sUSD' } as Token],
-		snxjs.contracts.CollateralShort.address
+		[{ address: snxJs.contracts.SynthsUSD.address, symbol: 'sUSD' } as Token],
+		snxJs.contracts.CollateralShort.address
 	);
 	const sUSDShortLocked = sUSDShortLockedQuery.data?.sUSD?.balance ?? null;
 
