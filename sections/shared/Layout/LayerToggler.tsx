@@ -39,7 +39,7 @@ const Container = styled.div`
 
 const RADIO_BUTTON_RADIUS = 4;
 
-const ToggleButton = styled.div<{ layer: string; active: boolean; onClick: () => void }>`
+const ToggleButton = styled.div<{ active: boolean }>`
 	display: flex;
 	align-items: center;
 	justify-content: center;
