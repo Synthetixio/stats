@@ -1,8 +1,9 @@
 import { FC } from 'react';
-import { PieChart, Pie, Cell, Legend, ResponsiveContainer } from 'recharts';
+import { PieChart, Pie, Cell, Legend, ResponsiveContainer, Tooltip } from 'recharts';
 
-import colors from '../../styles/colors';
+import colors from 'styles/colors';
 import CustomLegend from './CustomLegend';
+import CustomTooltip from './CustomTooltip';
 
 interface BasicPieChartProps {
 	data: {
@@ -10,9 +11,13 @@ interface BasicPieChartProps {
 		value: number;
 	}[];
 	isShortLegend: boolean;
+	tooltipFormatter?: FC<{ name: string; value: number; payload: any }>;
+	legendFormatter?: FC<{ payload: any }>;
 }
 
-const MUTED_COLORS = [
+export const MIN_PERCENT_FOR_PIE_CHART = 0.03;
+
+export const MUTED_COLORS = [
 	colors.mutedBrightBlue,
 	colors.mutedBrightOrange,
 	colors.mutedBrightGreen,
@@ -25,6 +30,7 @@ const MUTED_COLORS = [
 	colors.mutedBrightBurntOrange,
 	colors.mutedBrightForestGreen,
 ];
+
 export const BRIGHT_COLORS = [
 	colors.brightBlue,
 	colors.brightOrange,
@@ -39,7 +45,12 @@ export const BRIGHT_COLORS = [
 	colors.brightForestGreen,
 ];
 
-const BasicPieChart: FC<BasicPieChartProps> = ({ data, isShortLegend }) => (
+const BasicPieChart: FC<BasicPieChartProps> = ({
+	data,
+	isShortLegend,
+	tooltipFormatter,
+	legendFormatter,
+}) => (
 	<ResponsiveContainer width="100%" height={isShortLegend ? '80%' : '100%'}>
 		<PieChart height={380}>
 			<Pie
@@ -60,7 +71,17 @@ const BasicPieChart: FC<BasicPieChartProps> = ({ data, isShortLegend }) => (
 					/>
 				))}
 			</Pie>
-			<Legend content={<CustomLegend isShortLegend={isShortLegend} />} />
+			{!tooltipFormatter ? null : (
+				<Tooltip
+					content={
+						// @ts-ignore
+						<CustomTooltip formatter={tooltipFormatter} />
+					}
+				/>
+			)}
+			<Legend
+				content={<CustomLegend isShortLegend={isShortLegend} formatter={legendFormatter} />}
+			/>
 		</PieChart>
 	</ResponsiveContainer>
 );

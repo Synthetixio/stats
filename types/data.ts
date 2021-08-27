@@ -1,37 +1,6 @@
-export type OpenInterest = {
-	[name: string]: {
-		[subName: string]: {
-			value: number;
-			totalSupply: number;
-			isShort: boolean;
-			shortSupply: number | null;
-		};
-	};
-};
-
-export type SynthTotalSupply = {
-	name: string;
-	totalSupply?: number;
-	value: number;
-	valueWithAdjust: number;
-	maxLimit?: number;
-};
-
 export type SNXPriceData = {
 	id: string;
 	averagePrice: number;
-};
-
-export type ActiveStakersData = {
-	id: string;
-	count: number;
-};
-
-export type TradesRequestData = {
-	id: string;
-	trades: number;
-	exchangers: number;
-	exchangeUSDTally: number;
 };
 
 export type AreaChartData = {
@@ -54,13 +23,4 @@ export type FeePeriod = {
 	rewardsToDistribute: number;
 	rewardsClaimed: number;
 	startTime: number;
-};
-
-export type OptionsMarket = {
-	strikePrice: number;
-	maturityDate: number;
-	currencyKey: string;
-	poolSize: string;
-	expiryDate?: string;
-	value?: number;
 };

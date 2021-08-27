@@ -1,6 +1,7 @@
 import { FC } from 'react';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
-import { Skeleton } from '@material-ui/lab';
+import Skeleton from '@material-ui/core/Skeleton';
+import isBoolean from 'lodash/isBoolean';
 
 import colors from '../../styles/colors';
 import { AreaChartData } from '../../types/data';
@@ -18,6 +19,7 @@ interface BasicAreaChartProps {
 	timeSeries: TimeSeriesType;
 	valueType: NumberStyle;
 	percentChange: number | null;
+	isLoadingData?: boolean;
 }
 
 const BasicAreaChart: FC<BasicAreaChartProps> = ({
@@ -25,12 +27,13 @@ const BasicAreaChart: FC<BasicAreaChartProps> = ({
 	timeSeries,
 	valueType,
 	percentChange,
+	isLoadingData,
 }) => {
-	if (data.length === 0) {
+	if (isBoolean(isLoadingData) ? isLoadingData : !data.length) {
 		return (
 			<Skeleton
 				className="chart-skeleton"
-				variant="rect"
+				variant="rectangular"
 				animation="wave"
 				width="100%"
 				height={400}
@@ -75,19 +78,23 @@ const BasicAreaChart: FC<BasicAreaChartProps> = ({
 					type="number"
 					domain={
 						Math.abs(percentChange || 0) < 0.5
-							? [(dataMin) => 2.5 - Math.abs(dataMin), (dataMax) => dataMax * 1]
-							: [(dataMin) => 0 - Math.abs(dataMin), (dataMax) => dataMax * 1]
+							? [(dataMin: number) => 2.5 - Math.abs(dataMin), (dataMax: number) => dataMax * 1]
+							: [(dataMin: number) => 0 - Math.abs(dataMin), (dataMax: number) => dataMax * 1]
 					}
 				/>
 				<Tooltip
 					labelFormatter={(created) => {
-						return formatDate(created as string);
+						try {
+							return formatDate(created as string);
+						} catch {
+							return '-';
+						}
 					}}
 					separator=""
-					formatter={(value) =>
+					formatter={(value: number) =>
 						valueType === 'currency2'
-							? [formatCurrency(value as number, 2), '']
-							: [formatNumber(value as number, 0), '']
+							? [formatCurrency(value, 2), '']
+							: [formatNumber(value, 0), '']
 					}
 					contentStyle={{
 						backgroundColor: colors.tooltipBlue,

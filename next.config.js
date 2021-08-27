@@ -3,6 +3,8 @@ const path = require('path');
 
 module.exports = {
 	webpack(config) {
+		config.resolve.mainFields = ['module', 'browser', 'main'];
+
 		config.module.rules.push({
 			test: /\.(svg)$/,
 			include: path.resolve(__dirname, 'assets/svg'),
@@ -13,6 +15,6 @@ module.exports = {
 	},
 	env: {},
 	images: {
-		domains: ['raw.githubusercontent.com']
-	}
+		domains: ['raw.githubusercontent.com'],
+	},
 };

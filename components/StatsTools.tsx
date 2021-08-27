@@ -3,7 +3,8 @@ import styled from 'styled-components';
 
 import { SnxTooltip } from './common';
 import { UseQueryResult } from 'react-query';
-import { IconButton, withStyles } from '@material-ui/core';
+import { IconButton } from '@material-ui/core';
+import { withStyles } from '@material-ui/styles';
 
 import RefetchIcon from 'assets/svg/refetch';
 import { useTranslation } from 'react-i18next';

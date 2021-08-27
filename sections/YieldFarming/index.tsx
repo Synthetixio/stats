@@ -6,13 +6,13 @@ import StatsRow from 'components/StatsRow';
 import DoubleStatsBox from 'components/DoubleStatsBox';
 
 import { COLORS } from 'constants/styles';
-import { SNXJSContext, ProviderContext } from 'pages/_app';
 
 import { useRewardsContractInfo, RewardsData } from 'queries/yield-farming';
 import { curvepoolRewards } from 'contracts';
 import { usePageResults } from 'queries/shared/usePageResults';
 import { aave, aavev2 } from 'constants/graph-urls';
 import StatsBox from 'components/StatsBox';
+import { useNetwork } from 'contexts/Network';
 
 const SubtitleText = ({ name }: { name: string }) =>
 	name === 'sUSD' ? (
@@ -34,13 +34,11 @@ const SubtitleText = ({ name }: { name: string }) =>
 const YieldFarming: FC = () => {
 	const { t } = useTranslation();
 
-	const snxjs = useContext(SNXJSContext);
-
-	const provider = useContext(ProviderContext);
+	const { snxJs, provider } = useNetwork();
 
 	const rewardsData: { [id: string]: any } = {
 		'curve-susd': useRewardsContractInfo(
-			snxjs,
+			snxJs,
 			provider,
 			'sUSD',
 			curvepoolRewards.address,
