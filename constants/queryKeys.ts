@@ -1,4 +1,4 @@
-import { SynthetixJS } from '@synthetixio/contracts-interface';
+import { SynthetixJS, NetworkId } from '@synthetixio/contracts-interface';
 
 export default {
 	CMC: (symbol: string) => ['cmc', symbol],
@@ -19,9 +19,6 @@ export default {
 
 	Staking: {
 		Liquidations: ['staking', 'liquidations'],
-	},
-	Trading: {
-		GeneralTradingInfo: (period: string) => ['trading', 'generalTradingInfo', period],
 	},
 	YieldFarming: {
 		CurveApy: ['yieldFarming', 'curveApy'],

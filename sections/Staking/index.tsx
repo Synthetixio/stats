@@ -364,8 +364,8 @@ const Staking: FC = () => {
 				<StatsBox
 					key="LIQUIDCOUNT"
 					title={t('liquidation-count.title')}
-					num={liquidations.isSuccess ? liquidations.data[0].liquidatableCount : null}
-					queries={[liquidations]}
+					num={liquidations.summary.liquidatableCount}
+					queries={liquidations.queries}
 					percentChange={null}
 					subText={t('liquidation-count.subtext')}
 					color={COLORS.pink}
@@ -376,8 +376,8 @@ const Staking: FC = () => {
 				<StatsBox
 					key="LIQUIDAMOUNT"
 					title={t('liquidation-amount-to-cover.title')}
-					num={liquidations.isSuccess ? liquidations.data[0].amountToCover : null}
-					queries={[liquidations]}
+					num={liquidations.summary.amountToCover}
+					queries={liquidations.queries}
 					percentChange={null}
 					subText={t('liquidation-amount-to-cover.subtext')}
 					color={COLORS.pink}
@@ -388,8 +388,8 @@ const Staking: FC = () => {
 				<StatsBox
 					key="LIQUIDABLE"
 					title={t('liquidation-snx-total.title')}
-					num={liquidations.isSuccess ? liquidations.data[0].totalLiquidatableSNX : null}
-					queries={[liquidations]}
+					num={liquidations.summary.totalLiquidatableSNX}
+					queries={liquidations.queries}
 					percentChange={null}
 					subText={t('liquidation-snx-total.subtext')}
 					color={COLORS.pink}
@@ -399,9 +399,7 @@ const Staking: FC = () => {
 				/>
 			</StatsRow>
 			<Liquidations
-				liquidationsData={
-					liquidations.isSuccess ? _.reverse(_.sortBy(liquidations.data![1], 'amountToCover')) : []
-				}
+				liquidationsData={_.reverse(_.sortBy(liquidations.liquidations, 'amountToCover'))}
 				isLoading={liquidations.isFetching}
 				issuanceRatio={issuanceRatio.toNumber()}
 				snxPrice={SNXPrice.toNumber()}

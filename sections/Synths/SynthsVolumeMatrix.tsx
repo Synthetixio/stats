@@ -2,8 +2,10 @@ import React, { FC, useContext } from 'react';
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 import useSynthetixQueries, { SynthsTotalSupplyData } from '@synthetixio/queries';
+import { SynthExchangeExpanded } from '@synthetixio/data';
 import _padEnd from 'lodash/padEnd';
 import _orderBy from 'lodash/orderBy';
+import { ethers } from 'ethers';
 
 import { ChartTitle, SnxTooltip } from 'components/common';
 import colors from 'styles/colors';
@@ -33,7 +35,7 @@ const SynthsVolumeMatrix: FC<SynthsVolumeMatrixProps> = ({ synthsTotalSupply }) 
 	const { useTokenListQuery } = useSynthetixQueries();
 	const tokenList = useTokenListQuery('https://synths.snx.eth.link');
 
-	const synthTradesRequest = useGeneralTradingInfoQuery();
+	const { exchanges } = useGeneralTradingInfoQuery();
 	const synthFrozenRequest = useSnxjsContractQuery<any>(snxJs, 'SynthUtil', 'frozenSynths', []);
 	const synthTotalSupplies: string[] = synthsTotalSupply?.synthTotalSupplies[0];
 	const synthStatusesRequest = useSnxjsContractQuery<any>(
@@ -45,15 +47,10 @@ const SynthsVolumeMatrix: FC<SynthsVolumeMatrixProps> = ({ synthsTotalSupply }) 
 
 	let synthsVolumeData: SynthVolumeStatus[] = [];
 
-	if (
-		synthStatusesRequest.isSuccess &&
-		synthFrozenRequest.isSuccess &&
-		synthTradesRequest.isSuccess
-	) {
-		const aggregatedSynthVolume = aggregateSynthTradeVolume(synthTradesRequest.data!.exchanges);
+	if (synthStatusesRequest.isSuccess && synthFrozenRequest.isSuccess) {
+		const aggregatedSynthVolume = aggregateSynthTradeVolume(exchanges);
 		const suspendedSynths = synthStatusesRequest.data!;
 		const frozenSynthKeys = synthFrozenRequest.data!;
-
 		synthsVolumeData = synthTotalSupplies.map((currencyKey: string, idx: number) => ({
 			key: snxJs.utils.parseBytes32String(currencyKey),
 			lastDayVolume: aggregatedSynthVolume[currencyKey] || 0,
@@ -124,14 +121,16 @@ const SynthsVolumeMatrix: FC<SynthsVolumeMatrixProps> = ({ synthsTotalSupply }) 
 	);
 };
 
-function aggregateSynthTradeVolume(trades: any[]) {
+function aggregateSynthTradeVolume(trades: SynthExchangeExpanded[]) {
 	const synthVolumes: { [currencyKey: string]: number } = {};
 
 	for (const trade of trades) {
-		synthVolumes[_padEnd(trade.fromCurrencyKeyBytes, 66, '0')] =
-			(synthVolumes[trade.fromCurrencyKeyBytes] || 0) + trade.fromAmountInUSD;
-		synthVolumes[_padEnd(trade.toCurrencyKeyBytes, 66, '0')] =
-			(synthVolumes[trade.toCurrencyKeyBytes] || 0) + trade.toAmountInUSD;
+		const fromCurrencyKeyBytes = ethers.utils.formatBytes32String(trade.fromCurrencyKey);
+		const toCurrencyKeyBytes = ethers.utils.formatBytes32String(trade.toCurrencyKey);
+		synthVolumes[_padEnd(fromCurrencyKeyBytes, 66, '0')] =
+			(synthVolumes[fromCurrencyKeyBytes] || 0) + Number(trade.fromAmountInUSD);
+		synthVolumes[_padEnd(toCurrencyKeyBytes, 66, '0')] =
+			(synthVolumes[toCurrencyKeyBytes] || 0) + Number(trade.toAmountInUSD);
 	}
 
 	return synthVolumes;

@@ -84,7 +84,11 @@ const BasicAreaChart: FC<BasicAreaChartProps> = ({
 				/>
 				<Tooltip
 					labelFormatter={(created) => {
-						return formatDate(created as string);
+						try {
+							return formatDate(created as string);
+						} catch {
+							return '-';
+						}
 					}}
 					separator=""
 					formatter={(value: number) =>

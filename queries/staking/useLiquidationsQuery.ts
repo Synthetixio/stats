@@ -1,7 +1,8 @@
-import { useQuery } from 'react-query';
+import { useQuery, UseQueryResult } from 'react-query';
 import { ethers } from 'ethers';
 import useSynthetixQueries from '@synthetixio/queries';
 import { wei, WeiSource } from '@synthetixio/wei';
+import { AccountFlaggedForLiquidation, SnxHolder } from '@synthetixio/data';
 import _ from 'lodash';
 
 import QUERY_KEYS from 'constants/queryKeys';
@@ -29,7 +30,12 @@ const MIN_LIQUIDATION_COVER_THRESHOLD = 10;
 // number of SNX which is *actually* liquidatable before showing on page (or else its dust)
 const MIN_LIQUIDATION_BALANCE = 1;
 
-export const useLiquidationsQuery = () => {
+export const useLiquidationsQuery = (): {
+	summary: LiquidationsSummary;
+	liquidations: LiquidationsData[];
+	queries: UseQueryResult[];
+	isFetching: boolean;
+} => {
 	const { snxData } = useNetwork();
 	const { useGlobalStakingInfoQuery } = useSynthetixQueries();
 
@@ -48,7 +54,10 @@ export const useLiquidationsQuery = () => {
 				lastDebtLedgerEntry: wei(0),
 		  };
 
-	return useQuery<[LiquidationsSummary, LiquidationsData[]], string>(
+	const useLiquidationsQuery = useQuery<
+		{ activeLiquidations: AccountFlaggedForLiquidation[]; rawAccountInfos: SnxHolder[] },
+		string
+	>(
 		QUERY_KEYS.Staking.Liquidations,
 		async () => {
 			const activeLiquidations =
@@ -61,64 +70,77 @@ export const useLiquidationsQuery = () => {
 
 			const accountAddresses = activeLiquidations.map((l: any) => l.account.toLowerCase());
 
-			const rawAccountInfos = await snxData.snxHolders({
-				addresses: accountAddresses,
-			});
+			const rawAccountInfos =
+				(await snxData.snxHolders({
+					addresses: accountAddresses,
+				})) ?? [];
 
-			const accountInfos = _.keyBy(rawAccountInfos, 'id');
-
-			const summary: LiquidationsSummary = {
-				amountToCover: 0,
-				totalLiquidatableSNX: 0,
-				liquidatableCount: activeLiquidations.length,
-			};
-
-			const liquidations = [];
-			for (const l of activeLiquidations) {
-				const accountInfo = accountInfos[l.account.toLowerCase()];
-				const debtEntryAtIndexFmt = Number(
-					ethers.utils.formatEther(ethers.BigNumber.from(accountInfo.debtEntryAtIndex))
-				);
-				const initialDebtOwnershipFmt = Number(
-					ethers.utils.formatEther(ethers.BigNumber.from(accountInfo.initialDebtOwnership))
-				);
-
-				let currentDebt = totalIssuedSynths
-					.mul(lastDebtLedgerEntry)
-					.mul(initialDebtOwnershipFmt)
-					.div(debtEntryAtIndexFmt);
-
-				let currentCollateral = wei(
-					ethers.utils.formatEther(ethers.BigNumber.from(accountInfo.collateral))
-				);
-
-				let currentBalanceOf = wei(
-					ethers.utils.formatEther(ethers.BigNumber.from(accountInfo.balanceOf))
-				);
-
-				const amountToCover = currentDebt.sub(issuanceRatio).mul(currentCollateral).mul(SNXPrice);
-				const liquidatableAmount = amountToCover.div(SNXPrice);
-
-				if (
-					amountToCover.gt(MIN_LIQUIDATION_COVER_THRESHOLD) &&
-					currentBalanceOf.gt(MIN_LIQUIDATION_BALANCE)
-				) {
-					liquidations.push({
-						deadline: l.deadline,
-						account: l.account,
-						currentRatio: currentDebt.div(currentCollateral).mul(SNXPrice),
-						currentCollateral,
-						currentDebt,
-						amountToCover,
-						liquidatableAmount,
-					});
-
-					summary.amountToCover = summary.amountToCover.add(amountToCover);
-					summary.totalLiquidatableSNX = summary.totalLiquidatableSNX.add(liquidatableAmount);
-				}
-			}
-			return [summary, liquidations];
+			return { activeLiquidations, rawAccountInfos };
 		},
 		{ enabled: !!SNXPrice && !!issuanceRatio && !!totalIssuedSynths && !!lastDebtLedgerEntry }
 	);
+
+	const summary: LiquidationsSummary = {
+		amountToCover: 0,
+		totalLiquidatableSNX: 0,
+		liquidatableCount: 0,
+	};
+	const liquidations: LiquidationsData[] = [];
+
+	if (useLiquidationsQuery.isSuccess) {
+		const { activeLiquidations, rawAccountInfos } = useLiquidationsQuery.data;
+
+		const accountInfos = _.keyBy(rawAccountInfos, 'id');
+
+		summary.liquidatableCount = activeLiquidations.length;
+
+		const liquidations = [];
+		for (const l of activeLiquidations) {
+			const accountInfo = accountInfos[l.account.toLowerCase()];
+			const debtEntryAtIndexFmt = Number(
+				ethers.utils.formatEther(ethers.BigNumber.from(accountInfo.debtEntryAtIndex))
+			);
+			const initialDebtOwnershipFmt = Number(
+				ethers.utils.formatEther(ethers.BigNumber.from(accountInfo.initialDebtOwnership))
+			);
+
+			let currentDebt = totalIssuedSynths
+				.mul(lastDebtLedgerEntry)
+				.mul(initialDebtOwnershipFmt)
+				.div(debtEntryAtIndexFmt);
+
+			let currentCollateral = wei(
+				ethers.utils.formatEther(ethers.BigNumber.from(accountInfo.collateral))
+			);
+
+			let currentBalanceOf = wei(
+				ethers.utils.formatEther(ethers.BigNumber.from(accountInfo.balanceOf))
+			);
+
+			const amountToCover = currentDebt.sub(issuanceRatio).mul(currentCollateral).mul(SNXPrice);
+			const liquidatableAmount = amountToCover.div(SNXPrice);
+
+			if (
+				amountToCover.gt(MIN_LIQUIDATION_COVER_THRESHOLD) &&
+				currentBalanceOf.gt(MIN_LIQUIDATION_BALANCE)
+			) {
+				liquidations.push({
+					deadline: l.deadline,
+					account: l.account,
+					currentRatio: currentDebt.div(currentCollateral).mul(SNXPrice),
+					currentCollateral,
+					currentDebt,
+					amountToCover,
+					liquidatableAmount,
+				});
+
+				summary.amountToCover = summary.amountToCover.add(amountToCover);
+				summary.totalLiquidatableSNX = summary.totalLiquidatableSNX.add(liquidatableAmount);
+			}
+		}
+	}
+
+	const queries = [useLiquidationsQuery, globalStakingInfoQuery];
+
+	return { summary, liquidations, queries, isFetching: !!queries.find((q) => q.isFetching) };
 };
