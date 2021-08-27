@@ -1,11 +1,13 @@
 import useSynthetixQueries from '@synthetixio/queries';
 import { Period } from '@synthetixio/queries/build/node/src/constants';
 import { SynthExchangeExpanded } from '@synthetixio/data';
+import { UseQueryResult } from 'react-query';
 
 export interface GeneralTradingInfo {
 	exchanges: SynthExchangeExpanded[];
 	totalDailyTradingVolume: number;
 	totalUsers: number;
+	queries: UseQueryResult[];
 }
 
 export const useGeneralTradingInfoQuery = () => {
@@ -28,5 +30,6 @@ export const useGeneralTradingInfoQuery = () => {
 		exchanges,
 		totalDailyTradingVolume,
 		totalUsers: total?.exchangers ?? 0,
+		queries: [exchangesQuery, totalsQuery],
 	};
 };

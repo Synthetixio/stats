@@ -236,8 +236,8 @@ const Trading: FC = () => {
 				<StatsBox
 					key="TOTLDAILYVOLUME"
 					title={t('24hr-exchange-volume.title')}
-					num={generalTradingInfo.data?.totalDailyTradingVolume || null}
-					queries={[generalTradingInfo]}
+					num={generalTradingInfo.totalDailyTradingVolume || null}
+					queries={generalTradingInfo.queries}
 					percentChange={null}
 					subText={t('24hr-exchange-volume.subtext')}
 					color={COLORS.green}
@@ -366,8 +366,8 @@ const Trading: FC = () => {
 					<StatsBox
 						key="TOTALNOUNQTRADERS"
 						title={t('total-number-unique-traders.title')}
-						num={generalTradingInfo.data?.totalUsers || null}
-						queries={[generalTradingInfo]}
+						num={generalTradingInfo.totalUsers || null}
+						queries={generalTradingInfo.queries}
 						percentChange={null}
 						subText={t('total-number-unique-traders.subtext')}
 						color={COLORS.pink}
