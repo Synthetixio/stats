@@ -36,10 +36,7 @@ const HomePage: FC = () => {
 				</>
 			)}
 			<div ref={headersContext.SYNTHS as React.RefObject<HTMLDivElement>}>
-				<SynthsSection l2={false} />
-			</div>
-			<div ref={headersContext.L2 as React.RefObject<HTMLDivElement>}>
-				<SynthsSection l2={true} />
+				<SynthsSection />
 			</div>
 		</>
 	);
