@@ -4,7 +4,6 @@ import Head from 'next/head';
 import SnxSection from 'sections/Network';
 import TradingSection from 'sections/Trading';
 import SynthsSection from 'sections/Synths';
-import OptionsSection from 'sections/Options';
 import StakingSection from 'sections/Staking';
 import YieldFarmingSection from 'sections/YieldFarming';
 import { HeadersContext } from './_app';
@@ -39,11 +38,6 @@ const HomePage: FC = () => {
 			<div ref={headersContext.SYNTHS as React.RefObject<HTMLDivElement>}>
 				<SynthsSection />
 			</div>
-			{isL2 ? null : (
-				<div ref={headersContext.OPTIONS as React.RefObject<HTMLDivElement>}>
-					<OptionsSection />
-				</div>
-			)}
 		</>
 	);
 };
