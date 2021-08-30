@@ -1,35 +1,35 @@
-import { useQuery } from 'react-query';
-
-import QUERY_KEYS from 'constants/queryKeys';
-
-import snxData from 'synthetix-data';
+import useSynthetixQueries from '@synthetixio/queries';
+import { Period } from '@synthetixio/queries/build/node/src/constants';
+import { SynthExchangeExpanded } from '@synthetixio/data';
+import { UseQueryResult } from 'react-query';
 
 export interface GeneralTradingInfo {
-	exchanges: any[];
+	exchanges: SynthExchangeExpanded[];
 	totalDailyTradingVolume: number;
 	totalUsers: number;
+	queries: UseQueryResult[];
 }
 
-export const useGeneralTradingInfoQuery = (minTimestamp: number) => {
-	return useQuery<GeneralTradingInfo, string>(
-		QUERY_KEYS.Trading.GeneralTradingInfo(minTimestamp),
-		async () => {
-			const [exchanges, allTimeData] = await Promise.all([
-				snxData.exchanges.since({ minTimestamp }),
-				snxData.exchanges.total(),
-			]);
+export const useGeneralTradingInfoQuery = () => {
+	const { useSynthExchangesSinceQuery, useExchangeTotalsQuery } = useSynthetixQueries();
+	const exchangesQuery = useSynthExchangesSinceQuery(Period.ONE_DAY);
+	const totalsQuery = useExchangeTotalsQuery({ timeSeries: 'all', max: 1 });
 
-			// @ts-ignore
-			const totalDailyTradingVolume = exchanges.reduce(
-				(acc: number, { fromAmountInUSD }: any) => acc + fromAmountInUSD,
-				0
-			);
+	const exchanges = exchangesQuery.isSuccess
+		? (exchangesQuery.data as SynthExchangeExpanded[])
+		: [];
+	const totals = totalsQuery.isSuccess ? totalsQuery.data : [];
+	const total = totals?.[0];
 
-			return {
-				exchanges,
-				totalDailyTradingVolume,
-				totalUsers: allTimeData.exchangers,
-			};
-		}
+	const totalDailyTradingVolume: number = exchanges.reduce(
+		(acc: number, { fromAmountInUSD }: any) => acc + Number(fromAmountInUSD),
+		0
 	);
+
+	return {
+		exchanges,
+		totalDailyTradingVolume,
+		totalUsers: total?.exchangers ?? 0,
+		queries: [exchangesQuery, totalsQuery],
+	};
 };

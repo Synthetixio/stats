@@ -7,6 +7,8 @@ import MenuCloseIcon from 'assets/svg/menu-close';
 import { MAX_PAGE_WIDTH, Z_INDEX } from 'constants/styles';
 import { HeadersContext } from 'pages/_app';
 
+import LayerToggler from './LayerToggler';
+
 // TODO use translation
 const Header: FC = () => {
 	const [menuOpen, setMenuOpen] = useState(false);
@@ -24,7 +26,7 @@ const Header: FC = () => {
 			}
 		};
 		routeApp();
-	}, []);
+	}, [headersContext]);
 
 	const scrollToRef = (ref: any, hashLink: string) => {
 		const offsetTop = ref?.current?.offsetTop ?? 0;
@@ -40,6 +42,7 @@ const Header: FC = () => {
 						<StatsLogoWrap>
 							<StatsLogo />
 						</StatsLogoWrap>
+						<LayerToggler />
 					</HeaderSectionLeft>
 					<HeaderSectionRight>
 						{Object.entries(headersContext).map(([key, value]) => (
@@ -102,13 +105,12 @@ const HeaderContainerInner = styled.div`
 	}
 `;
 
-const StatsLogoWrap = styled.div`
-	margin-top: -4px;
-`;
+const StatsLogoWrap = styled.div``;
 
 const HeaderSectionLeft = styled.div`
 	display: flex;
 	justify-content; space-between;
+	align-items: center;
 `;
 
 const HeaderSectionRight = styled.div`

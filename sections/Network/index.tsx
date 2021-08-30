@@ -1,7 +1,12 @@
 import { FC, useState, useContext } from 'react';
-import snxData from 'synthetix-data';
 import { ethers } from 'ethers';
+import { formatEther } from 'ethers/lib/utils';
 import { Trans, useTranslation } from 'react-i18next';
+import { useQuery } from 'react-query';
+import useSynthetixQueries, { Token } from '@synthetixio/queries';
+import { wei } from '@synthetixio/wei';
+import { SynthHolder } from '@synthetixio/data';
+import styled from 'styled-components';
 
 import { ChartPeriod, TreeMapData } from 'types/data';
 import { ChartTitle } from 'components/common';
@@ -10,6 +15,8 @@ import StatsRow from 'components/StatsRow';
 import AreaChart from 'components/Charts/AreaChart';
 import PieChart from 'components/Charts/PieChart';
 import SectionHeader from 'components/SectionHeader';
+import SingleStatRow from 'components/SingleStatRow';
+import { LinkText, NewParagraph } from 'components/common';
 import { COLORS, MAX_PAGE_WIDTH } from 'constants/styles';
 import QUERY_KEYS from 'constants/queryKeys';
 import {
@@ -19,106 +26,97 @@ import {
 	curveDocumentation,
 	synthetixDataGithub,
 } from 'constants/links';
-import SUSDDistribution from '../Network/SUSDDistribution';
-import { SNXJSContext, ProviderContext } from 'pages/_app';
 import { getSUSDHoldersName } from 'utils/dataMapping';
-import { LinkText, NewParagraph } from 'components/common';
 import { renBTC } from 'contracts';
-import { useSnxPriceChartQuery } from 'queries/network/useSnxPriceChartQuery';
-import { formatEther } from 'ethers/lib/utils';
 import { useSnxjsContractQuery } from 'queries/shared/useSnxjsContractQuery';
-import { useTokenBalanceQuery } from 'queries/shared/useTokenBalanceQuery';
-import { useQuery } from 'react-query';
-import { useSNXInfo } from 'queries/shared/useSNXInfo';
 import { useSUSDInfo } from 'queries/shared/useSUSDInfo';
-import SingleStatRow from 'components/SingleStatRow';
-import styled from 'styled-components';
+import { useNetwork } from 'contexts/Network';
+
+import SUSDDistribution from '../Network/SUSDDistribution';
 
 const NetworkSection: FC = () => {
 	const { t } = useTranslation();
 
 	const [priceChartPeriod, setPriceChartPeriod] = useState<ChartPeriod>('D');
-
+	const {
+		useSnxPriceChartQuery,
+		useTokensBalancesQuery,
+		useETHBalanceQuery,
+		useGlobalStakingInfoQuery,
+	} = useSynthetixQueries();
 	const SNXChartPriceData = useSnxPriceChartQuery(priceChartPeriod);
 
-	const snxjs = useContext(SNXJSContext);
-	const provider = useContext(ProviderContext);
+	const { provider, snxJs, snxData } = useNetwork();
 
+	const globalStakingInfoQuery = useGlobalStakingInfoQuery();
 	const {
-		SNXPrice,
-		SNXTotalSupply,
-		SNXPercentLocked,
+		snxPrice: SNXPrice,
+		totalSupply: SNXTotalSupply,
+		snxPercentLocked: SNXPercentLocked,
 		issuanceRatio,
 		activeCRatio,
 		totalIssuedSynths,
+	} = globalStakingInfoQuery.isSuccess
+		? globalStakingInfoQuery.data
+		: {
+				snxPrice: null,
+				totalSupply: wei(0),
+				snxPercentLocked: wei(0),
+				issuanceRatio: wei(0),
+				activeCRatio: wei(0),
+				totalIssuedSynths: wei(0),
+		  };
 
-		SNXPriceQuery,
-		SNXTotalSupplyQuery,
-		issuanceRatioQuery,
-		totalIssuedSynthsQuery,
-		SNXHoldersQuery,
-	} = useSNXInfo(snxjs);
 	const { sUSDPrice, sUSDPriceQuery } = useSUSDInfo(provider);
 
 	const unformattedSUSDTotalSupply = useSnxjsContractQuery<ethers.BigNumber>(
-		snxjs,
+		snxJs,
 		'SynthsUSD',
 		'totalSupply',
 		[]
 	);
 
 	const unformattedWrapprLocked = useSnxjsContractQuery<ethers.BigNumber>(
-		snxjs,
+		snxJs,
 		'EtherWrapper',
 		'sETHIssued',
 		[]
 	);
 	const unformattedEthPrice = useSnxjsContractQuery<ethers.BigNumber>(
-		snxjs,
+		snxJs,
 		'ExchangeRates',
 		'rateForCurrency',
-		[snxjs.toBytes32('sETH')]
+		[snxJs.toBytes32('sETH')]
 	);
 	const unformattedBtcPrice = useSnxjsContractQuery<ethers.BigNumber>(
-		snxjs,
+		snxJs,
 		'ExchangeRates',
 		'rateForCurrency',
-		[snxjs.toBytes32('sBTC')]
+		[snxJs.toBytes32('sBTC')]
 	);
 
-	const ethSusdCollateralBalance = useTokenBalanceQuery(
-		provider,
-		ethers.constants.AddressZero,
-		snxjs.contracts.EtherCollateralsUSD.address
+	const ethSusdCollateralBalance = useETHBalanceQuery(snxJs.contracts.EtherCollateralsUSD.address);
+	const ethCollateralBalance = useETHBalanceQuery(snxJs.contracts.EtherCollateral.address);
+	const multiCollateralEtherBalance = useETHBalanceQuery(snxJs.contracts.CollateralEth.address);
+
+	const bitcoinLockedQuery = useTokensBalancesQuery(
+		[{ address: renBTC.address, symbol: 'renBTC' } as Token],
+		snxJs.contracts.CollateralErc20.address
 	);
-	const ethCollateralBalance = useTokenBalanceQuery(
-		provider,
-		ethers.constants.AddressZero,
-		snxjs.contracts.EtherCollateral.address
+	const bitcoinLocked = bitcoinLockedQuery.data?.renBTC?.balance ?? null;
+
+	const sUSDShortLockedQuery = useTokensBalancesQuery(
+		[{ address: snxJs.contracts.SynthsUSD.address, symbol: 'sUSD' } as Token],
+		snxJs.contracts.CollateralShort.address
 	);
-	const multiCollateralEtherBalance = useTokenBalanceQuery(
-		provider,
-		ethers.constants.AddressZero,
-		snxjs.contracts.CollateralEth.address
-	);
-	const bitcoinLocked = useTokenBalanceQuery(
-		provider,
-		renBTC.address,
-		snxjs.contracts.CollateralErc20.address,
-		{ decimals: 8 }
-	);
-	const sUSDShortLocked = useTokenBalanceQuery(
-		provider,
-		snxjs.contracts.SynthsUSD.address,
-		snxjs.contracts.CollateralShort.address
-	);
+	const sUSDShortLocked = sUSDShortLockedQuery.data?.sUSD?.balance ?? null;
 
 	const snxTotals = useQuery<any, string>(QUERY_KEYS.SnxTotals, async () => {
-		return snxData.snx.total();
+		return snxData.synthetix();
 	});
 	const SUSDHolders = useQuery<TreeMapData[], string>(QUERY_KEYS.sUSDHolders, async () => {
-		const topSUSDHolders = await snxData.synths.holders({ max: 10, synth: 'sUSD' });
-		return topSUSDHolders.map(({ balanceOf, address }: { balanceOf: number; address: string }) => ({
+		const topSUSDHolders = (await snxData.synthHolders({ max: 10, synth: 'sUSD' })) ?? [];
+		return topSUSDHolders.map(({ balanceOf, address }: SynthHolder) => ({
 			name: getSUSDHoldersName(address),
 			value: balanceOf,
 		}));
@@ -146,8 +144,8 @@ const NetworkSection: FC = () => {
 		: null;
 
 	const networkCRatio =
-		SNXTotalSupply && SNXPrice && totalIssuedSynths
-			? (SNXTotalSupply * SNXPrice) / totalIssuedSynths
+		SNXTotalSupply.gt(0) && SNXPrice?.gt(0) && totalIssuedSynths.gt(0)
+			? SNXTotalSupply.mul(SNXPrice).div(totalIssuedSynths).toNumber()
 			: null;
 
 	const wrapprLocked = unformattedWrapprLocked.isSuccess
@@ -155,20 +153,12 @@ const NetworkSection: FC = () => {
 		: null;
 
 	const priorSNXPrice = SNXChartPriceData.isSuccess ? SNXChartPriceData.data![0].value : null;
-
 	const pricePeriods: ChartPeriod[] = ['D', 'W', 'M', 'Y'];
 
 	// there are 4 sources of debt for the debt pool right now
 	const debtResponsibilityChartData = [];
 
-	if (
-		wrapprLocked &&
-		etherLocked &&
-		bitcoinLocked.isSuccess &&
-		totalIssuedSynths &&
-		ethPrice &&
-		btcPrice
-	) {
+	if (wrapprLocked && etherLocked && bitcoinLocked && totalIssuedSynths && ethPrice && btcPrice) {
 		debtResponsibilityChartData.push(
 			{
 				name: 'ETH Wrapper',
@@ -180,14 +170,14 @@ const NetworkSection: FC = () => {
 			},
 			{
 				name: 'BTC Collateral Loan',
-				value: Number(bitcoinLocked.data!) * btcPrice,
+				value: bitcoinLocked.toNumber() * btcPrice,
 			}
 		);
 
 		// snx stakers are responsible for all the debt that is not covered by the previous sources
 		debtResponsibilityChartData.unshift({
 			name: 'SNX Stakers',
-			value: totalIssuedSynths, // this is actually issued synths not associated with above categories
+			value: totalIssuedSynths.toNumber(), // this is actually issued synths not associated with above categories
 		});
 	}
 
@@ -202,10 +192,12 @@ const NetworkSection: FC = () => {
 				}}
 				data={SNXChartPriceData.data || []}
 				title={t('snx-price.title')}
-				num={SNXPrice}
+				num={SNXPrice?.toNumber() ?? null}
 				numFormat="currency2"
 				percentChange={
-					SNXPrice != null && priorSNXPrice != null ? (SNXPrice ?? 0) / priorSNXPrice - 1 : null
+					SNXPrice != null && priorSNXPrice != null
+						? SNXPrice.div(wei(priorSNXPrice)).sub(wei(1)).toNumber()
+						: null
 				}
 				timeSeries={priceChartPeriod === 'D' ? '15m' : '1d'}
 				infoData={
@@ -227,8 +219,8 @@ const NetworkSection: FC = () => {
 				<StatsBox
 					key="SNXMKTCAP"
 					title={t('snx-market-cap.title')}
-					num={SNXPrice != null && SNXTotalSupply != null ? SNXTotalSupply * (SNXPrice ?? 0) : null}
-					queries={[SNXPriceQuery, SNXTotalSupplyQuery]}
+					num={SNXPrice != null && SNXTotalSupply != null ? SNXTotalSupply.mul(SNXPrice) : null}
+					queries={[globalStakingInfoQuery]}
 					percentChange={null}
 					subText={t('snx-market-cap.subtext')}
 					color={COLORS.pink}
@@ -271,8 +263,8 @@ const NetworkSection: FC = () => {
 				<StatsBox
 					key="ISSUANCECRATIO"
 					title={t('issuance-ratio.title')}
-					num={issuanceRatio != null ? 1 / (issuanceRatio ?? 0) : null}
-					queries={[issuanceRatioQuery]}
+					num={issuanceRatio.gt(0) ? wei(1).div(issuanceRatio) : null}
+					queries={[globalStakingInfoQuery]}
 					percentChange={null}
 					subText={t('issuance-ratio.subtext')}
 					color={COLORS.green}
@@ -287,10 +279,10 @@ const NetworkSection: FC = () => {
 					title={t('total-snx-locked.title')}
 					num={
 						SNXPercentLocked != null && SNXTotalSupply != null && SNXPrice != null
-							? SNXPercentLocked * SNXTotalSupply * (SNXPrice ?? 0)
+							? SNXPercentLocked.mul(SNXTotalSupply).mul(SNXPrice)
 							: null
 					}
-					queries={[SNXTotalSupplyQuery, SNXPriceQuery]}
+					queries={[globalStakingInfoQuery]}
 					percentChange={null}
 					subText={t('total-snx-locked.subtext')}
 					color={COLORS.pink}
@@ -315,7 +307,7 @@ const NetworkSection: FC = () => {
 					key="NETWORKCRATIO"
 					title={t('network-cratio.title')}
 					num={networkCRatio}
-					queries={[SNXTotalSupplyQuery, SNXPriceQuery, totalIssuedSynthsQuery]}
+					queries={[globalStakingInfoQuery]}
 					percentChange={null}
 					subText={t('network-cratio.subtext')}
 					color={COLORS.green}
@@ -359,7 +351,7 @@ const NetworkSection: FC = () => {
 					key="SNXHOLDRS"
 					title={t('snx-holders.title')}
 					num={SNXHolders}
-					queries={[SNXHoldersQuery]}
+					queries={[globalStakingInfoQuery]}
 					percentChange={null}
 					subText={t('snx-holders.subtext')}
 					color={COLORS.green}
@@ -410,8 +402,8 @@ const NetworkSection: FC = () => {
 					<StatsBox
 						key="BTCLOCKED"
 						title={t('btc-collateral.title')}
-						num={parseFloat(bitcoinLocked.data || '0')}
-						queries={[bitcoinLocked]}
+						num={bitcoinLocked}
+						queries={[bitcoinLockedQuery]}
 						percentChange={null}
 						subText={t('btc-collateral.subtext')}
 						color={COLORS.green}
@@ -422,8 +414,8 @@ const NetworkSection: FC = () => {
 					<StatsBox
 						key="USDLOCKEDSHORT"
 						title={t('short-collateral.title')}
-						num={parseFloat(sUSDShortLocked.data || '0')}
-						queries={[sUSDShortLocked]}
+						num={sUSDShortLocked}
+						queries={[sUSDShortLockedQuery]}
 						percentChange={null}
 						subText={t('short-collateral.subtext')}
 						color={COLORS.pink}

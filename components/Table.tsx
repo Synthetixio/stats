@@ -1,7 +1,7 @@
 import React, { FC, useMemo, DependencyList } from 'react';
 import styled, { css } from 'styled-components';
 import { useTable, useFlexLayout, useSortBy, Column, Row, usePagination, Cell } from 'react-table';
-import { Skeleton } from '@material-ui/lab';
+import Skeleton from '@material-ui/core/Skeleton';
 
 import SortDownIcon from 'assets/svg/caret-down.svg';
 import SortUpIcon from 'assets/svg/caret-up.svg';
@@ -119,7 +119,7 @@ export const Table: FC<TableProps> = ({
 					{isLoading ? (
 						<Skeleton
 							className="liquidations-skeleton"
-							variant="rect"
+							variant="rectangular"
 							animation="wave"
 							width="100%"
 							height="200px"

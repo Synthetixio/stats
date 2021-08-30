@@ -1,11 +1,9 @@
 import { createContext, FC, createRef, RefObject, useState } from 'react';
 import { AppProps } from 'next/app';
 import Head from 'next/head';
-import { ethers } from 'ethers';
-import { QueryClientProvider, QueryClient, Query } from 'react-query';
 import { ReactQueryDevtools } from 'react-query/devtools';
+import { QueryClientProvider, QueryClient, Query } from 'react-query';
 
-import { synthetix, Network } from '@synthetixio/contracts-interface';
 import { ThemeProvider as SCThemeProvider } from 'styled-components';
 import { ThemeProvider as MuiThemeProvider } from '@material-ui/core/styles';
 
@@ -15,12 +13,15 @@ import 'styles/index.css';
 import '../i18n';
 
 import Layout from 'sections/shared/Layout';
-import { IconButton, Snackbar, withStyles } from '@material-ui/core';
+import { IconButton, Snackbar } from '@material-ui/core';
+import { withStyles } from '@material-ui/styles';
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 import { Alert } from '@material-ui/lab';
 import colors from 'styles/colors';
 import { SPIN360 } from 'constants/styles';
+
+import { NetworkProvider } from 'contexts/Network';
 
 import MenuCloseIcon from 'assets/svg/menu-close';
 import RefetchIcon from 'assets/svg/refetch';
@@ -32,18 +33,7 @@ export const headersAndScrollRef: { [key: string]: RefObject<unknown> } = {
 	'YIELD FARMING': createRef(),
 	SYNTHS: createRef(),
 	OPTIONS: createRef(),
-	L2: createRef(),
 };
-
-const provider = new ethers.providers.InfuraProvider(
-	'homestead',
-	process.env.NEXT_PUBLIC_INFURA_KEY
-);
-
-const providerl2 = new ethers.providers.JsonRpcProvider('https://mainnet.optimism.io');
-
-export const ProviderContext = createContext(provider as ethers.providers.Provider);
-export const ProviderContextL2 = createContext(providerl2 as ethers.providers.Provider);
 
 export const HeadersContext = createContext(headersAndScrollRef);
 
@@ -53,17 +43,12 @@ const queryClient = new QueryClient({
 			retry: 0, // on failure, do not repeat the request
 			refetchOnWindowFocus: false,
 			refetchOnReconnect: false,
+			refetchInterval: false,
 		},
 	},
 });
 
 let checkInterval: any = null;
-
-const snxjs = synthetix({ network: Network.Mainnet, provider });
-const snxjsl2 = synthetix({ network: Network['Mainnet-Ovm'], provider: providerl2 });
-
-export const SNXJSContext = createContext(snxjs);
-export const SNXJSContextL2 = createContext(snxjsl2);
 
 const App: FC<AppProps> = ({ Component, pageProps }) => {
 	const { t } = useTranslation();
@@ -199,13 +184,11 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
 				<MuiThemeProvider theme={muiTheme}>
 					<QueryClientProvider client={queryClient}>
 						<HeadersContext.Provider value={headersAndScrollRef}>
-							<SNXJSContext.Provider value={snxjs}>
-								<ProviderContext.Provider value={provider}>
-									<Layout>
-										<Component {...pageProps} />
-									</Layout>
-								</ProviderContext.Provider>
-							</SNXJSContext.Provider>
+							<NetworkProvider>
+								<Layout>
+									<Component {...pageProps} />
+								</Layout>
+							</NetworkProvider>
 						</HeadersContext.Provider>
 						<Snackbar
 							anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
