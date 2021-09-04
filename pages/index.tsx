@@ -24,9 +24,6 @@ const HomePage: FC = () => {
 					<div ref={headersContext.NETWORK as React.RefObject<HTMLDivElement>}>
 						<SnxSection />
 					</div>
-					<div ref={headersContext.STAKING as React.RefObject<HTMLDivElement>}>
-						<StakingSection />
-					</div>
 					<div ref={headersContext.TRADING as React.RefObject<HTMLDivElement>}>
 						<TradingSection />
 					</div>
@@ -35,6 +32,9 @@ const HomePage: FC = () => {
 					</div>
 				</>
 			)}
+			<div ref={headersContext.STAKING as React.RefObject<HTMLDivElement>}>
+				<StakingSection />
+			</div>
 			<div ref={headersContext.SYNTHS as React.RefObject<HTMLDivElement>}>
 				<SynthsSection />
 			</div>

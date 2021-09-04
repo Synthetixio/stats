@@ -1,4 +1,4 @@
-import { FC, useContext } from 'react';
+import { FC } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
 
 import SectionHeader from 'components/SectionHeader';

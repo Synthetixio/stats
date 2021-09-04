@@ -1,6 +1,6 @@
 import { NetworkId } from '@synthetixio/contracts-interface';
 import { useNetwork } from 'contexts/Network';
-import { FC, useState } from 'react';
+import { FC } from 'react';
 import styled from 'styled-components';
 
 const LAYERS = [

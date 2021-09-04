@@ -1,4 +1,4 @@
-import React, { FC, useContext } from 'react';
+import React, { FC } from 'react';
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 import useSynthetixQueries, { SynthsTotalSupplyData } from '@synthetixio/queries';
