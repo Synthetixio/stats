@@ -31,6 +31,8 @@ const SynthsBarChart: FC<SynthsBarChartProps> = ({ synthsTotalSupply }) => {
 		.filter((synth) => ['crypto', 'index'].includes(synth.category))
 		.map(({ name }) => name);
 
+	let totalSkewValue = wei(0);
+
 	const data = openInterest
 		.filter((item) => openInterestSynths.includes(item.name))
 		.reduce((acc: Record<string, OpenInterest>, curr: SynthTotalSupply): Record<
@@ -69,6 +71,8 @@ const SynthsBarChart: FC<SynthsBarChartProps> = ({ synthsTotalSupply }) => {
 					const shortSupply = negativeEntries.add(inverseTotalSupply);
 					const shortValue = shortSupply.mul(price);
 
+					totalSkewValue = totalSkewValue.add(shortValue);
+
 					acc[name] = {
 						...acc[name],
 						isShort: true,
@@ -77,6 +81,7 @@ const SynthsBarChart: FC<SynthsBarChartProps> = ({ synthsTotalSupply }) => {
 						shortValue: shortValue.toNumber(),
 					};
 				} else {
+					totalSkewValue = totalSkewValue.add(curr.value);
 					acc[name] = {
 						...acc[name],
 						value: curr.value.toNumber(),
@@ -93,7 +98,7 @@ const SynthsBarChart: FC<SynthsBarChartProps> = ({ synthsTotalSupply }) => {
 		<SynthsBarChartContainer>
 			<ChartTitle>{t('synth-bar-chart.title')}</ChartTitle>
 			<ChartSubtitle>{t('synth-bar-chart.subtext')}</ChartSubtitle>
-			<SidewaysBarChart data={sortedData} totalValue={synthsTotalSupply.totalValue.toNumber()} />
+			<SidewaysBarChart data={sortedData} totalValue={totalSkewValue.toNumber()} />
 		</SynthsBarChartContainer>
 	);
 };

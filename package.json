@@ -18,7 +18,7 @@
 		"@synthetixio/contracts-interface": "2.47.0-ovm.8",
 		"@synthetixio/data": "2.47.0-ovm.11",
 		"@synthetixio/providers": "0.0.12",
-		"@synthetixio/queries": "2.47.0-ovm.11",
+		"@synthetixio/queries": "0.0.0-43e851b",
 		"@synthetixio/wei": "2.47.0-ovm.5",
 		"axios": "0.21.1",
 		"bignumber.js": "9.0.0",
