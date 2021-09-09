@@ -1,9 +1,6 @@
 import { FC, useState, useContext, createContext, ReactNode } from 'react';
 import { ethers } from 'ethers';
-import {
-	NetworkId,
-	SynthetixJS,
-} from '@synthetixio/queries/node_modules/@synthetixio/contracts-interface'; // @synthetixio/contracts-interface
+import { NetworkId, SynthetixJS } from '@synthetixio/contracts-interface';
 import { createQueryContext, SynthetixQueryContextProvider } from '@synthetixio/queries';
 import { SynthetixProvider } from '@synthetixio/providers';
 import { SynthetixData } from '@synthetixio/data';
