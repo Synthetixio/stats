@@ -15,7 +15,6 @@
 		"@material-ui/core": "5.0.0-beta.2",
 		"@material-ui/lab": "5.0.0-alpha.41",
 		"@material-ui/styles": "5.0.0-beta.2",
-		"@synthetixio/contracts-interface": "2.47.0-ovm.8",
 		"@synthetixio/data": "2.47.0-ovm.11",
 		"@synthetixio/providers": "0.0.12",
 		"@synthetixio/queries": "0.0.0-43e851b",
