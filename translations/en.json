@@ -155,6 +155,10 @@
 		"title": "TOTAL ACTIVE STAKERS",
 		"infoData": "The number of total active stakers is obtained from the \"TotalActiveStaker\" entity from the <linkText>Synthetix subgraph.</linkText> The chart data shows the \"TotalDailyActiveStaker\" entity over time."
 	},
+	"total-debt": {
+		"title": "TOTAL DEBT",
+		"subtext": "The total value of all Synth Debt denominated in USD"	
+	},
 	"total-issued-synths": {
 		"title": "TOTAL ISSUED SYNTHS",
 		"infoData": "Representation of the total debt in the system over time. Fluctuates based on issuance and price fluctuation."
