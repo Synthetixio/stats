@@ -71,7 +71,7 @@ function formatLiquidationsChart(
 			continue;
 		}
 
-		const value = wei(liquidation.amountLiquidated).toNumber();
+		const value = wei(liquidation.amountLiquidated, 18, true).toNumber();
 		const timeBucket = new Date((time - (time % precisionLength)) * 1000).toISOString();
 		if (_.last(chartData)?.created === timeBucket) {
 			_.last(chartData)!.value += value;
