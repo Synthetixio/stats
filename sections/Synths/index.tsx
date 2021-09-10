@@ -13,7 +13,7 @@ import SynthsPieChart from './SynthsPieChart';
 import TopSynths from './TopSynths';
 import SynthsVolumeMatrix from './SynthsVolumeMatrix';
 
-const SynthsSection: FC<{}> = ({}) => {
+const SynthsSection: FC = () => {
 	const { t } = useTranslation();
 	const { isL2 } = useNetwork();
 	const { useSynthsTotalSupplyQuery } = useSynthetixQueries();

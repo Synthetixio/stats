@@ -1,4 +1,4 @@
-import { FC, useState, useContext, useMemo } from 'react';
+import { FC, useState, useMemo } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
 import { format } from 'date-fns';
 import { CellProps } from 'react-table';
@@ -6,7 +6,7 @@ import styled from 'styled-components';
 import { ethers } from 'ethers';
 import { l1Endpoints as l1GraphAPIEndpoints, DailyTotalActiveStakers } from '@synthetixio/data';
 import useSynthetixQueries from '@synthetixio/queries';
-import { wei } from '@synthetixio/wei';
+import Wei, { wei } from '@synthetixio/wei';
 import _ from 'lodash';
 
 import SectionHeader from 'components/SectionHeader';
@@ -71,9 +71,7 @@ function formatLiquidationsChart(
 			continue;
 		}
 
-		const value = Number(
-			ethers.utils.formatEther(ethers.BigNumber.from(liquidation.amountLiquidated))
-		);
+		const value = wei(liquidation.amountLiquidated, 18, true).toNumber();
 		const timeBucket = new Date((time - (time % precisionLength)) * 1000).toISOString();
 		if (_.last(chartData)?.created === timeBucket) {
 			_.last(chartData)!.value += value;
@@ -88,6 +86,44 @@ function formatLiquidationsChart(
 	return _.reverse(chartData);
 }
 
+// todo: refactor
+function formatDebtChart(
+	data: RawDebtState[],
+	property: keyof RawDebtState,
+	period: ChartPeriod,
+	precision: TimeSeriesType
+) {
+	const chartData: AreaChartData[] = [];
+
+	const curTime = Date.now() / 1000;
+	const periodLength = periodToDays(period) * 86400;
+	const precisionLength = getTimeLength(precision);
+
+	for (const debtState of data) {
+		const time = parseInt(debtState.timestamp);
+
+		if (time < curTime - periodLength) {
+			continue;
+		}
+
+		if (!debtState[property]) continue;
+
+		let value = wei(debtState[property]).toNumber();
+
+		const timeBucket = new Date((time - (time % precisionLength)) * 1000).toISOString();
+		if (_.last(chartData)?.created === timeBucket) {
+			_.last(chartData)!.value = value;
+		} else {
+			chartData.push({
+				created: timeBucket,
+				value,
+			});
+		}
+	}
+
+	return _.reverse(chartData.slice(1, chartData.length - 1));
+}
+
 interface RawRecentLiquidation {
 	account: string;
 	liquidator: string;
@@ -95,13 +131,27 @@ interface RawRecentLiquidation {
 	time: string;
 }
 
+interface RawDebtState {
+	timestamp: string;
+	totalIssuedSynths: string;
+	debtEntry: string;
+	debtRatio: string;
+	snxSupply: string;
+}
+
 const Staking: FC = () => {
 	const { t } = useTranslation();
 
+	const { isL2 } = useNetwork();
+
 	const [stakersChartPeriod, setStakersChartPeriod] = useState<ChartPeriod>('Y');
 	const [liquidationsChartPeriod, setLiquidationsChartPeriod] = useState<ChartPeriod>('M');
+	const [totalIssuedSynthsChartPeriod, setTotalIssuedSynthsChartPeriod] = useState<ChartPeriod>(
+		'M'
+	);
 
 	const liquidationsChartPrecision = liquidationsChartPeriod === 'W' ? '15m' : '1d';
+	const totalIssuedSynthsChartPrecision = liquidationsChartPeriod === 'W' ? '15m' : '1d';
 
 	const { provider } = useNetwork();
 
@@ -149,7 +199,24 @@ const Staking: FC = () => {
 		},
 	});
 
+	const globalDebtOverTimeQuery = usePageResults<RawDebtState[]>({
+		api: isL2
+			? 'https://api.thegraph.com/subgraphs/name/killerbyte/optimism-global-debt'
+			: 'https://api.thegraph.com/subgraphs/name/killerbyte/synthetix-global-debt',
+		max: 5000,
+		query: {
+			entity: 'debtStates',
+			selection: {
+				orderBy: 'timestamp',
+				orderDirection: 'desc',
+				first: 1000,
+			},
+			properties: ['timestamp', 'totalIssuedSynths', 'debtEntry', 'debtRatio', 'snxSupply'],
+		},
+	});
+
 	let stakersChartData: AreaChartData[] = [];
+
 	let totalActiveStakers: number | null = null;
 	if (activeStakersData.isSuccess) {
 		const d = activeStakersData.data!.slice(0).reverse();
@@ -176,26 +243,65 @@ const Staking: FC = () => {
 		]
 	);
 
-	let stakeApySnx: number | null = null;
-	let stakeApyFees: number | null = null;
+	const totalIssuedSynthsChartData = useMemo<AreaChartData[]>(
+		() =>
+			globalDebtOverTimeQuery.isSuccess
+				? formatDebtChart(
+						globalDebtOverTimeQuery.data!,
+						'totalIssuedSynths',
+						totalIssuedSynthsChartPeriod,
+						totalIssuedSynthsChartPrecision
+				  )
+				: [],
+		[
+			globalDebtOverTimeQuery.isSuccess,
+			globalDebtOverTimeQuery.data,
+			totalIssuedSynthsChartPeriod,
+			totalIssuedSynthsChartPrecision,
+		]
+	);
+
+	const snxSupplyChartData = useMemo<AreaChartData[]>(
+		() =>
+			globalDebtOverTimeQuery.isSuccess
+				? formatDebtChart(
+						globalDebtOverTimeQuery.data!,
+						'snxSupply',
+						totalIssuedSynthsChartPeriod,
+						totalIssuedSynthsChartPrecision
+				  )
+				: [],
+		[
+			globalDebtOverTimeQuery.isSuccess,
+			globalDebtOverTimeQuery.data,
+			totalIssuedSynthsChartPeriod,
+			totalIssuedSynthsChartPrecision,
+		]
+	);
+
+	let stakeApySnx: Wei | null = null;
+	let stakeApyFees: Wei | null = null;
 
 	if (
 		sUSDPrice != null &&
 		SNXPrice != null &&
+		SNXPrice.gt(0) &&
 		issuanceRatio != null &&
 		currentFeePeriod.isSuccess &&
 		totalIssuedSynths != null &&
+		totalIssuedSynths.gt(0) &&
 		SNXValueStaked != null
 	) {
-		const fakeSnxStaked = 1000;
-		const fakesUSDMinted = fakeSnxStaked * SNXPrice.toNumber() * issuanceRatio.toNumber();
-		const feePoolPortion = fakesUSDMinted / totalIssuedSynths.toNumber();
-		const usdThisWeek =
-			sUSDPrice * currentFeePeriod.data!.feesToDistribute.toNumber() * feePoolPortion;
-		const snxThisWeek = currentFeePeriod.data!.rewardsToDistribute.toNumber() * feePoolPortion;
+		const fakeSnxStaked = wei(1000);
+		const fakesUSDMinted = fakeSnxStaked.mul(SNXPrice).mul(issuanceRatio);
+		const feePoolPortion = fakesUSDMinted.div(totalIssuedSynths);
+		const usdThisWeek = wei(sUSDPrice)
+			.mul(currentFeePeriod.data!.feesToDistribute)
+			.mul(feePoolPortion);
+		const snxThisWeek = currentFeePeriod.data!.rewardsToDistribute.mul(feePoolPortion);
 
-		stakeApySnx = (snxThisWeek * (365.0 / 7)) / fakeSnxStaked;
-		stakeApyFees = (usdThisWeek * (365.0 / 7)) / (SNXPrice.toNumber() * fakeSnxStaked);
+		stakeApySnx = snxThisWeek.mul(365.0 / 7).div(fakeSnxStaked);
+		stakeApyFees = usdThisWeek.mul(365.0 / 7).div(SNXPrice.mul(fakeSnxStaked));
 	}
 
 	return (
@@ -205,7 +311,7 @@ const Staking: FC = () => {
 				<StatsBox
 					key="SNXSTKAPY"
 					title={t('current-staking-apy.title')}
-					num={stakeApyFees && stakeApySnx ? stakeApyFees + stakeApySnx : null}
+					num={stakeApyFees && stakeApySnx ? stakeApyFees.add(stakeApySnx) : null}
 					queries={[sUSDPriceQuery, globalStakingInfoQuery, currentFeePeriod]}
 					percentChange={null}
 					subText={t('current-staking-apy.subtext')}
@@ -334,6 +440,58 @@ const Staking: FC = () => {
 					infoData={null}
 				/>
 			</StatsRow>
+			<AreaChart
+				periods={stakingPeriods}
+				activePeriod={totalIssuedSynthsChartPeriod}
+				onPeriodSelect={(period: ChartPeriod) => {
+					setTotalIssuedSynthsChartPeriod(period);
+				}}
+				data={snxSupplyChartData}
+				isLoadingData={globalDebtOverTimeQuery.isLoading}
+				title={t('snx-supply.title')}
+				num={_.last(snxSupplyChartData)?.value || 0}
+				numFormat="number"
+				percentChange={
+					snxSupplyChartData.length
+						? _.last(snxSupplyChartData)!.value / snxSupplyChartData[0].value - 1
+						: null
+				}
+				timeSeries="1d"
+				infoData={
+					<Trans
+						i18nKey="snx-supply.infoData"
+						components={{
+							linkText: <LinkText href={synthetixSubgraph} />,
+						}}
+					/>
+				}
+			/>
+			<AreaChart
+				periods={stakingPeriods}
+				activePeriod={totalIssuedSynthsChartPeriod}
+				onPeriodSelect={(period: ChartPeriod) => {
+					setTotalIssuedSynthsChartPeriod(period);
+				}}
+				data={totalIssuedSynthsChartData}
+				isLoadingData={globalDebtOverTimeQuery.isLoading}
+				title={t('total-issued-synths.title')}
+				num={_.last(totalIssuedSynthsChartData)?.value || 0}
+				numFormat="number"
+				percentChange={
+					totalIssuedSynthsChartData.length
+						? _.last(totalIssuedSynthsChartData)!.value / totalIssuedSynthsChartData[0].value - 1
+						: null
+				}
+				timeSeries="1d"
+				infoData={
+					<Trans
+						i18nKey="total-issued-synths.infoData"
+						components={{
+							linkText: <LinkText href={synthetixSubgraph} />,
+						}}
+					/>
+				}
+			/>
 			<AreaChart
 				periods={stakingPeriods}
 				activePeriod={stakersChartPeriod}

@@ -1,4 +1,4 @@
-import { FC, useState, useContext } from 'react';
+import { FC, useState } from 'react';
 import { ethers } from 'ethers';
 import { formatEther } from 'ethers/lib/utils';
 import { Trans, useTranslation } from 'react-i18next';
