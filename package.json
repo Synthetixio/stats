@@ -28,7 +28,7 @@
 		"ethers": "5.0.8",
 		"graph-results-pager": "1.0.3",
 		"i18next": "19.7.0",
-		"lodash": "4.17.20",
+		"lodash": "4.17.21",
 		"next": "10.0.1",
 		"next-images": "1.4.0",
 		"numbro": "2.3.1",
