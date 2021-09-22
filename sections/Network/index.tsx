@@ -188,9 +188,10 @@ const NetworkSection: FC = () => {
 				num={SNXPrice?.toNumber() ?? null}
 				numFormat="currency2"
 				percentChange={
+					null /* TODO: uncomment once subgraph bug is fixed
 					SNXPrice != null && priorSNXPrice != null
 						? SNXPrice.div(wei(priorSNXPrice)).sub(wei(1)).toNumber()
-						: null
+						: null*/
 				}
 				timeSeries={priceChartPeriod === 'D' ? '15m' : '1d'}
 				infoData={
