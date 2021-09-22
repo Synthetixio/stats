@@ -44,10 +44,10 @@ import Liquidations from './Liquidations';
 
 const WEEK = 86400 * 7 * 1000;
 
-function formatChartData(data: DailyTotalActiveStakers[]) {
+function formatChartData(data: DailyTotalActiveStakers[]): AreaChartData[] {
 	return data.map(({ id, count }) => {
 		return {
-			created: id,
+			created: id.toString(),
 			value: count,
 		};
 	});

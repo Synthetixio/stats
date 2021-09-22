@@ -35,7 +35,7 @@ function getTotalValue(data: AreaChartData[]): number {
 
 function formatChartData(data: ExchangeTotals[], type: 'trade' | 'volume'): AreaChartData[] {
 	return data.map(({ id, trades, exchangeUSDTally }) => ({
-		created: id,
+		created: id.toString(),
 		value: type === 'trade' ? trades : exchangeUSDTally,
 	}));
 }
