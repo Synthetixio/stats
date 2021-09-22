@@ -95,8 +95,6 @@ const NetworkSection: FC = () => {
 		[snxJs.toBytes32('sBTC')]
 	);
 
-	const ethSusdCollateralBalance = useETHBalanceQuery(snxJs.contracts.EtherCollateralsUSD.address);
-	const ethCollateralBalance = useETHBalanceQuery(snxJs.contracts.EtherCollateral.address);
 	const multiCollateralEtherBalance = useETHBalanceQuery(snxJs.contracts.CollateralEth.address);
 
 	const bitcoinLockedQuery = useTokensBalancesQuery(
@@ -126,14 +124,9 @@ const NetworkSection: FC = () => {
 		val.isSuccess ? Number(formatEther(val.data!)) : null
 	);
 
-	const etherLocked =
-		ethCollateralBalance.isSuccess &&
-		ethSusdCollateralBalance.isSuccess &&
-		multiCollateralEtherBalance.isSuccess
-			? Number(ethCollateralBalance.data!) +
-			  Number(ethSusdCollateralBalance.data!) +
-			  Number(multiCollateralEtherBalance.data!)
-			: null;
+	const etherLocked = multiCollateralEtherBalance.isSuccess
+		? Number(multiCollateralEtherBalance.data!)
+		: null;
 
 	const SNXHolders = snxTotals.data?.snxHolders;
 
@@ -195,9 +188,10 @@ const NetworkSection: FC = () => {
 				num={SNXPrice?.toNumber() ?? null}
 				numFormat="currency2"
 				percentChange={
+					null /* TODO: uncomment once subgraph bug is fixed
 					SNXPrice != null && priorSNXPrice != null
 						? SNXPrice.div(wei(priorSNXPrice)).sub(wei(1)).toNumber()
-						: null
+						: null*/
 				}
 				timeSeries={priceChartPeriod === 'D' ? '15m' : '1d'}
 				infoData={
@@ -391,7 +385,7 @@ const NetworkSection: FC = () => {
 						key="ETHLOCKED"
 						title={t('eth-collateral.title')}
 						num={etherLocked}
-						queries={[ethCollateralBalance, ethSusdCollateralBalance, multiCollateralEtherBalance]}
+						queries={[multiCollateralEtherBalance]}
 						percentChange={null}
 						subText={t('eth-collateral.subtext')}
 						color={COLORS.green}

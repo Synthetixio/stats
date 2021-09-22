@@ -9,7 +9,11 @@ export const useSnxjsContractQuery = <T>(
 	method: string,
 	args: any[]
 ) => {
-	return useQuery<T, string>(QUERY_KEYS.SnxjsContract(snxJs, contract, method, args), async () => {
-		return snxJs.contracts[contract][method](...args);
-	});
+	return useQuery<T, string>(
+		QUERY_KEYS.SnxjsContract(snxJs, contract, method, args),
+		async () => {
+			return snxJs.contracts[contract][method](...args);
+		},
+		{ enabled: !!snxJs }
+	);
 };

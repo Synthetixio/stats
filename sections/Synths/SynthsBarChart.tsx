@@ -39,55 +39,43 @@ const SynthsBarChart: FC<SynthsBarChartProps> = ({ synthsTotalSupply }) => {
 			string,
 			OpenInterest
 		> => {
-			const isInverseSynth = 'i' === curr.name.slice(0, 1);
-			const isBTCorETHInverseSynth = ~['iBTC', 'iETH'].indexOf(curr.name);
-			if (!isInverseSynth || isBTCorETHInverseSynth) {
-				const name = curr.name.slice(1);
+			const name = curr.name.slice(1);
 
-				acc[name] = acc[name] || {
-					name,
-					value: 0,
-					totalSupply: 0,
-					isShort: false,
-					inverseTotalSupply: 0,
-					shortSupply: 0,
-					shortValue: 0,
-				};
+			acc[name] = acc[name] || {
+				name,
+				value: curr.value.toNumber(),
+				totalSupply: curr.totalSupply.toNumber() ?? 0,
+				isShort: false,
+				shortSupply: 0,
+				shortValue: 0,
+			};
 
-				if (isBTCorETHInverseSynth) {
-					let inverseTotalSupply = wei(curr.totalSupply.toString()) ?? wei(0),
-						negativeEntries = wei(0),
-						price = wei(0);
+			totalSkewValue = totalSkewValue.add(curr.value);
 
-					if (curr.name === 'iBTC') {
-						negativeEntries = wei(btcNegativeEntries.toString());
-						price = wei(btcPrice.toString());
-					}
-					if (curr.name === 'iETH') {
-						negativeEntries = wei(ethNegativeEntries.toString());
-						price = wei(ethPrice.toString());
-					}
+			if (~['BTC', 'ETH'].indexOf(name)) {
+				let negativeEntries = wei(0),
+					price = wei(0);
 
-					const shortSupply = negativeEntries.add(inverseTotalSupply);
-					const shortValue = shortSupply.mul(price);
-
-					totalSkewValue = totalSkewValue.add(shortValue);
-
-					acc[name] = {
-						...acc[name],
-						isShort: true,
-						inverseTotalSupply: inverseTotalSupply.toNumber(),
-						shortSupply: shortSupply.toNumber(),
-						shortValue: shortValue.toNumber(),
-					};
-				} else {
-					totalSkewValue = totalSkewValue.add(curr.value);
-					acc[name] = {
-						...acc[name],
-						value: curr.value.toNumber(),
-						totalSupply: curr.totalSupply.toNumber() ?? 0,
-					};
+				if (name === 'BTC') {
+					negativeEntries = wei(btcNegativeEntries.toString());
+					price = wei(btcPrice.toString());
 				}
+				if (name === 'ETH') {
+					negativeEntries = wei(ethNegativeEntries.toString());
+					price = wei(ethPrice.toString());
+				}
+
+				const shortSupply = negativeEntries;
+				const shortValue = shortSupply.mul(price);
+
+				totalSkewValue = totalSkewValue.add(shortValue);
+
+				acc[name] = {
+					...acc[name],
+					isShort: true,
+					shortSupply: shortSupply.toNumber(),
+					shortValue: shortValue.toNumber(),
+				};
 			}
 			return acc;
 		}, {} as Record<string, OpenInterest>);

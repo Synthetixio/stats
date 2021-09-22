@@ -35,13 +35,13 @@ function getTotalValue(data: AreaChartData[]): number {
 
 function formatChartData(data: ExchangeTotals[], type: 'trade' | 'volume'): AreaChartData[] {
 	return data.map(({ id, trades, exchangeUSDTally }) => ({
-		created: formatIdToIsoString(id.toString(), '1d'),
+		created: id.toString(),
 		value: type === 'trade' ? trades : exchangeUSDTally,
 	}));
 }
 
 interface ExchangePartnerData {
-	dayID: string;
+	timestamp: string;
 	id: string;
 	partner: string;
 	trades: string;
@@ -49,17 +49,21 @@ interface ExchangePartnerData {
 	usdVolume: string;
 }
 
+function getDayId(timestamp: number) {
+	return timestamp / 86400;
+}
+
 function reducePartnerData(partnerData: ExchangePartnerData[], limitDays: number) {
 	if (!partnerData.length) return [];
 
-	const oldestDayId = Number(partnerData[0].dayID) - limitDays;
+	const oldestDayId = getDayId(Number(partnerData[0].timestamp)) - limitDays;
 
 	const groupedPartnerData: {
 		[partner: string]: { partner: string; usdFees: number; usdVolume: number; trades: number };
 	} = {};
 
 	for (const vd of partnerData) {
-		if (oldestDayId >= Number(vd.dayID)) break;
+		if (oldestDayId >= getDayId(Number(vd.timestamp))) break;
 
 		if (partnerNameMap[vd.partner]) {
 			vd.partner = partnerNameMap[vd.partner];
@@ -121,10 +125,10 @@ const Trading: FC = () => {
 		query: {
 			entity: 'dailyExchangePartners',
 			selection: {
-				orderBy: 'dayID',
+				orderBy: 'timestamp',
 				orderDirection: 'desc',
 			},
-			properties: ['dayID', 'partner', 'usdFees', 'usdVolume', 'trades'],
+			properties: ['timestamp', 'partner', 'usdFees', 'usdVolume', 'trades'],
 		},
 	});
 

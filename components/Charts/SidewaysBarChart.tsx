@@ -15,7 +15,6 @@ export type OpenInterest = {
 	totalSupply: number;
 
 	isShort: boolean;
-	inverseTotalSupply: number;
 	shortSupply: number;
 	shortValue: number;
 };
@@ -44,12 +43,10 @@ const SidewaysBarChart: FC<SidewaysBarChartProps> = ({ data, totalValue }) => {
 							totalSupply,
 
 							isShort,
-							inverseTotalSupply,
 							shortSupply,
 							shortValue,
 						}) => {
 							const synthName = `s${name}`;
-							const inverseName = `i${name}`;
 							return (
 								<SynthContainer key={`synth-${name}`}>
 									<SynthLabels>
@@ -57,11 +54,11 @@ const SidewaysBarChart: FC<SidewaysBarChartProps> = ({ data, totalValue }) => {
 											<FlexDivCol>
 												<FlexDivRow>
 													<SynthLabel>
-														{inverseName === 'iBTC' || inverseName === 'iETH'
-															? `${inverseName}, ${t('synth-bar-chart.shorts', {
+														{shortValue <= 0
+															? null
+															: `${t('synth-bar-chart.shorts', {
 																	asset: name,
-															  })}, other collateral`
-															: inverseName}
+															  })}, other collateral`}
 													</SynthLabel>
 													{isShort ? (
 														<InfoPopover
@@ -70,7 +67,7 @@ const SidewaysBarChart: FC<SidewaysBarChartProps> = ({ data, totalValue }) => {
 																<Trans
 																	i18nKey="synth-bar-chart.info-data"
 																	values={{
-																		asset: inverseName.slice(1),
+																		asset: synthName,
 																	}}
 																/>
 															}
@@ -78,16 +75,11 @@ const SidewaysBarChart: FC<SidewaysBarChartProps> = ({ data, totalValue }) => {
 													) : null}
 												</FlexDivRow>
 												<LabelSmall>
-													{inverseName === 'iBTC' || inverseName === 'iETH'
-														? `${formatNumber(inverseTotalSupply)} ${inverseName} + ${formatNumber(
-																shortSupply
-														  )} ${t('synth-bar-chart.shorts', {
+													{shortValue <= 0
+														? null
+														: `${formatNumber(shortSupply)} ${t('synth-bar-chart.shorts', {
 																asset: name,
-														  })}/${formatCurrency(shortValue, 0)}`
-														: `${formatNumber(inverseTotalSupply)} ${inverseName}/${formatCurrency(
-																shortValue,
-																0
-														  )}`}
+														  })}/${formatCurrency(shortValue, 0)}`}
 												</LabelSmall>
 											</FlexDivCol>
 										</SynthInfo>
