@@ -1,6 +1,7 @@
 import BigNumber from 'bignumber.js';
 import numbro from 'numbro';
 import { format } from 'date-fns';
+import isNaN from 'lodash/isNaN';
 
 import { NumberStyle } from '../constants/styles';
 import { TimeSeries } from '../types/data';
@@ -84,10 +85,15 @@ export const getTimeLength = (tst: TimeSeriesType): number => {
 };
 
 export const formatTime = (created: string | number, type: TimeSeriesType) => {
+	// hack for if timestamp might be in seconds
+	let date = new Date(created);
+	if (isNaN(date.getFullYear())) {
+		date = new Date(Number(created) * 1000);
+	}
 	if (type === '15m') {
-		return format(new Date(created), 'HH:00');
+		return format(date, 'HH:00');
 	} else if (type === '1d') {
-		return format(new Date(created), 'MM/dd');
+		return format(date, 'MM/dd');
 	}
 	throw new Error('unrecognized time to format');
 };
