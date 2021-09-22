@@ -157,7 +157,7 @@
 	},
 	"total-debt": {
 		"title": "TOTAL DEBT",
-		"subtext": "The total value of all Synth Debt denominated in USD"	
+		"subtext": "The total value of all Synth Debt denominated in USD"
 	},
 	"total-issued-synths": {
 		"title": "TOTAL ISSUED SYNTHS",
@@ -189,7 +189,7 @@
 		"shorts": "{{asset}} Shorts",
 		"wrapper": "{{asset}} Wrapper",
 		"shortLinkText": "Synthetix Surge",
-		"info-data": "It is possible to short {{asset}} without buying an inverse synth. A loan is borrowed in s{{asset}} terms, but receive the equivalent value in sUSD instead, thereby going short.\n\nAdditionally, debt pool corrections for wrappr or collateral loans may be included here."
+		"info-data": "One can short a synth by borrowing a loan in {{asset}} terms, but receive the equivalent value in sUSD instead, thereby going short.\n\nAdditionally, debt pool corrections for wrappr or collateral loans may be included here."
 	},
 	"synth-pie-chart": {
 		"title": "SYNTH DOMINANCE",
