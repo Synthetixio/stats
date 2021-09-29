@@ -77,17 +77,17 @@ export const useLiquidationsQuery = (): {
 
 			return { activeLiquidations, rawAccountInfos };
 		},
-		{ enabled: !!SNXPrice && !!issuanceRatio && !!totalIssuedSynths && !!lastDebtLedgerEntry }
+		{ enabled: SNXPrice.gt(0) && !!issuanceRatio && !!totalIssuedSynths && !!lastDebtLedgerEntry }
 	);
 
 	const summary: LiquidationsSummary = {
-		amountToCover: 0,
-		totalLiquidatableSNX: 0,
-		liquidatableCount: 0,
+		amountToCover: wei(0),
+		totalLiquidatableSNX: wei(0),
+		liquidatableCount: wei(0),
 	};
 	const liquidations: LiquidationsData[] = [];
 
-	if (useLiquidationsQuery.isSuccess) {
+	if (useLiquidationsQuery.isSuccess && SNXPrice.gt(0)) {
 		const { activeLiquidations, rawAccountInfos } = useLiquidationsQuery.data;
 
 		const accountInfos = _.keyBy(rawAccountInfos, 'id');
@@ -97,25 +97,17 @@ export const useLiquidationsQuery = (): {
 		const liquidations = [];
 		for (const l of activeLiquidations) {
 			const accountInfo = accountInfos[l.account.toLowerCase()];
-			const debtEntryAtIndexFmt = Number(
-				ethers.utils.formatEther(ethers.BigNumber.from(accountInfo.debtEntryAtIndex))
-			);
-			const initialDebtOwnershipFmt = Number(
-				ethers.utils.formatEther(ethers.BigNumber.from(accountInfo.initialDebtOwnership))
-			);
+			const debtEntryAtIndexFmt = Number(accountInfo.debtEntryAtIndex ?? 0);
+			const initialDebtOwnershipFmt = Number(accountInfo.initialDebtOwnership);
 
 			let currentDebt = totalIssuedSynths
 				.mul(lastDebtLedgerEntry)
 				.mul(initialDebtOwnershipFmt)
 				.div(debtEntryAtIndexFmt);
 
-			let currentCollateral = wei(
-				ethers.utils.formatEther(ethers.BigNumber.from(accountInfo.collateral))
-			);
+			let currentCollateral = wei(accountInfo.collateral);
 
-			let currentBalanceOf = wei(
-				ethers.utils.formatEther(ethers.BigNumber.from(accountInfo.balanceOf))
-			);
+			let currentBalanceOf = wei(accountInfo.balanceOf);
 
 			const amountToCover = currentDebt.sub(issuanceRatio).mul(currentCollateral).mul(SNXPrice);
 			const liquidatableAmount = amountToCover.div(SNXPrice);
