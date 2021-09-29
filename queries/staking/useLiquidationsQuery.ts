@@ -36,7 +36,7 @@ export const useLiquidationsQuery = (): {
 	queries: UseQueryResult[];
 	isFetching: boolean;
 } => {
-	const { snxData } = useNetwork();
+	const { snxData, isL2 } = useNetwork();
 	const { useGlobalStakingInfoQuery } = useSynthetixQueries();
 
 	const globalStakingInfoQuery = useGlobalStakingInfoQuery();
@@ -77,7 +77,10 @@ export const useLiquidationsQuery = (): {
 
 			return { activeLiquidations, rawAccountInfos };
 		},
-		{ enabled: SNXPrice.gt(0) && !!issuanceRatio && !!totalIssuedSynths && !!lastDebtLedgerEntry }
+		{
+			enabled:
+				SNXPrice.gt(0) && !!issuanceRatio && !!totalIssuedSynths && !!lastDebtLedgerEntry && !isL2,
+		}
 	);
 
 	const summary: LiquidationsSummary = {
