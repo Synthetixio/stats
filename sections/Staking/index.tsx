@@ -518,136 +518,147 @@ const Staking: FC = () => {
 					/>
 				}
 			/>
-			<StatsRow>
-				<StatsBox
-					key="LIQUIDCOUNT"
-					title={t('liquidation-count.title')}
-					num={liquidations.summary.liquidatableCount}
-					queries={liquidations.queries}
-					percentChange={null}
-					subText={t('liquidation-count.subtext')}
-					color={COLORS.pink}
-					numberStyle="number"
-					numBoxes={3}
-					infoData={null}
-				/>
-				<StatsBox
-					key="LIQUIDAMOUNT"
-					title={t('liquidation-amount-to-cover.title')}
-					num={liquidations.summary.amountToCover}
-					queries={liquidations.queries}
-					percentChange={null}
-					subText={t('liquidation-amount-to-cover.subtext')}
-					color={COLORS.pink}
-					numberStyle="currency2"
-					numBoxes={3}
-					infoData={null}
-				/>
-				<StatsBox
-					key="LIQUIDABLE"
-					title={t('liquidation-snx-total.title')}
-					num={liquidations.summary.totalLiquidatableSNX}
-					queries={liquidations.queries}
-					percentChange={null}
-					subText={t('liquidation-snx-total.subtext')}
-					color={COLORS.pink}
-					numberStyle="number"
-					numBoxes={3}
-					infoData={null}
-				/>
-			</StatsRow>
-			<Liquidations
-				liquidationsData={_.reverse(_.sortBy(liquidations.liquidations, 'amountToCover'))}
-				isLoading={liquidations.isFetching}
-				issuanceRatio={issuanceRatio.toNumber()}
-				snxPrice={SNXPrice.toNumber()}
-			/>
-			<AreaChart
-				periods={stakingPeriods}
-				activePeriod={liquidationsChartPeriod}
-				onPeriodSelect={(period: ChartPeriod) => {
-					setLiquidationsChartPeriod(period);
-				}}
-				data={recentLiquidatedChartData}
-				isLoadingData={recentLiquidationsQuery.isLoading}
-				title={t('recent-liquidations-chart.title')}
-				numFormat="currency0"
-				num={null}
-				percentChange={null}
-				timeSeries={liquidationsChartPrecision}
-				infoData={<Trans i18nKey="recent-liquidations.infoData" />}
-			/>
-			{recentLiquidationsQuery.isSuccess /* have to do this because our table is broken */ && (
-				<SectionWrap>
-					<SectionTitle>{t('recent-liquidations.title')}</SectionTitle>
-					<SectionSubtitle>{t('recent-liquidations.subtitle')}</SectionSubtitle>
-					<Table
-						columns={[
-							{
-								Header: (
-									<StyledTableHeader>{t('recent-liquidations.columns.time')}</StyledTableHeader>
-								),
-								accessor: 'time',
-								Cell: (cellProps: CellProps<RawRecentLiquidation>) => (
-									<InterSpan>
-										{new Date(1000 * parseInt(cellProps.row.original.time)).toISOString()}
-									</InterSpan>
-								),
-								width: 100,
-							},
-							{
-								Header: (
-									<StyledTableHeader>{t('recent-liquidations.columns.account')}</StyledTableHeader>
-								),
-								accessor: 'account',
-								Cell: (cellProps: CellProps<RawRecentLiquidation>) => (
-									<InterSpan>{cellProps.row.original.account}</InterSpan>
-								),
-							},
-							{
-								Header: (
-									<StyledTableHeader>
-										{t('recent-liquidations.columns.liquidator')}
-									</StyledTableHeader>
-								),
-								accessor: 'liquidator',
-								Cell: (cellProps: CellProps<RawRecentLiquidation>) => (
-									<InterSpan>{cellProps.row.original.liquidator}</InterSpan>
-								),
-							},
-							{
-								Header: (
-									<StyledTableHeader>{t('recent-liquidations.columns.amount')}</StyledTableHeader>
-								),
-								accessor: 'amountLiquidated',
-								Cell: (cellProps: CellProps<RawRecentLiquidation>) => (
-									<InterSpan>
-										{formatCurrency(
-											Number(
-												ethers.utils.formatEther(
-													ethers.BigNumber.from(cellProps.row.original.amountLiquidated)
-												)
-											),
-											0
-										)}
-									</InterSpan>
-								),
-								width: 50,
-							},
-						]}
-						data={recentLiquidationsQuery.data.slice(100)}
-						isLoading={recentLiquidationsQuery.isLoading}
-						noResultsMessage={
-							!recentLiquidationsQuery.isLoading && recentLiquidationsQuery.data?.length === 0 ? (
-								<TableNoResults>
-									<NoNotificationIcon />
-									<NoResults>{t('recent-liquidations.no-results')}</NoResults>
-								</TableNoResults>
-							) : undefined
-						}
-						showPagination={true}
+
+			{isL2 ? null : (
+				<>
+					<StatsRow>
+						<StatsBox
+							key="LIQUIDCOUNT"
+							title={t('liquidation-count.title')}
+							num={liquidations.summary.liquidatableCount}
+							queries={liquidations.queries}
+							percentChange={null}
+							subText={t('liquidation-count.subtext')}
+							color={COLORS.pink}
+							numberStyle="number"
+							numBoxes={3}
+							infoData={null}
+						/>
+						<StatsBox
+							key="LIQUIDAMOUNT"
+							title={t('liquidation-amount-to-cover.title')}
+							num={liquidations.summary.amountToCover}
+							queries={liquidations.queries}
+							percentChange={null}
+							subText={t('liquidation-amount-to-cover.subtext')}
+							color={COLORS.pink}
+							numberStyle="currency2"
+							numBoxes={3}
+							infoData={null}
+						/>
+						<StatsBox
+							key="LIQUIDABLE"
+							title={t('liquidation-snx-total.title')}
+							num={liquidations.summary.totalLiquidatableSNX}
+							queries={liquidations.queries}
+							percentChange={null}
+							subText={t('liquidation-snx-total.subtext')}
+							color={COLORS.pink}
+							numberStyle="number"
+							numBoxes={3}
+							infoData={null}
+						/>
+					</StatsRow>
+					<Liquidations
+						liquidationsData={_.reverse(_.sortBy(liquidations.liquidations, 'amountToCover'))}
+						isLoading={liquidations.isFetching}
+						issuanceRatio={issuanceRatio.toNumber()}
+						snxPrice={SNXPrice.toNumber()}
 					/>
-				</SectionWrap>
+
+					<AreaChart
+						periods={stakingPeriods}
+						activePeriod={liquidationsChartPeriod}
+						onPeriodSelect={(period: ChartPeriod) => {
+							setLiquidationsChartPeriod(period);
+						}}
+						data={recentLiquidatedChartData}
+						isLoadingData={recentLiquidationsQuery.isLoading}
+						title={t('recent-liquidations-chart.title')}
+						numFormat="currency0"
+						num={null}
+						percentChange={null}
+						timeSeries={liquidationsChartPrecision}
+						infoData={<Trans i18nKey="recent-liquidations.infoData" />}
+					/>
+					{recentLiquidationsQuery.isSuccess /* have to do this because our table is broken */ && (
+						<SectionWrap>
+							<SectionTitle>{t('recent-liquidations.title')}</SectionTitle>
+							<SectionSubtitle>{t('recent-liquidations.subtitle')}</SectionSubtitle>
+							<Table
+								columns={[
+									{
+										Header: (
+											<StyledTableHeader>{t('recent-liquidations.columns.time')}</StyledTableHeader>
+										),
+										accessor: 'time',
+										Cell: (cellProps: CellProps<RawRecentLiquidation>) => (
+											<InterSpan>
+												{new Date(1000 * parseInt(cellProps.row.original.time)).toISOString()}
+											</InterSpan>
+										),
+										width: 100,
+									},
+									{
+										Header: (
+											<StyledTableHeader>
+												{t('recent-liquidations.columns.account')}
+											</StyledTableHeader>
+										),
+										accessor: 'account',
+										Cell: (cellProps: CellProps<RawRecentLiquidation>) => (
+											<InterSpan>{cellProps.row.original.account}</InterSpan>
+										),
+									},
+									{
+										Header: (
+											<StyledTableHeader>
+												{t('recent-liquidations.columns.liquidator')}
+											</StyledTableHeader>
+										),
+										accessor: 'liquidator',
+										Cell: (cellProps: CellProps<RawRecentLiquidation>) => (
+											<InterSpan>{cellProps.row.original.liquidator}</InterSpan>
+										),
+									},
+									{
+										Header: (
+											<StyledTableHeader>
+												{t('recent-liquidations.columns.amount')}
+											</StyledTableHeader>
+										),
+										accessor: 'amountLiquidated',
+										Cell: (cellProps: CellProps<RawRecentLiquidation>) => (
+											<InterSpan>
+												{formatCurrency(
+													Number(
+														ethers.utils.formatEther(
+															ethers.BigNumber.from(cellProps.row.original.amountLiquidated)
+														)
+													),
+													0
+												)}
+											</InterSpan>
+										),
+										width: 50,
+									},
+								]}
+								data={recentLiquidationsQuery.data.slice(100)}
+								isLoading={recentLiquidationsQuery.isLoading}
+								noResultsMessage={
+									!recentLiquidationsQuery.isLoading &&
+									recentLiquidationsQuery.data?.length === 0 ? (
+										<TableNoResults>
+											<NoNotificationIcon />
+											<NoResults>{t('recent-liquidations.no-results')}</NoResults>
+										</TableNoResults>
+									) : undefined
+								}
+								showPagination={true}
+							/>
+						</SectionWrap>
+					)}
+				</>
 			)}
 		</>
 	);
