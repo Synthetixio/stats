@@ -277,7 +277,7 @@
 	},
 	"liquidation-snx-total": {
 		"title": "Liquidatable SNX",
-		"subtext": "10% will be sent to liquidators on liqudation"
+		"subtext": "10% will be sent to liquidators on liquidation"
 	},
 	"liquidations": {
 		"title": "LIQUIDATIONS",
