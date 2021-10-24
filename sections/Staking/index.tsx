@@ -358,7 +358,7 @@ const Staking: FC = () => {
 					percentChange={null}
 					subText={t('current-fee-pool.subtext', {
 						endDate: currentFeePeriod.isSuccess
-							? format(new Date(currentFeePeriod.data!.startTime + WEEK), 'MMMM dd')
+							? format(new Date(currentFeePeriod.data!.startTime * 1000 + WEEK), 'MMMM dd')
 							: '-',
 					})}
 					color={COLORS.pink}
@@ -385,7 +385,7 @@ const Staking: FC = () => {
 					percentChange={null}
 					subText={t('current-fee-pool-snx.subtext', {
 						endDate: currentFeePeriod.isSuccess
-							? format(new Date(currentFeePeriod.data!.startTime + WEEK), 'MMMM dd')
+							? format(new Date(currentFeePeriod.data!.startTime * 1000 + WEEK), 'MMMM dd')
 							: '-',
 					})}
 					color={COLORS.green}
@@ -415,7 +415,7 @@ const Staking: FC = () => {
 					percentChange={null}
 					subText={t('unclaimed-fees-and-rewards.subtext', {
 						endDate: nextFeePeriod.isSuccess
-							? format(new Date(nextFeePeriod.data!.startTime + WEEK), 'MMMM dd')
+							? format(new Date(nextFeePeriod.data!.startTime * 1000 + WEEK), 'MMMM dd')
 							: '-',
 					})}
 					color={COLORS.green}
