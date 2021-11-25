@@ -2,6 +2,7 @@ import { FC } from 'react';
 import styled, { createGlobalStyle } from 'styled-components';
 
 import Header from './Header';
+import { LinkText } from 'components/common';
 
 type LayoutProps = {
 	children: React.ReactNode;
@@ -19,7 +20,9 @@ const Layout: FC<LayoutProps> = ({ children }) => {
 					<p>Data is out of date and a new version is coming soon.</p>
 					<p>
 						See the debt pool on{' '}
-						<a href="https://staking.synthetix.io/debt">https://staking.synthetix.io/debt</a>{' '}
+						<LinkText href="https://staking.synthetix.io/debt">
+							https://staking.synthetix.io/debt
+						</LinkText>{' '}
 					</p>
 				</MaintenanceWrapper>
 			) : (
