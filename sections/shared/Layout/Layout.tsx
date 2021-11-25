@@ -1,18 +1,33 @@
 import { FC } from 'react';
-import { createGlobalStyle } from 'styled-components';
+import styled, { createGlobalStyle } from 'styled-components';
 
 import Header from './Header';
+import { LinkText } from 'components/common';
 
 type LayoutProps = {
 	children: React.ReactNode;
 };
+export const IN_MAINTENANCE = true;
 
 const Layout: FC<LayoutProps> = ({ children }) => {
 	return (
 		<>
 			<GlobalStyle />
-			<Header />
-			<section>{children}</section>
+			{IN_MAINTENANCE ? '' : <Header />}
+			{IN_MAINTENANCE ? (
+				<MaintenanceWrapper>
+					<h2>Maintenance Mode</h2>
+					<p>Data is out of date and a new version is coming soon.</p>
+					<p>
+						See the debt pool on{' '}
+						<LinkText href="https://staking.synthetix.io/debt">
+							https://staking.synthetix.io/debt
+						</LinkText>{' '}
+					</p>
+				</MaintenanceWrapper>
+			) : (
+				<section>{children}</section>
+			)}
 		</>
 	);
 };
@@ -98,6 +113,14 @@ const GlobalStyle = createGlobalStyle`
 			margin: 10px 0;
 		}
   }
+`;
+const MaintenanceWrapper = styled.div`
+	width: 100%;
+	height: 100vh;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-direction: column;
 `;
 
 export default Layout;
