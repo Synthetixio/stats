@@ -7,7 +7,8 @@ import { LinkText } from 'components/common';
 type LayoutProps = {
 	children: React.ReactNode;
 };
-export const IN_MAINTENANCE = true;
+export const IN_MAINTENANCE =
+	typeof window !== 'undefined' && !window.location.search.includes('disable-maintenance');
 
 const Layout: FC<LayoutProps> = ({ children }) => {
 	return (
