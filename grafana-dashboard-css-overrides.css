@@ -1,0 +1,85 @@
+body {
+	background: rgb(6, 6, 27);
+}
+/* Toolbar */
+.toolbar-button,
+.gf-form button,
+.gf-form label {
+	color: white;
+	background: none;
+	border: none;
+}
+.toolbar-button:hover {
+	background: none;
+	box-shadow: none;
+}
+/* Table */
+[aria-label='table header'] {
+	background: rgb(22, 27, 68);
+}
+[aria-label='table header'] div {
+	color: white;
+}
+[role='row']:hover,
+[role='cell']:hover {
+	background: inherit;
+}
+/* Time picker */
+#TimePickerContent {
+	background: rgb(9, 9, 47);
+}
+input {
+	background: transparent !important;
+}
+[aria-label='Time Range calendar'],
+[aria-label='Time Range calendar'] div {
+	background: rgb(9, 9, 47);
+}
+/* Tooltip */
+.popper__background {
+	background: rgb(9, 9, 47);
+	border-color: rgb(9, 9, 47);
+	box-shadow: 0 4px 8px rgb(9 9 47 / 69%);
+}
+.popper__background .popper__arrow {
+	border-color: rgb(9, 9, 47);
+}
+
+/* Hide theme panel */
+.react-grid-layout .react-grid-item:first-child {
+	display: none;
+}
+/* Hide view mode in toolbar*/
+[aria-label='Cycle view mode'] {
+	display: none;
+}
+/* Network picker*/
+.variable-value-dropdown {
+	background: rgb(9, 9, 47);
+	box-shadow: 0 4px 8px rgb(9 9 47 / 69%);
+}
+.variable-option.highlighted,
+.variable-option:hover {
+	background: rgb(6, 6, 27);
+}
+.variable-value-dropdown.single .selected {
+	background: rgb(6, 6, 27);
+}
+/* Chart tooltip */
+.css-tfew28,
+.visx-tooltip {
+	background: rgb(6, 6, 27);
+	box-shadow: rgb(255 255 255 / 7%) 0px 4px 8px;
+}
+/* Secondary Button */
+.btn.btn-secondary {
+	background: rgb(6, 6, 27);
+}
+/* Collapsed row*/
+.dashboard-row--collapsed {
+	background: rgb(6, 6, 27);
+}
+/* Adjust page grid Y position to accound for hidden theme panel*/
+.react-grid-layout {
+	transform: translateY(-35px);
+}
