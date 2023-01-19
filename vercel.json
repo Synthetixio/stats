@@ -1,5 +1,5 @@
 {
   "redirects": [
-    { "source": "/(.*)", "destination": "https://grafana.synthetix.io/d/pjPJZ6x7z/synthetix-system-stats?orgId=1&kiosk=full" }
+    { "source": "/(.*)", "destination": "https://dune.com/synthetix_community/synthetix-stats" }
   ]
 }
