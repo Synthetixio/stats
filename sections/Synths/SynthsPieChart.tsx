@@ -81,7 +81,7 @@ const Tooltip: FC<{ name: string; value: number; payload: { payload: SynthTotalS
 const Legend: FC<{ payload: { payload: SynthTotalSupply } }> = ({ payload: { payload } }) => {
 	return (
 		<span>
-			{formatCurrency(payload.skewValue.toNumber(), 0)} ($
+			{formatCurrency(payload.skewValue.toNumber(), 0)} (
 			{formatPercentage(payload.poolProportion.toNumber(), 0)})
 		</span>
 	);
