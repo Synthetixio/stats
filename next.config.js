@@ -14,7 +14,5 @@ module.exports = {
 		return config;
 	},
 	env: {},
-	images: {
-		domains: ['raw.githubusercontent.com'],
-	},
+	images: {},
 };
